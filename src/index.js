@@ -97,7 +97,7 @@ const getConfiguration = async () => {
     log('green', `Configuration file found: \`${file}\``);
   }
 
-  return {
+  const result = {
     input: ['src'],
     output: 'esm',
     directory: null,
@@ -105,6 +105,27 @@ const getConfiguration = async () => {
     extension: true,
     ...config,
   };
+
+  result.input = result.input.map((item) => path.join(cwd, item));
+  result.output = path.join(cwd, result.output);
+  return result;
+};
+/**
+ * Ensures the output directory exists and it's empty. If the directory exists, it removes it and
+ * then creates it again.
+ *
+ * @param {string} output The output directory the tool will use.
+ * @returns {Promise}
+ */
+const ensureOutput = async (output) => {
+  const exists = await fs.pathExists(output);
+  if (exists) {
+    await fs.remove(output);
+  }
+
+  await fs.mkdir(output);
+  log('green', 'Output directory successfully cleaned');
 };
 
 module.exports.getConfiguration = getConfiguration;
+module.exports.ensureOutput = ensureOutput;
