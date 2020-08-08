@@ -256,6 +256,7 @@ const transformOutput = async (files, output) => {
   const transformations = [
     path.resolve('node_modules', '5to6-codemod', 'transforms', 'cjs.js'),
     path.resolve('node_modules', '5to6-codemod', 'transforms', 'exports.js'),
+    path.resolve('node_modules', '5to6-codemod', 'transforms', 'named-export-generation.js'),
   ];
 
   log('yellow', `Transforming ${files.length} files...`);
