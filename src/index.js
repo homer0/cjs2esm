@@ -1,5 +1,7 @@
 const path = require('path');
+const chalk = require('chalk');
 const fs = require('fs-extra');
+const { name } = require('../package.json');
 /**
  * @typedef {Object} CJS2ESMModuleOption
  * @property {string}             name     The name of the module.
@@ -22,6 +24,18 @@ const fs = require('fs-extra');
  * @property {boolean}               extension Whether or not to change the extensions of the
  *                                             transpiled files to `.mjs`.
  */
+
+/**
+ * Logs messages prefixed with the name of the project and with a specified color.
+ * Yes, this is a proxy-like function for `console.log` with `chalk`.
+ *
+ * @param {string}   color The color from `chalk` that should be used.
+ * @param {string[]} args  The list of messages to log.
+ */
+const log = (color, ...args) => {
+  // eslint-disable-next-line no-console
+  console.log(...[`[${name}]`, ...args].map((item) => chalk[color](item)));
+};
 
 /**
  * Given a list of file names and a directory, the function will find the first file that exists.
@@ -50,6 +64,7 @@ const findFile = async (list, directory) => {
  * @returns {Promise<CJS2ESMOptions>}
  */
 const getConfiguration = async () => {
+  log('yellow', 'Loading configuration...');
   const cwd = process.cwd();
   const file = await findFile(
     [
@@ -66,14 +81,20 @@ const getConfiguration = async () => {
     const pckJson = require(path.join(cwd, 'package.json'));
     if (pckJson.config && pckJson.config.cjs2esm) {
       config = pckJson.config.cjs2esm;
+      log('green', 'Using configuration from the package.json');
     } else if (pckJson.cjs2esm) {
       config = pckJson.cjs2esm;
+      log('green', 'Using configuration from the package.json');
+    } else {
+      log('gray', 'No configuration was found, using defaults...');
     }
   } else if (file.match(/\.js$/i)) {
     // eslint-disable-next-line global-require, import/no-dynamic-require
     config = require(file);
+    log('green', `Configuration file found: \`${file}\``);
   } else {
     config = await fs.readJSON(file);
+    log('green', `Configuration file found: \`${file}\``);
   }
 
   return {
