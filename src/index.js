@@ -1,0 +1,89 @@
+const path = require('path');
+const fs = require('fs-extra');
+/**
+ * @typedef {Object} CJS2ESMModuleOption
+ * @property {string}             name     The name of the module.
+ * @property {'path'|'extension'} strategy The strategy the tool will use to transform the import.
+ * @property {?string}            path     When `strategy` is `path`, this property will be used to
+ *                                         change the import path. For example, if the module is
+ *                                         `wootils`, this can be set to `wootils/esm`.
+ */
+
+/**
+ * @typedef {Object} CJS2ESMOptions
+ * @property {string[]}              input     The list of directories that should be transformed.
+ * @property {string}                output    The directory where the transformed code should be
+ *                                             placed.
+ * @property {?boolean}              directory By default, if `input` has only one directory, the
+ *                                             only thing copied will be its contents, instead of
+ *                                             the directory itself; this flag can be used to force
+ *                                             it and always copy the directory.
+ * @property {CJS2ESMModuleOption[]} modules   Special configurations for modules with ESM versions.
+ * @property {boolean}               extension Whether or not to change the extensions of the
+ *                                             transpiled files to `.mjs`.
+ */
+
+/**
+ * Given a list of file names and a directory, the function will find the first file that exists.
+ *
+ * @param {string[]} list      The list of files to test.
+ * @param {string}   directory The base directory where the paths will be tested.
+ * @returns {Promise<?string>}
+ */
+const findFile = async (list, directory) => {
+  let result;
+  for (let i = 0; i < list.length; i++) {
+    const test = path.join(directory, list[i]);
+    // eslint-disable-next-line no-await-in-loop
+    const exists = await fs.pathExists(test);
+    if (exists) {
+      result = test;
+      break;
+    }
+  }
+
+  return result || null;
+};
+/**
+ * Loads the configuration for the project.
+ *
+ * @returns {Promise<CJS2ESMOptions>}
+ */
+const getConfiguration = async () => {
+  const cwd = process.cwd();
+  const file = await findFile(
+    [
+      '.cjs2esm',
+      '.cjs2esm.json',
+      '.cjs2esm.js',
+    ],
+    cwd,
+  );
+
+  let config = {};
+  if (file === null) {
+    // eslint-disable-next-line global-require, import/no-dynamic-require
+    const pckJson = require(path.join(cwd, 'package.json'));
+    if (pckJson.config && pckJson.config.cjs2esm) {
+      config = pckJson.config.cjs2esm;
+    } else if (pckJson.cjs2esm) {
+      config = pckJson.cjs2esm;
+    }
+  } else if (file.match(/\.js$/i)) {
+    // eslint-disable-next-line global-require, import/no-dynamic-require
+    config = require(file);
+  } else {
+    config = await fs.readJSON(file);
+  }
+
+  return {
+    input: ['src'],
+    output: 'esm',
+    directory: null,
+    modules: [],
+    extension: true,
+    ...config,
+  };
+};
+
+module.exports.getConfiguration = getConfiguration;
