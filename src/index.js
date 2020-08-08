@@ -1,6 +1,7 @@
 const path = require('path');
 const chalk = require('chalk');
 const fs = require('fs-extra');
+const Runner = require('jscodeshift/src/Runner');
 const { name } = require('../package.json');
 /**
  * @typedef {Object} CJS2ESMModuleOption
@@ -222,7 +223,58 @@ const copyFiles = async (input, output, changeExtension, useDirectory) => {
 
   return result;
 };
+/**
+ * Transforms all files from the output directory into ES Modules.
+ *
+ * @param {string[]} files  The list of files that were copied to the output directory.
+ * @param {string}   output The absolute path to the output directory.
+ * @returns {Promise}
+ * @throws {Error} If there's a problem while transforming a file.
+ */
+const transformOutput = async (files, output) => {
+  const extension = files[0].match(/\.mjs$/i) ? 'mjs' : 'js';
+  const options = {
+    verbose: 0,
+    dry: false,
+    print: false,
+    babel: true,
+    extension,
+    ignorePattern: [],
+    ignoreConfig: [],
+    runInBand: false,
+    silent: true,
+    parser: 'babel',
+  };
+
+  const transformations = [
+    path.resolve('node_modules', '5to6-codemod', 'transforms', 'cjs.js'),
+    path.resolve('node_modules', '5to6-codemod', 'transforms', 'exports.js'),
+  ];
+
+  log('yellow', `Transforming ${files.length} files...`);
+
+  const results = await transformations.reduce(
+    (acc, transformation) => acc.then((prevStats) => (
+      Runner.run(transformation, [output], options)
+      .then((stats) => [...prevStats, stats])
+    )),
+    Promise.resolve([null]),
+  );
+
+  results.shift();
+  const errorIndex = results.findIndex((stats) => (stats.ok + stats.nochange) !== files.length);
+  if (errorIndex > -1) {
+    let transformationError = transformations[errorIndex];
+    transformationError = path.parse(transformationError).name;
+    throw new Error(`At least one file couldn't be transformed with \`${transformationError}\``);
+  }
+
+  const cwd = process.cwd();
+  files.forEach((file) => log('gray', `> ${file.substr(cwd.length + 1)}`));
+  log('green', 'All files were successfully transformed!');
+};
 
 module.exports.getConfiguration = getConfiguration;
 module.exports.ensureOutput = ensureOutput;
 module.exports.copyFiles = copyFiles;
+module.exports.transformOutput = transformOutput;

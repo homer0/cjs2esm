@@ -3,6 +3,7 @@ const {
   getConfiguration,
   ensureOutput,
   copyFiles,
+  transformOutput,
 } = require('.');
 
 (async () => {
@@ -14,7 +15,5 @@ const {
     config.extension,
     config.directory,
   );
-
-  // eslint-disable-next-line no-console
-  console.log(files);
+  await transformOutput(files, config.output);
 })();
