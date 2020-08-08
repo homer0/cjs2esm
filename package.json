@@ -31,6 +31,9 @@
     "lint-staged": "^10.2.11",
     "semantic-release": "^17.1.1"
   },
+  "bin": {
+    "cjs2esm": "./src/bin.js"
+  },
   "engine-strict": true,
   "engines": {
     "node": ">=10"
