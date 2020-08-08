@@ -151,7 +151,14 @@ const findFiles = async (directory) => {
     return newItem;
   }));
 
-  result = result.filter((item) => item !== null);
+  result = result
+  .filter((item) => item !== null)
+  .reduce((acc, item) => (
+    Array.isArray(item) ?
+      [...acc, ...item] :
+      [...acc, item]
+  ), []);
+
   return result;
 };
 /**
