@@ -126,6 +126,103 @@ const ensureOutput = async (output) => {
   await fs.mkdir(output);
   log('green', 'Output directory successfully cleaned');
 };
+/**
+ * Finds all the JavaScript files on a given directory.
+ *
+ * @param {string} directory The absolute path to the directory.
+ * @returns {Promise<string[]>}
+ */
+const findFiles = async (directory) => {
+  let result = await fs.readdir(directory);
+  result = result.filter((item) => !item.startsWith('.'));
+  result = await Promise.all(result.map(async (item) => {
+    const itempath = path.join(directory, item);
+    const stats = await fs.stat(itempath);
+    let newItem;
+    if (stats.isDirectory()) {
+      newItem = await findFiles(itempath);
+    } else if (item.match(/\.js$/i)) {
+      newItem = itempath;
+    } else {
+      newItem = null;
+    }
+
+    return newItem;
+  }));
+
+  result = result.filter((item) => item !== null);
+  return result;
+};
+/**
+ * Copies all the files from a source directory to the output directory, changing the extensions
+ * if required.
+ *
+ * @param {string}  directory           The source directory from where the files will be copied.
+ * @param {string}  output              The output directory where the files should be copied to.
+ * @param {boolean} changeExtension     Whether or not to change the extensions to `.mjs`.
+ * @param {boolean} [useDirectory=true] If `false`, the directory itself won't be copied, just its
+ *                                      contents.
+ * @returns {Promise<string[]>}
+ */
+const copyDirectory = async (directory, output, changeExtension, useDirectory = true) => {
+  const cwd = process.cwd();
+  let contents = await findFiles(directory);
+  contents = await Promise.all(contents.map(async (item) => {
+    let cleanPath = item.substr(cwd.length + 1);
+    if (!useDirectory) {
+      cleanPath = cleanPath.split(path.sep);
+      cleanPath.shift();
+      cleanPath = cleanPath.join(path.sep);
+    }
+
+    let newPath = path.join(output, cleanPath);
+    if (changeExtension) {
+      newPath = newPath.replace(/\.js$/i, '.mjs');
+    }
+
+    await fs.ensureDir(path.dirname(newPath));
+    await fs.copyFile(item, newPath);
+    return newPath;
+  }));
+
+  return contents;
+};
+/**
+ * Copies all the files the tool will transpile.
+ *
+ * @param {string[]} input           The list of source paths where the files are located.
+ * @param {string}   output          The output path where all the files will be transpiled to.
+ * @param {boolean}  changeExtension Whether or not to change the extensions to `.mjs`.
+ * @param {?boolean} useDirectory    By default, if `input` has only one directory, the only thing
+ *                                   copied will be its contents, instead of the directory itself;
+ *                                   this parameter can be used to force it and always copy the
+ *                                   directory.
+ *
+ * @returns {string[]}
+ */
+const copyFiles = async (input, output, changeExtension, useDirectory) => {
+  let result;
+  if (input.length === 1) {
+    const [firstInput] = input;
+    result = await copyDirectory(
+      firstInput,
+      output,
+      changeExtension,
+      useDirectory === true,
+    );
+  } else {
+    result = await Promise.all(input.map((item) => copyDirectory(
+      item,
+      output,
+      changeExtension,
+    )));
+
+    result = result.reduce((acc, item) => [...acc, ...item], []);
+  }
+
+  return result;
+};
 
 module.exports.getConfiguration = getConfiguration;
 module.exports.ensureOutput = ensureOutput;
+module.exports.copyFiles = copyFiles;
