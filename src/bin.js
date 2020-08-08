@@ -12,8 +12,8 @@ const {
   const files = await copyFiles(
     config.input,
     config.output,
-    config.extension,
-    config.directory,
+    config.extension.change,
+    config.forceDirectory,
   );
-  await transformOutput(files, config.output);
+  await transformOutput(files, config);
 })();

@@ -13,17 +13,30 @@ const { name } = require('../package.json');
  */
 
 /**
+ * @typedef {Object} CJS2ESMExtensionOptions
+ * @property {boolean}  change        Whether or not to change the `.js` extension to `.mjs` of
+ *                                    the files transformed.
+ * @property {boolean}  addOnImports  Whether or not to add `.mjs` or `/index.mjs` to the import
+ *                                    statements.
+ * @property {string[]} ignoreImports A list of expressions (strings that will be converted on
+ *                                    `RegExp`) to ignore import statements when adding the `.mjs`
+ *                                    extension or the `/index.mjs`.
+ */
+
+/**
  * @typedef {Object} CJS2ESMOptions
- * @property {string[]}              input     The list of directories that should be transformed.
- * @property {string}                output    The directory where the transformed code should be
- *                                             placed.
- * @property {?boolean}              directory By default, if `input` has only one directory, the
- *                                             only thing copied will be its contents, instead of
- *                                             the directory itself; this flag can be used to force
- *                                             it and always copy the directory.
- * @property {CJS2ESMModuleOption[]} modules   Special configurations for modules with ESM versions.
- * @property {boolean}               extension Whether or not to change the extensions of the
- *                                             transpiled files to `.mjs`.
+ * @property {string[]} input
+ * The list of directories that should be transformed.
+ * @property {string} output
+ * The directory where the transformed code should be placed.
+ * @property {?boolean} forceDirectory
+ * By default, if `input` has only one directory, the only thing copied will be its contents,
+ * instead of the directory itself; this flag can be used to force force it and always copy the
+ * directory.
+ * @property {CJS2ESMModuleOption[]} modules
+ * Special configurations for modules with ESM versions.
+ * @property {CJS2ESMExtensionOptions} extension
+ * How should the tool handle the `.mjs` extension.
  */
 
 /**
@@ -101,10 +114,17 @@ const getConfiguration = async () => {
   const result = {
     input: ['src'],
     output: 'esm',
-    directory: null,
+    forceDirectory: null,
     modules: [],
-    extension: true,
+    extension: {},
     ...config,
+  };
+
+  result.extension = {
+    change: true,
+    addOnImports: true,
+    ignoreImports: [],
+    ...result.extension,
   };
 
   result.input = result.input.map((item) => path.join(cwd, item));
@@ -165,19 +185,19 @@ const findFiles = async (directory) => {
  * Copies all the files from a source directory to the output directory, changing the extensions
  * if required.
  *
- * @param {string}  directory           The source directory from where the files will be copied.
- * @param {string}  output              The output directory where the files should be copied to.
- * @param {boolean} changeExtension     Whether or not to change the extensions to `.mjs`.
- * @param {boolean} [useDirectory=true] If `false`, the directory itself won't be copied, just its
- *                                      contents.
+ * @param {string}  directory             The source directory from where the files will be copied.
+ * @param {string}  output                The output directory where the files should be copied to.
+ * @param {boolean} changeExtension       Whether or not to change the extensions to `.mjs`.
+ * @param {boolean} [forceDirectory=true] If `false`, the directory itself won't be copied, just
+ *                                        its contents.
  * @returns {Promise<string[]>}
  */
-const copyDirectory = async (directory, output, changeExtension, useDirectory = true) => {
+const copyDirectory = async (directory, output, changeExtension, forceDirectory = true) => {
   const cwd = process.cwd();
   let contents = await findFiles(directory);
   contents = await Promise.all(contents.map(async (item) => {
     let cleanPath = item.substr(cwd.length + 1);
-    if (!useDirectory) {
+    if (!forceDirectory) {
       cleanPath = cleanPath.split(path.sep);
       cleanPath.shift();
       cleanPath = cleanPath.join(path.sep);
@@ -201,14 +221,14 @@ const copyDirectory = async (directory, output, changeExtension, useDirectory = 
  * @param {string[]} input           The list of source paths where the files are located.
  * @param {string}   output          The output path where all the files will be transpiled to.
  * @param {boolean}  changeExtension Whether or not to change the extensions to `.mjs`.
- * @param {?boolean} useDirectory    By default, if `input` has only one directory, the only thing
+ * @param {?boolean} forceDirectory  By default, if `input` has only one directory, the only thing
  *                                   copied will be its contents, instead of the directory itself;
  *                                   this parameter can be used to force it and always copy the
  *                                   directory.
  *
  * @returns {string[]}
  */
-const copyFiles = async (input, output, changeExtension, useDirectory) => {
+const copyFiles = async (input, output, changeExtension, forceDirectory) => {
   let result;
   if (input.length === 1) {
     const [firstInput] = input;
@@ -216,7 +236,7 @@ const copyFiles = async (input, output, changeExtension, useDirectory) => {
       firstInput,
       output,
       changeExtension,
-      useDirectory === true,
+      forceDirectory === true,
     );
   } else {
     result = await Promise.all(input.map((item) => copyDirectory(
@@ -233,24 +253,25 @@ const copyFiles = async (input, output, changeExtension, useDirectory) => {
 /**
  * Transforms all files from the output directory into ES Modules.
  *
- * @param {string[]} files  The list of files that were copied to the output directory.
- * @param {string}   output The absolute path to the output directory.
+ * @param {string[]}       files   The list of files that were copied to the output directory.
+ * @param {CJS2ESMOptions} options The options of the tool, so they can be sent to the
+ *                                 transformers.
  * @returns {Promise}
  * @throws {Error} If there's a problem while transforming a file.
  */
-const transformOutput = async (files, output) => {
-  const extension = files[0].match(/\.mjs$/i) ? 'mjs' : 'js';
-  const options = {
+const transformOutput = async (files, options) => {
+  const transformOptions = {
     verbose: 0,
     dry: false,
     print: false,
     babel: true,
-    extension,
+    extension: files[0].match(/\.mjs$/i) ? 'mjs' : 'js',
     ignorePattern: [],
     ignoreConfig: [],
     runInBand: false,
     silent: true,
     parser: 'babel',
+    cjs2esm: options,
   };
 
   const transformations = [
@@ -259,7 +280,7 @@ const transformOutput = async (files, output) => {
     path.resolve('node_modules', '5to6-codemod', 'transforms', 'named-export-generation.js'),
   ];
 
-  if (extension === 'mjs') {
+  if (options.extension.addOnImports) {
     transformations.push(path.resolve(__dirname, 'transforms', 'indexes.js'));
   }
 
@@ -267,7 +288,7 @@ const transformOutput = async (files, output) => {
 
   const results = await transformations.reduce(
     (acc, transformation) => acc.then((prevStats) => (
-      Runner.run(transformation, [output], options)
+      Runner.run(transformation, [options.output], transformOptions)
       .then((stats) => [...prevStats, stats])
     )),
     Promise.resolve([null]),
