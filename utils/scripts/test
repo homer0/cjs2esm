@@ -1,0 +1,2 @@
+#!/bin/bash -e
+jest -c ./.jestrc.js $@

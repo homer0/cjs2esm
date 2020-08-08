@@ -1,0 +1,2 @@
+#!/bin/bash -e
+jsdoc -c .jsdoc.js
