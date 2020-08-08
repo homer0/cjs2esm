@@ -259,6 +259,10 @@ const transformOutput = async (files, output) => {
     path.resolve('node_modules', '5to6-codemod', 'transforms', 'named-export-generation.js'),
   ];
 
+  if (extension === 'mjs') {
+    transformations.push(path.resolve(__dirname, 'transforms', 'indexes.js'));
+  }
+
   log('yellow', `Transforming ${files.length} files...`);
 
   const results = await transformations.reduce(
