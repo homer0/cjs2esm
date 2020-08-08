@@ -6,7 +6,13 @@
   "repository": "homer0/cjs2esm",
   "author": "Leonardo Apiwan (@homer0) <me@homer0.com>",
   "license": "MIT",
-  "dependencies": {},
+  "dependencies": {
+    "@babel/core": "^7.11.1",
+    "@babel/preset-env": "^7.11.0",
+    "5to6-codemod": "1.8.0",
+    "fs-extra": "^9.0.1",
+    "jscodeshift": "0.10.0"
+  },
   "devDependencies": {
     "@semantic-release/changelog": "^5.0.1",
     "@semantic-release/git": "^9.0.0",
