@@ -10,6 +10,7 @@
     "@babel/core": "^7.11.1",
     "@babel/preset-env": "^7.11.0",
     "5to6-codemod": "1.8.0",
+    "chalk": "^4.1.0",
     "del": "^5.1.0",
     "fs-extra": "^9.0.1",
     "jscodeshift": "0.10.0"
