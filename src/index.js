@@ -5,11 +5,11 @@ const Runner = require('jscodeshift/src/Runner');
 const { name } = require('../package.json');
 /**
  * @typedef {Object} CJS2ESMModuleOption
- * @property {string}             name     The name of the module.
- * @property {'path'|'extension'} strategy The strategy the tool will use to transform the import.
- * @property {?string}            path     When `strategy` is `path`, this property will be used to
- *                                         change the import path. For example, if the module is
- *                                         `wootils`, this can be set to `wootils/esm`.
+ * @property {string}  name The name of the module, or the beginning of an import path. This will
+ *                          be converted into a `RegExp`, so it can be a expression too.
+ * @property {?string} find Optionally, instead of replacing `name` on the path, this property can
+ *                          be used to define a custom `RegExp` string.
+ * @property {string}  path The custom path for the ESM version.
  */
 
 /**
@@ -280,8 +280,8 @@ const transformOutput = async (files, options) => {
     path.resolve('node_modules', '5to6-codemod', 'transforms', 'named-export-generation.js'),
   ];
 
-  if (options.extension.addOnImports) {
-    transformations.push(path.resolve(__dirname, 'transforms', 'indexes.js'));
+  if (options.extension.addOnImports || options.modules.length) {
+    transformations.push(path.resolve(__dirname, 'transformer.js'));
   }
 
   log('yellow', `Transforming ${files.length} files...`);
