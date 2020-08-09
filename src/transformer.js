@@ -1,6 +1,6 @@
 const path = require('path');
 const fs = require('fs-extra');
-const { findFileSync, getAbsPathInfo } = require('./utils');
+const { findFileSync, getAbsPathInfoSync } = require('./utils');
 
 /**
  * @typedef {import('jscodeshift').API} API
@@ -14,7 +14,8 @@ const { findFileSync, getAbsPathInfo } = require('./utils');
  *
  * @param {string} absPath    The absolute path for the folder.
  * @param {string} importPath The path as it is on the import statement.
- * @returns {string}
+ * @returns {?string} If there's no `package.json` and no `index` was found, the function will
+ *                    return `null`.
  */
 const createReplacementForFolder = (absPath, importPath) => {
   let result;
@@ -79,7 +80,7 @@ const transform = (file, api, options) => {
     const absPath = importPath.startsWith('.') ?
       path.join(base, importPath) :
       path.resolve('node_modules', importPath);
-    const info = getAbsPathInfo(absPath);
+    const info = getAbsPathInfoSync(absPath);
     let replacement;
     if (info === null) {
       // No info was found, so "don't replace it".

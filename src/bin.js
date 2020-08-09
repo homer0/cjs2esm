@@ -4,6 +4,7 @@ const {
   ensureOutput,
   copyFiles,
   transformOutput,
+  updatePackageJSON,
 } = require('.');
 
 (async () => {
@@ -16,4 +17,7 @@ const {
     config.forceDirectory,
   );
   await transformOutput(files, config);
+  if (config.addModuleEntry) {
+    await updatePackageJSON(files);
+  }
 })();

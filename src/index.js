@@ -1,7 +1,7 @@
 const path = require('path');
 const fs = require('fs-extra');
 const Runner = require('jscodeshift/src/Runner');
-const { log, findFile } = require('./utils');
+const { log, findFile, getAbsPathInfo } = require('./utils');
 
 /**
  * Loads the configuration for the project.
@@ -23,12 +23,12 @@ const getConfiguration = async () => {
   let config = {};
   if (file === null) {
     // eslint-disable-next-line global-require, import/no-dynamic-require
-    const pckJson = require(path.join(cwd, 'package.json'));
-    if (pckJson.config && pckJson.config.cjs2esm) {
-      config = pckJson.config.cjs2esm;
+    const pkgJson = require(path.join(cwd, 'package.json'));
+    if (pkgJson.config && pkgJson.config.cjs2esm) {
+      config = pkgJson.config.cjs2esm;
       log('green', 'Using configuration from the package.json');
-    } else if (pckJson.cjs2esm) {
-      config = pckJson.cjs2esm;
+    } else if (pkgJson.cjs2esm) {
+      config = pkgJson.cjs2esm;
       log('green', 'Using configuration from the package.json');
     } else {
       log('gray', 'No configuration was found, using defaults...');
@@ -48,6 +48,7 @@ const getConfiguration = async () => {
     forceDirectory: null,
     modules: [],
     extension: {},
+    addModuleEntry: false,
     ...config,
   };
 
@@ -242,8 +243,79 @@ const transformOutput = async (files, options) => {
   files.forEach((file) => log('gray', `> ${file.to.substr(cwd.length + 1)}`));
   log('green', 'All files were successfully transformed!');
 };
+/**
+ * Given an absolute path for a folder, the function will try to find its "entry file": if there's
+ * a `package.json`, the same path will be returned (as Node will resolve it with the `main`
+ * property), otherwise, it will check for `index.mjs` and `index.js`.
+ *
+ * @param {string} absPath The absolute path to the folder.
+ * @returns {?string} If there's no `package.json` and no `index` was found, the function will
+ *                    return `null`.
+ */
+const findFolderEntryPath = async (absPath) => {
+  let result;
+  const pkgPath = path.join(absPath, 'package.json');
+  const pkgExists = await fs.pathExists(pkgPath);
+  if (pkgExists) {
+    result = absPath;
+  } else {
+    const file = await findFile(['index.mjs', 'index.js'], absPath);
+    result = file ?
+      path.join(absPath, path.basename(file)) :
+      null;
+  }
+
+  return result;
+};
+/**
+ * Updates the project `package.json` by adding a `module` property that points to the transformed
+ * version of the current `main` property.
+ *
+ * @param {CJS2ESMCopiedFile[]} files The list of files that were copied, so the function can find
+ *                                    the transformed path for the `main` file.
+ * @returns {Promise}
+ * @throws {Error} If the function can't find the transformed version of the `main` file.
+ */
+const updatePackageJSON = async (files) => {
+  const cwd = process.cwd();
+  const pkgJsonPath = path.join(cwd, 'package.json');
+  // eslint-disable-next-line global-require, import/no-dynamic-require
+  const pkgJson = require(pkgJsonPath);
+  let result;
+  if (pkgJson.main) {
+    let mainPath = path.join(cwd, pkgJson.main);
+    const info = await getAbsPathInfo(mainPath);
+    if (info.isFile) {
+      mainPath = info.path;
+    } else {
+      mainPath = await findFolderEntryPath(info.path);
+      if (!mainPath) {
+        throw new Error(`The entry file can't be found: \`${info.path}\``);
+      }
+    }
+    const file = files.find((item) => item.from === mainPath);
+    if (file) {
+      const relPath = path.relative(cwd, file.to).replace(/^(\w)/, './$1');
+      pkgJson.module = relPath;
+      await fs.writeJSON(pkgJsonPath, pkgJson, { spaces: 2 });
+      log('green', 'The module property was successfully added to the package.json!');
+    } else {
+      log(
+        'yellow',
+        'It doesnt seem like the main file was transformed, package.json update aborted',
+      );
+      result = null;
+    }
+  } else {
+    log('yellow', 'There\'s no main property, package.json update aborted');
+    result = null;
+  }
+
+  return result;
+};
 
 module.exports.getConfiguration = getConfiguration;
 module.exports.ensureOutput = ensureOutput;
 module.exports.copyFiles = copyFiles;
 module.exports.transformOutput = transformOutput;
+module.exports.updatePackageJSON = updatePackageJSON;

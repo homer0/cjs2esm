@@ -71,7 +71,7 @@ const findFileSync = (list, directory) => {
  */
 const parseJSPath = (filepath) => {
   const result = path.parse(filepath);
-  if (result.ext && !result.match(/\.m?js$/i)) {
+  if (result.ext && !result.ext.match(/\.m?js$/i)) {
     result.name = `${result.name}${result.ext}`;
     result.ext = '';
   }
@@ -84,7 +84,23 @@ const parseJSPath = (filepath) => {
  * @param {string} absPath The generated absolute path for the file.
  * @returns {?string}
  */
-const findFileExtension = (absPath) => {
+const findFileExtension = async (absPath) => {
+  const info = path.parse(absPath);
+  const name = info.name.replace(/\.$/, '');
+  const file = await findFile(
+    [`${name}.mjs`, `${name}.js`],
+    info.dir,
+  );
+
+  return file ? path.parse(file).ext : null;
+};
+/**
+ * Tries to find the extension for a file import path.
+ *
+ * @param {string} absPath The generated absolute path for the file.
+ * @returns {?string}
+ */
+const findFileExtensionSync = (absPath) => {
   const info = path.parse(absPath);
   const name = info.name.replace(/\.$/, '');
   const file = findFileSync(
@@ -101,7 +117,47 @@ const findFileExtension = (absPath) => {
  * @param {string} absPath The absolute path for the resource.
  * @returns {?AbsPathInfo}
  */
-const getAbsPathInfo = (absPath) => {
+const getAbsPathInfo = async (absPath) => {
+  const info = parseJSPath(absPath);
+  let result;
+  if (info.ext) {
+    result = {
+      path: absPath,
+      isFile: true,
+      extension: info.ext,
+    };
+  } else {
+    const exists = await fs.pathExists(absPath);
+    if (exists) {
+      result = {
+        path: absPath.replace(/\/$/, ''),
+        isFile: false,
+        extension: null,
+      };
+    } else {
+      const extension = await findFileExtension(absPath);
+      if (extension) {
+        result = {
+          path: `${absPath}${extension}`,
+          isFile: true,
+          extension,
+        };
+      } else {
+        result = null;
+      }
+    }
+  }
+
+  return result;
+};
+/**
+ * Given an the aboslute path for an import/require statement, the method will validate if its for
+ * a folder, a file, and if it's for a file, it will complete its extension in case it's missing.
+ *
+ * @param {string} absPath The absolute path for the resource.
+ * @returns {?AbsPathInfo}
+ */
+const getAbsPathInfoSync = (absPath) => {
   const info = parseJSPath(absPath);
   let result;
   if (info.ext) {
@@ -119,7 +175,7 @@ const getAbsPathInfo = (absPath) => {
         extension: null,
       };
     } else {
-      const extension = findFileExtension(absPath);
+      const extension = findFileExtensionSync(absPath);
       if (extension) {
         result = {
           path: `${absPath}${extension}`,
@@ -139,3 +195,4 @@ module.exports.log = log;
 module.exports.findFile = findFile;
 module.exports.findFileSync = findFileSync;
 module.exports.getAbsPathInfo = getAbsPathInfo;
+module.exports.getAbsPathInfoSync = getAbsPathInfoSync;

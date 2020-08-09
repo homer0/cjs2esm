@@ -33,7 +33,7 @@
  * Special configurations for modules with ESM versions.
  * @property {CJS2ESMExtensionOptions} extension
  * How should the tool handle the `.mjs` extension.
- * @property {boolean} addModuleMain
+ * @property {boolean} addModuleEntry
  * Whether or not to modify the project `package.json` and add a `module` property with the
  * path to the transformed entry file. This will only work if the project has a `main` property
  * and the file it points to is being transformed.
