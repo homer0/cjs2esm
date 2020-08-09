@@ -1,43 +1,8 @@
 const path = require('path');
-const chalk = require('chalk');
 const fs = require('fs-extra');
 const Runner = require('jscodeshift/src/Runner');
-const { name } = require('../package.json');
+const { log, findFile } = require('./utils');
 
-/**
- * Logs messages prefixed with the name of the project and with a specified color.
- * Yes, this is a proxy-like function for `console.log` with `chalk`.
- *
- * @param {string}   color The color from `chalk` that should be used.
- * @param {string[]} args  The list of messages to log.
- */
-const log = (color, ...args) => {
-  // eslint-disable-next-line no-console
-  console.log(...[`[${name}]`, ...args].map((item) => chalk[color](item)));
-};
-
-/**
- * Given a list of file names and a directory, the function will try find the first file that
- * exists.
- *
- * @param {string[]} list      The list of files to test.
- * @param {string}   directory The base directory where the paths will be tested.
- * @returns {Promise<?string>}
- */
-const findFile = async (list, directory) => {
-  let result;
-  for (let i = 0; i < list.length; i++) {
-    const test = path.join(directory, list[i]);
-    // eslint-disable-next-line no-await-in-loop
-    const exists = await fs.pathExists(test);
-    if (exists) {
-      result = test;
-      break;
-    }
-  }
-
-  return result || null;
-};
 /**
  * Loads the configuration for the project.
  *

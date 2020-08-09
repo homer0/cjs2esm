@@ -1,50 +1,12 @@
 const path = require('path');
 const fs = require('fs-extra');
+const { findFileSync, getAbsPathInfo } = require('./utils');
+
 /**
  * @typedef {import('jscodeshift').API} API
  * @typedef {import('jscodeshift').FileInfo} FileInfo
- * @typedef {import('path').ParsedPath} ParsedPath
  */
 
-/**
- * Given a list of file names and a directory, the function will try to find the first file that
- * exists.
- * The reason this is sync it's because the transformation can't use promises.
- *
- * @param {string[]} list      The list of files to test.
- * @param {string}   directory The base directory where the paths will be tested.
- * @returns {?string}
- */
-const findFileSync = (list, directory) => {
-  let result;
-  for (let i = 0; i < list.length; i++) {
-    const test = path.join(directory, list[i]);
-    const exists = fs.pathExistsSync(test);
-    if (exists) {
-      result = test;
-      break;
-    }
-  }
-
-  return result || null;
-};
-/**
- * A special version of `path.parse` that validates if the file extension is `.js` or `.mjs`, and
- * if is not, in case it's something like `.config` or `.service`, it moves the extension to the
- * `name` and leaves `ext` empty.
- *
- * @param {string} filepath The file path to parse.
- * @returns {ParsedPath}
- */
-const parseJSPath = (filepath) => {
-  const result = path.parse(filepath);
-  if (result.ext && !result.match(/\.m?js$/i)) {
-    result.name = `${result.name}${result.ext}`;
-    result.ext = '';
-  }
-
-  return result;
-};
 /**
  * Creates the replacement path for an import statement for a folder. It validates if the folder
  * has a `package.json`, to keep it as it is, and if it fails, it tries to find an index files,
@@ -65,62 +27,6 @@ const createReplacementForFolder = (absPath, importPath) => {
     result = file ?
       path.join(importPath, path.basename(file)) :
       null;
-  }
-
-  return result;
-};
-/**
- * Tries to find the extension for a file import path.
- *
- * @param {string} absPath The generated absolute path for the file.
- * @returns {?string}
- */
-const findFileExtension = (absPath) => {
-  const info = path.parse(absPath);
-  const name = info.name.replace(/\.$/, '');
-  const file = findFileSync(
-    [`${name}.mjs`, `${name}.js`],
-    info.dir,
-  );
-
-  return file ? path.parse(file).ext : null;
-};
-/**
- * Given the aboslute path for an import statement, the method will validate if its for a folder,
- * a file, and if it's for a file, it will complete its extension in case it's missing.
- *
- * @param {string} absPath The absolute path for the resource.
- * @returns {?ImportTypeInfo}
- */
-const getImportTypeInfo = (absPath) => {
-  const info = parseJSPath(absPath);
-  let result;
-  if (info.ext) {
-    result = {
-      path: absPath,
-      isFile: true,
-      extension: info.ext,
-    };
-  } else {
-    const exists = fs.pathExistsSync(absPath);
-    if (exists) {
-      result = {
-        path: absPath.replace(/\/$/, ''),
-        isFile: false,
-        extension: null,
-      };
-    } else {
-      const extension = findFileExtension(absPath);
-      if (extension) {
-        result = {
-          path: `${absPath}${extension}`,
-          isFile: true,
-          extension,
-        };
-      } else {
-        result = null;
-      }
-    }
   }
 
   return result;
@@ -173,7 +79,7 @@ const transform = (file, api, options) => {
     const absPath = importPath.startsWith('.') ?
       path.join(base, importPath) :
       path.resolve('node_modules', importPath);
-    const info = getImportTypeInfo(absPath);
+    const info = getAbsPathInfo(absPath);
     let replacement;
     if (info === null) {
       // No info was found, so "don't replace it".

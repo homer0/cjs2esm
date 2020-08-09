@@ -53,8 +53,8 @@
  */
 
 /**
- * @typedef {Object} ImportTypeInfo
+ * @typedef {Object} AbsPathInfo
  * @property {string}  path      The complete, absolute, path to the file/folder.
- * @property {boolean} isFile    Whether or not the import is for a file.
- * @property {?string} extension If the import is for a file, this will be its extension.
+ * @property {boolean} isFile    Whether or not the path is for a file.
+ * @property {?string} extension If the path is for a file, this will be its extension.
  */
