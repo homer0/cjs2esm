@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8" />
+    <title>typedef.js - cjs2esm docs</title>
+    
+    
+    
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css" />
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css" />
+    <script src="scripts/nav.js" defer></script>
+    <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no" />
+    <link rel="shortcut icon" href="icons/favicon-48.png" />
+    <link rel="apple-touch-icon" sizes="48x48" href="icons/favicon-48.png" />
+    <link rel="apple-touch-icon" sizes="72x72" href="icons/favicon-72.png" />
+    <link rel="apple-touch-icon" sizes="96x96" href="icons/favicon-96.png" />
+    <link rel="apple-touch-icon" sizes="144x144" href="icons/favicon-144.png" />
+    <link rel="apple-touch-icon" sizes="192x192" href="icons/favicon-192.png" />
+    <link rel="apple-touch-icon" sizes="256x256" href="icons/favicon-256.png" />
+    <link rel="apple-touch-icon" sizes="384x384" href="icons/favicon-384.png" />
+    <link rel="apple-touch-icon" sizes="512x512" href="icons/favicon-512.png" />
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <h2><a href="index.html" class="home-link">cjs2esm</a></h2><h2><a href="https://github.com/homer0/cjs2esm" target="_blank" >GitHub</a></h2><h3>Global</h3><ul><li><a href="global.html#addErrorHandler">addErrorHandler</a></li><li><a href="global.html#addPackageJSON">addPackageJSON</a></li><li><a href="global.html#copyFiles">copyFiles</a></li><li><a href="global.html#createReplacementForFolder">createReplacementForFolder</a></li><li><a href="global.html#ensureOutput">ensureOutput</a></li><li><a href="global.html#findFile">findFile</a></li><li><a href="global.html#findFileSync">findFileSync</a></li><li><a href="global.html#getAbsPathInfo">getAbsPathInfo</a></li><li><a href="global.html#getAbsPathInfoSync">getAbsPathInfoSync</a></li><li><a href="global.html#getConfiguration">getConfiguration</a></li><li><a href="global.html#log">log</a></li><li><a href="global.html#requireModule">requireModule</a></li><li><a href="global.html#transform">transform</a></li><li><a href="global.html#transformOutput">transformOutput</a></li><li><a href="global.html#updatePackageJSON">updatePackageJSON</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">typedef.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @typedef {Object} CJS2ESMModuleOption
+ * @property {string}  name The name of the module, or the beginning of an import path. This will
+ *                          be converted into a `RegExp`, so it can be a expression too.
+ * @property {?string} find Optionally, instead of replacing `name` on the path, this property can
+ *                          be used to define a custom `RegExp` string.
+ * @property {string}  path The custom path for the ESM version.
+ */
+
+/**
+ * @typedef {'js'|'mjs'} ModuleExtension
+ */
+
+/**
+ * @typedef {Object} CJS2ESMExtensionOptions
+ * @property {ModuleExtension} use    Which extension should be used.
+ * @property {string[]}        ignore A list of expressions (strings that will be converted on
+ *                                    `RegExp`) to ignore import statements when validating the use
+ *                                    of extensions.
+ */
+
+/**
+ * @typedef {Object} CJS2ESMOptions
+ * @property {string[]} input
+ * The list of directories that should be transformed.
+ * @property {string} output
+ * The directory where the transformed code should be placed.
+ * @property {?boolean} forceDirectory
+ * By default, if `input` has only one directory, the only thing copied will be its contents,
+ * instead of the directory itself; this flag can be used to force force it and always copy the
+ * directory.
+ * @property {CJS2ESMModuleOption[]} modules
+ * Special configurations for modules with ESM versions.
+ * @property {CJS2ESMExtensionOptions} extension
+ * How should the tool handle the file extensions.
+ * @property {boolean} addModuleEntry
+ * Whether or not to modify the project `package.json` and add a `module` property with the
+ * path to the transformed entry file. This will only work if the project has a `main` property
+ * and the file it points to was transformed.
+ * @property {boolean} addPackageJson
+ * Whether or not to add a `package.json` with `type` set to `module` on the `output` directory.
+ */
+
+/**
+ * @typedef {Object} CJS2ESMCopiedFile
+ * @property {string} from The absolute path from where the file was copied.
+ * @property {string} to   The absolute path to where the file was copied to. It may include a
+ *                         change of extension if it was configured on the tool.
+ */
+
+/**
+ * @typedef {Object} TransformOptions
+ * @property {CJS2ESMOptions} cjs2esm The options sent to the main tool. Needed to validate how
+ *                                    the extension should be handled.
+ */
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.5</a> using a forked <a href="https://github.com/homer0/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+
+<script src="scripts/collapse.js" defer></script>
+
+
+</body>
+</html>

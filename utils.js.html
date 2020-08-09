@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8" />
+    <title>utils.js - cjs2esm docs</title>
+    
+    
+    
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css" />
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css" />
+    <script src="scripts/nav.js" defer></script>
+    <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no" />
+    <link rel="shortcut icon" href="icons/favicon-48.png" />
+    <link rel="apple-touch-icon" sizes="48x48" href="icons/favicon-48.png" />
+    <link rel="apple-touch-icon" sizes="72x72" href="icons/favicon-72.png" />
+    <link rel="apple-touch-icon" sizes="96x96" href="icons/favicon-96.png" />
+    <link rel="apple-touch-icon" sizes="144x144" href="icons/favicon-144.png" />
+    <link rel="apple-touch-icon" sizes="192x192" href="icons/favicon-192.png" />
+    <link rel="apple-touch-icon" sizes="256x256" href="icons/favicon-256.png" />
+    <link rel="apple-touch-icon" sizes="384x384" href="icons/favicon-384.png" />
+    <link rel="apple-touch-icon" sizes="512x512" href="icons/favicon-512.png" />
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <h2><a href="index.html" class="home-link">cjs2esm</a></h2><h2><a href="https://github.com/homer0/cjs2esm" target="_blank" >GitHub</a></h2><h3>Global</h3><ul><li><a href="global.html#addErrorHandler">addErrorHandler</a></li><li><a href="global.html#addPackageJSON">addPackageJSON</a></li><li><a href="global.html#copyFiles">copyFiles</a></li><li><a href="global.html#createReplacementForFolder">createReplacementForFolder</a></li><li><a href="global.html#ensureOutput">ensureOutput</a></li><li><a href="global.html#findFile">findFile</a></li><li><a href="global.html#findFileSync">findFileSync</a></li><li><a href="global.html#getAbsPathInfo">getAbsPathInfo</a></li><li><a href="global.html#getAbsPathInfoSync">getAbsPathInfoSync</a></li><li><a href="global.html#getConfiguration">getConfiguration</a></li><li><a href="global.html#log">log</a></li><li><a href="global.html#requireModule">requireModule</a></li><li><a href="global.html#transform">transform</a></li><li><a href="global.html#transformOutput">transformOutput</a></li><li><a href="global.html#updatePackageJSON">updatePackageJSON</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">utils.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const path = require('path');
+const chalk = require('chalk');
+const fs = require('fs-extra');
+const pkgJson = require('../package.json');
+
+/**
+ * @typedef {import('path').ParsedPath} ParsedPath
+ */
+
+/**
+ * @typedef {Object} AbsPathInfo
+ * @property {string}  path      The complete, absolute, path to the file/folder.
+ * @property {boolean} isFile    Whether or not the path is for a file.
+ * @property {?string} extension If the path is for a file, this will be its extension.
+ */
+
+/**
+ * Logs messages prefixed with the name of the project and with a specified color.
+ * Yes, this is a proxy-like function for `console.log` with `chalk`.
+ *
+ * @param {string}   color The color from `chalk` that should be used.
+ * @param {string[]} args  The list of messages to log.
+ */
+const log = (color, ...args) => {
+  // eslint-disable-next-line no-console
+  console.log(...[`[${pkgJson.name}]`, ...args].map((item) => chalk[color](item)));
+};
+/**
+ * Given a list of file names and a directory, the function will try find the first file that
+ * exists.
+ *
+ * @param {string[]} list      The list of files to test.
+ * @param {string}   directory The base directory where the paths will be tested.
+ * @returns {Promise&lt;?string>}
+ */
+const findFile = async (list, directory) => {
+  let result;
+  for (let i = 0; i &lt; list.length; i++) {
+    const test = path.join(directory, list[i]);
+    // eslint-disable-next-line no-await-in-loop
+    const exists = await fs.pathExists(test);
+    if (exists) {
+      result = test;
+      break;
+    }
+  }
+
+  return result || null;
+};
+/**
+ * Given a list of file names and a directory, the function will try to find the first file that
+ * exists.
+ *
+ * @param {string[]} list      The list of files to test.
+ * @param {string}   directory The base directory where the paths will be tested.
+ * @returns {?string}
+ */
+const findFileSync = (list, directory) => {
+  let result;
+  for (let i = 0; i &lt; list.length; i++) {
+    const test = path.join(directory, list[i]);
+    const exists = fs.pathExistsSync(test);
+    if (exists) {
+      result = test;
+      break;
+    }
+  }
+
+  return result || null;
+};
+/**
+ * A special version of `path.parse` that validates if the file extension is `.js` or `.mjs`, and
+ * if is not, in case it's something like `.config` or `.service`, it moves the extension to the
+ * `name` and leaves `ext` empty.
+ *
+ * @param {string} filepath The file path to parse.
+ * @returns {ParsedPath}
+ * @ignore
+ */
+const parseJSPath = (filepath) => {
+  const result = path.parse(filepath);
+  if (result.ext &amp;&amp; !result.ext.match(/\.m?js$/i)) {
+    result.name = `${result.name}${result.ext}`;
+    result.ext = '';
+  }
+
+  return result;
+};
+/**
+ * Tries to find the extension for a file import path.
+ *
+ * @param {string} absPath The generated absolute path for the file.
+ * @returns {?string}
+ * @ignore
+ */
+const findFileExtension = async (absPath) => {
+  const info = parseJSPath(absPath);
+  const name = info.name.replace(/\.$/, '');
+  const file = await findFile(
+    [`${name}.mjs`, `${name}.js`],
+    info.dir,
+  );
+
+  return file ? path.parse(file).ext : null;
+};
+/**
+ * Tries to find the extension for a file import path.
+ *
+ * @param {string} absPath The generated absolute path for the file.
+ * @returns {?string}
+ * @ignore
+ */
+const findFileExtensionSync = (absPath) => {
+  const info = parseJSPath(absPath);
+  const name = info.name.replace(/\.$/, '');
+  const file = findFileSync(
+    [`${name}.mjs`, `${name}.js`],
+    info.dir,
+  );
+
+  return file ? path.parse(file).ext : null;
+};
+/**
+ * Given an the aboslute path for an import/require statement, the method will validate if its for
+ * a folder, a file, and if it's for a file, it will complete its extension in case it's missing.
+ *
+ * @param {string} absPath The absolute path for the resource.
+ * @returns {?AbsPathInfo}
+ */
+const getAbsPathInfo = async (absPath) => {
+  const info = parseJSPath(absPath);
+  let result;
+  if (info.ext) {
+    result = {
+      path: absPath,
+      isFile: true,
+      extension: info.ext,
+    };
+  } else {
+    const exists = await fs.pathExists(absPath);
+    if (exists) {
+      result = {
+        path: absPath.replace(/\/$/, ''),
+        isFile: false,
+        extension: null,
+      };
+    } else {
+      const extension = await findFileExtension(absPath);
+      if (extension) {
+        result = {
+          path: `${absPath}${extension}`,
+          isFile: true,
+          extension,
+        };
+      } else {
+        result = null;
+      }
+    }
+  }
+
+  return result;
+};
+/**
+ * Given an the aboslute path for an import/require statement, the method will validate if its for
+ * a folder, a file, and if it's for a file, it will complete its extension in case it's missing.
+ *
+ * @param {string} absPath The absolute path for the resource.
+ * @returns {?AbsPathInfo}
+ */
+const getAbsPathInfoSync = (absPath) => {
+  const info = parseJSPath(absPath);
+  let result;
+  if (info.ext) {
+    result = {
+      path: absPath,
+      isFile: true,
+      extension: info.ext,
+    };
+  } else {
+    const exists = fs.pathExistsSync(absPath);
+    if (exists) {
+      result = {
+        path: absPath.replace(/\/$/, ''),
+        isFile: false,
+        extension: null,
+      };
+    } else {
+      const extension = findFileExtensionSync(absPath);
+      if (extension) {
+        result = {
+          path: `${absPath}${extension}`,
+          isFile: true,
+          extension,
+        };
+      } else {
+        result = null;
+      }
+    }
+  }
+
+  return result;
+};
+/**
+ * This function is just a proxy for `require` and it only exists to make testing the tool
+ * easier: the test for this is just that returns the same as `require`, but on the files that
+ * use it, with mocking this funcion is enough and there won't be any need for `resetModules`.
+ *
+ * @param {string} modulePath The path to the module to be required.
+ * @returns {Object}
+ */
+const requireModule = (modulePath) => {
+  // eslint-disable-next-line global-require, import/no-dynamic-require
+  const result = require(modulePath);
+  // And this variable only exists to avoid issues between the JSDoc block and ESLint.
+  return result;
+};
+
+module.exports.log = log;
+module.exports.findFile = findFile;
+module.exports.findFileSync = findFileSync;
+module.exports.getAbsPathInfo = getAbsPathInfo;
+module.exports.getAbsPathInfoSync = getAbsPathInfoSync;
+module.exports.requireModule = requireModule;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.5</a> using a forked <a href="https://github.com/homer0/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+
+<script src="scripts/collapse.js" defer></script>
+
+
+</body>
+</html>

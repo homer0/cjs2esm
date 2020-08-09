@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8" />
+    <title>Home - cjs2esm docs</title>
+    
+    
+    
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css" />
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css" />
+    <script src="scripts/nav.js" defer></script>
+    <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no" />
+    <link rel="shortcut icon" href="icons/favicon-48.png" />
+    <link rel="apple-touch-icon" sizes="48x48" href="icons/favicon-48.png" />
+    <link rel="apple-touch-icon" sizes="72x72" href="icons/favicon-72.png" />
+    <link rel="apple-touch-icon" sizes="96x96" href="icons/favicon-96.png" />
+    <link rel="apple-touch-icon" sizes="144x144" href="icons/favicon-144.png" />
+    <link rel="apple-touch-icon" sizes="192x192" href="icons/favicon-192.png" />
+    <link rel="apple-touch-icon" sizes="256x256" href="icons/favicon-256.png" />
+    <link rel="apple-touch-icon" sizes="384x384" href="icons/favicon-384.png" />
+    <link rel="apple-touch-icon" sizes="512x512" href="icons/favicon-512.png" />
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <h2><a href="index.html" class="home-link">cjs2esm</a></h2><h2><a href="https://github.com/homer0/cjs2esm" target="_blank" >GitHub</a></h2><h3>Global</h3><ul><li><a href="global.html#addErrorHandler">addErrorHandler</a></li><li><a href="global.html#addPackageJSON">addPackageJSON</a></li><li><a href="global.html#copyFiles">copyFiles</a></li><li><a href="global.html#createReplacementForFolder">createReplacementForFolder</a></li><li><a href="global.html#ensureOutput">ensureOutput</a></li><li><a href="global.html#findFile">findFile</a></li><li><a href="global.html#findFileSync">findFileSync</a></li><li><a href="global.html#getAbsPathInfo">getAbsPathInfo</a></li><li><a href="global.html#getAbsPathInfoSync">getAbsPathInfoSync</a></li><li><a href="global.html#getConfiguration">getConfiguration</a></li><li><a href="global.html#log">log</a></li><li><a href="global.html#requireModule">requireModule</a></li><li><a href="global.html#transform">transform</a></li><li><a href="global.html#transformOutput">transformOutput</a></li><li><a href="global.html#updatePackageJSON">updatePackageJSON</a></li></ul>
+</nav>
+
+<div id="main">
+    
+
+    
+
+
+
+    
+
+
+    <section class="package">
+        <h3> </h3>		
+    </section>
+
+
+
+
+
+
+
+
+
+    
+
+
+
+    <section class="readme usertext">
+        <article><h1>CJS 2 ESM</h1>
+<p><a href="https://github.com/homer0/cjs2esm/actions?query=workflow%3ATest"><img src="https://img.shields.io/github/workflow/status/homer0/cjs2esm/Test/master?style=flat-square" alt="GitHub Workflow Status (master)"></a>
+<a href="https://coveralls.io/github/homer0/cjs2esm?branch=master"><img src="https://img.shields.io/coveralls/github/homer0/cjs2esm.svg?style=flat-square" alt="Coveralls github"></a>
+<a href="https://david-dm.org/homer0/cjs2esm"><img src="https://img.shields.io/david/homer0/cjs2esm.svg?style=flat-square" alt="David"></a>
+<a href="https://david-dm.org/homer0/cjs2esm"><img src="https://img.shields.io/david/dev/homer0/cjs2esm.svg?style=flat-square" alt="David"></a></p>
+<p>Transforms a project that uses CommonJS to ES Modules.</p>
+<h2>📝 Introduction</h2>
+<blockquote>
+<p>If you are wondering why I built this, go to the <a href="#motivation">Motivation</a> section.</p>
+</blockquote>
+<p>You can use this tool to transform a project that uses <strong>CommonJS</strong> to <strong>ES Modules</strong> and get it ready for Node <code>v14</code>, any module bundler with <strong>ESM</strong> support, or even <a href="https://github.com/homer0/jsdoc-ts-utils#import-type-defintions"><code>typedef</code> imports on JSDoc</a>.</p>
+<p>This tool internally uses <a href="https://github.com/facebook/jscodeshift"><code>jscodeshift</code></a> with the transformations from <a href="https://github.com/5to6/5to6-codemod"><code>5to6</code></a> and an extra one created to fix missing extensions.</p>
+<h2>⚡️ Examples</h2>
+<h3>Require</h3>
+<pre class="prettyprint source lang-js"><code>const { Jimpex } = require('jimpex');
+const ObjectUtils = require('wootils/shared/objectUtils');
+require('./homer0');
+
+// Become
+
+import { Jimpex } from 'jimpex';
+import ObjectUtils from 'wootils/shared/objectUtils.js';
+import './homer0/index.js';
+</code></pre>
+<p>It validates if the file needs an extension <code>.mjs</code> or <code>.js</code> by checking if the statement is for a directory and there's <code>package.json</code> in there.</p>
+<p>If there's no <code>package.json</code>, it tries to find <code>index.mjs</code> or <code>index.js</code>.</p>
+<h3>Exports</h3>
+<pre class="prettyprint source lang-js"><code>module.exports = Rosario;
+module.exports.Pilar = Pilar;
+
+module.exports = {
+  Rosario,
+  Pilar,
+};
+
+// Becomes
+
+export default Rosario;
+export { Pilar }
+
+const exported = { Rosario, Pilar };
+export default exported;
+export { Rosario, Pilar };
+</code></pre>
+<h2>🚀 Usage</h2>
+<p>The package comes with a binary that you can execute from your <code>package.json</code>, or with <code>npm</code>/<code>yarn</code>:</p>
+<pre class="prettyprint source lang-bash"><code># From the package.json
+cjs2esm
+
+# Yarn
+yarn cjs2esm
+
+# NPM
+npx cjs2esm
+</code></pre>
+<h3>Configuration</h3>
+<p>The tool has a lot of different settings you can change to customize how the imports and extensions are handled:</p>
+<pre class="prettyprint source lang-js"><code>module.exports = {
+  input: ['src'],
+  output: 'esm',
+  forceDirectory: null,
+  modules: [],
+  extension: {
+    use: 'js',
+    ignore: [],
+  },
+  addModuleEntry: false,
+  addPackageJson: true,
+};
+</code></pre>
+<p>To modify the settings, you can...</p>
+<ol>
+<li>Create a property <code>cjs2esm</code> on your <code>package.json</code>.</li>
+<li>Create a property <code>cjs2esm</code> inside the <code>config</code> object of your <code>package.json</code>.</li>
+<li>Create a <code>.cjs2esm</code> file that uses JSON syntax.</li>
+<li>Create a <code>.cjs2esm.json</code> file.</li>
+<li>Create a <code>.cjs2esm.js</code> file and use <code>module.exports</code> to export the settings (like on the example above).</li>
+</ol>
+<h4>.input</h4>
+<p>The list of directories that should be transformed.</p>
+<blockquote>
+<p>Default <code>['src']</code></p>
+</blockquote>
+<h4>.output</h4>
+<p>The directory where the transformed code should be placed.</p>
+<blockquote>
+<p>Default <code>esm</code></p>
+</blockquote>
+<h4>.forceDirectory</h4>
+<p>By default, if <code>input</code> has only one directory, the only thing copied will be its contents, instead of the directory itself; this flag can be used to force force it and always copy the directory.</p>
+<p><strong>This is a <code>boolean</code> setting</strong>, using <code>null</code> means that the tool gets to decide.</p>
+<blockquote>
+<p>Default <code>null</code></p>
+</blockquote>
+<h4>.modules</h4>
+<p>This is a list of modifiers for imports of specific modules and that can be used to change their paths. Yes, pretty complicated to explain, an example will be better:</p>
+<p>The module <code>wootils</code> uses this tool and generates an ESM version on a <code>esm</code> diretory, so we need to change all the imports for <code>wootils</code> so they'll use <code>wootils/esm</code>:</p>
+<pre class="prettyprint source lang-js"><code>const options = {
+  // ...
+  modules: {
+    name: 'wootils',
+    path: 'wootils/esm',
+  },
+};
+</code></pre>
+<p>Now, when tool gets executed, it will perform the following change:</p>
+<pre class="prettyprint source lang-diff"><code>- const ObjectUtils = require('wootils/shared/objectUtils');
++ import ObjectUtils from 'wootils/esm/shared/objectUtils.js';
+</code></pre>
+<blockquote>
+<p>Default <code>[]</code></p>
+</blockquote>
+<h4>.extension</h4>
+<p>Starting on Node <code>v14</code>, when you are using ESM, and unless there's a <code>package.json</code> specifying the <code>type</code> <code>modules</code>, you'll need all your imports to have file extensions.</p>
+<p>This group of settings are specific for how the tool handles the extensions.</p>
+<h5>.use</h5>
+<p>The extensions the files need to have; it can be <code>js</code> or <code>mjs</code>.</p>
+<p>If you <code>use</code> <code>mjs</code>, when transforming the project files, all filenames will be renamed.</p>
+<blockquote>
+<p>Default <code>js</code></p>
+</blockquote>
+<h5>.ignore</h5>
+<p>A list of expressions (strings that will be converted on <code>RegExp</code>) to ignore import statements when validating the use of extensions.</p>
+<blockquote>
+<p>Default <code>[]</code></p>
+</blockquote>
+<h4>.addModuleEntry</h4>
+<p>Whether or not to modify the project <code>package.json</code> and add a <code>module</code> property with the path to the transformed entry file. This will only work if the project has a <code>main</code> property and the file it points to was transformed.</p>
+<blockquote>
+<p>Default <code>false</code></p>
+</blockquote>
+<h4>.addPackageJson</h4>
+<p>Whether or not to add a <code>package.json</code> with <code>type</code> set to <code>module</code> on the <code>output</code> directory.</p>
+<blockquote>
+<p>Default <code>true</code></p>
+</blockquote>
+<h2>⚙️ Development</h2>
+<h3>NPM/Yarn tasks</h3>
+<table>
+<thead>
+<tr>
+<th>Task</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>test</code></td>
+<td>Run the project unit tests.</td>
+</tr>
+<tr>
+<td><code>lint</code></td>
+<td>Lint the modified files.</td>
+</tr>
+<tr>
+<td><code>lint:all</code></td>
+<td>Lint the entire project code.</td>
+</tr>
+<tr>
+<td><code>docs</code></td>
+<td>Generate the project documentation.</td>
+</tr>
+<tr>
+<td><code>todo</code></td>
+<td>List all the pending to-do's.</td>
+</tr>
+</tbody>
+</table>
+<h3>Repository hooks</h3>
+<p>I use <a href="https://yarnpkg.com/package/husky"><code>husky</code></a> to automatically install the repository hooks so the code will be tested and linted before any commit and the dependencies updated after every merge.</p>
+<p>The configuration is on the <code>husky</code> property of the <code>package.json</code> and the hooks' files are on <code>./utils/hooks</code>.</p>
+<h4>Commits convention</h4>
+<p>I use <a href="https://www.conventionalcommits.org">conventional commits</a> with <a href="https://yarnpkg.com/package/commitizen"><code>commitizen</code></a> in order to support semantic releases. The one that sets it up is actually husky, that installs a script that runs commitizen on the <code>git commit</code> command.</p>
+<p>The hook for this is on <code>./utils/hooks/prepare-commit-msg</code> and the configuration for comitizen is on the <code>config.commitizen</code> property of the <code>package.json</code>.</p>
+<h3>Releases</h3>
+<p>I use <a href="https://yarnpkg.com/package/semantic-release"><code>semantic-release</code></a> and a GitHub action to automatically release on NPM everything that gets merged to master.</p>
+<p>The configuration for <code>semantic-release</code> is on <code>./releaserc</code> and the workflow for the release is on <code>./.github/workflow/release.yml</code>.</p>
+<h3>Testing</h3>
+<p>I use <a href="https://facebook.github.io/jest/">Jest</a> to test the project.</p>
+<p>The configuration file is on <code>./.jestrc.json</code>, the tests are on <code>./tests</code> and the script that runs it is on <code>./utils/scripts/test</code>.</p>
+<h3>Linting</h3>
+<p>I use <a href="http://eslint.org">ESlint</a> with <a href="http://yarnpkg.com/en/package/eslint-plugin-homer0">my own custom configuration</a> to validate all the JS code. The configuration file for the project code is on <code>./.eslintrc</code> and the one for the tests is on <code>./tests/.eslintrc</code>. There's also an <code>./.eslintignore</code> to exclude some files on the process. The script that runs it is on <code>./utils/scripts/lint</code>.</p>
+<h3>Documentation</h3>
+<p>I use <a href="https://jsdoc.app">JSDoc</a> to generate an HTML documentation site for the project.</p>
+<p>The configuration file is on <code>./.jsdoc.js</code> and the script that runs it is on <code>./utils/scripts/docs</code>.</p>
+<h3>To-Dos</h3>
+<p>I use <code>@todo</code> comments to write all the pending improvements and fixes, and <a href="https://yarnpkg.com/en/package/leasot">Leasot</a> to generate a report. The script that runs it is on <code>./utils/scripts/todo</code>.</p>
+<h2>💡 Motivation</h2>
+<p>I maintain a lot of open source projects (that only I use :P), and most of them are Node libraries and I alway respect the good practice of giving support to the oldes LTS, currently <code>v10</code>.</p>
+<p>Node started supporting ES Modules, without a flag, starting on <code>v14</code>, so I can't ship a ESM-only version... I would need to transpile the code.</p>
+<p><strong>I don't want to add transpilation just for this</strong>, Node <code>v10</code> has enough features that I don't need Babel, which means that I don't have to use <code>babel-eslint</code> to lint, nor configure Jest for transpilation.</p>
+<p>So I started looking for something that would transpile from CJS to ESM, but most of the tooling out there are for ESM to CJS, &quot;code with modern syntax, transpile for legay&quot;... Node <code>v12</code>, the active LTS, only supports ESM if you use a flag, so we are not talking about a really legacy functionality here.</p>
+<p>The thing I like the least from transpiling from ESM to CJS is that if you use CJS, you have to use <code>require('something').default</code>, as <code>export default</code> becomes <code>exports.default</code>; I've had to update a lot of tools for this kind of changes (on the <code>webpack</code> ecosystem)...That's a sh*#ty experience.</p>
+<p>I found <code>jscodeshift</code> and the <code>5to6</code> codemod, that are normally used to migrate a project to ESM and I adapted so it can cover a couple more issues (like extensions and the <code>package.json</code>).</p>
+<p>It's not as fast as Babel, running it on <a href="https://github.com/homer0/jimpex">Jimpex</a> (~40 files), takes ~12seg, but you would only run it on your CI, or once or twice to see what generates.</p>
+<p>I believe it's a better experencie to have the ESM version on a different path :D.</p>
+<p>Enjoy 🤘!</p>
+<blockquote>
+<p>Once <code>v14</code> becomes the oldest LTS, I'll archive this repository and deprecate the tool.</p>
+</blockquote></article>
+    </section>
+
+
+
+
+
+
+
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.5</a> using a forked <a href="https://github.com/homer0/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+
+<script src="scripts/collapse.js" defer></script>
+
+
+</body>
+</html>
