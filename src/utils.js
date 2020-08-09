@@ -8,6 +8,13 @@ const pkgJson = require('../package.json');
  */
 
 /**
+ * @typedef {Object} AbsPathInfo
+ * @property {string}  path      The complete, absolute, path to the file/folder.
+ * @property {boolean} isFile    Whether or not the path is for a file.
+ * @property {?string} extension If the path is for a file, this will be its extension.
+ */
+
+/**
  * Logs messages prefixed with the name of the project and with a specified color.
  * Yes, this is a proxy-like function for `console.log` with `chalk`.
  *
@@ -85,7 +92,7 @@ const parseJSPath = (filepath) => {
  * @returns {?string}
  */
 const findFileExtension = async (absPath) => {
-  const info = path.parse(absPath);
+  const info = parseJSPath(absPath);
   const name = info.name.replace(/\.$/, '');
   const file = await findFile(
     [`${name}.mjs`, `${name}.js`],
@@ -101,7 +108,7 @@ const findFileExtension = async (absPath) => {
  * @returns {?string}
  */
 const findFileExtensionSync = (absPath) => {
-  const info = path.parse(absPath);
+  const info = parseJSPath(absPath);
   const name = info.name.replace(/\.$/, '');
   const file = findFileSync(
     [`${name}.mjs`, `${name}.js`],

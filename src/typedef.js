@@ -53,10 +53,3 @@
  * @property {CJS2ESMOptions} cjs2esm The options sent to the main tool. Needed to validate how
  *                                    the extension should be handled.
  */
-
-/**
- * @typedef {Object} AbsPathInfo
- * @property {string}  path      The complete, absolute, path to the file/folder.
- * @property {boolean} isFile    Whether or not the path is for a file.
- * @property {?string} extension If the path is for a file, this will be its extension.
- */
