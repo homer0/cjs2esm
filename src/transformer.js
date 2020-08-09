@@ -56,23 +56,17 @@ const transform = (file, api, options) => {
   const ignoreListForExt = cjs2esm.extension.ignore
   .map((ignore) => new RegExp(ignore));
 
-  // Get the list of import statements on the file.
-  const imports = root.find(j.ImportDeclaration)
-  .filter((item) => {
-    const importPath = item.value.source.value;
-    return (
-      importPath.startsWith('.') ||
-      importPath.match(/^\w/)
-    );
-  });
   // =================================================
   // Parse the import statements to add missing extensions.
   // =================================================
-  imports
+  root.find(j.ImportDeclaration)
   // Filter out the ones that are on the ignore list.
   .filter((item) => {
     const importPath = item.value.source.value;
-    return !ignoreListForExt.some((exp) => importPath.match(exp));
+    return !ignoreListForExt.some((exp) => importPath.match(exp)) && (
+      importPath.startsWith('.') ||
+      importPath.match(/^\w/)
+    );
   })
   .replaceWith((item) => {
     const importPath = item.value.source.value;
@@ -93,7 +87,8 @@ const transform = (file, api, options) => {
       );
     } else {
       // If it's a directory, call the function that checks for a `package.json` or an `index`.
-      replacement = createReplacementForFolder(absPath, importPath);
+      const folderReplacement = createReplacementForFolder(absPath, importPath);
+      replacement = folderReplacement || importPath;
     }
 
     /**
@@ -112,7 +107,7 @@ const transform = (file, api, options) => {
   // Parse the modules modifications.
   // =================================================
   if (cjs2esm.modules.length) {
-    imports
+    root.find(j.ImportDeclaration)
     // Filter out the import statments that don't need to be modified.
     .filter((item) => {
       const importPath = item.value.source.value;
