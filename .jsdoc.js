@@ -20,7 +20,6 @@ module.exports = {
     recurse: true,
     destination: './docs',
     readme: 'README.md',
-    tutorials: './documents',
     template: 'node_modules/docdash'
   },
   docdash: {

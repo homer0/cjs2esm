@@ -87,6 +87,7 @@ const ensureOutput = async (output) => {
  *
  * @param {string} directory The absolute path to the directory.
  * @returns {Promise<string[]>}
+ * @ignore
  */
 const findFiles = async (directory) => {
   let result = await fs.readdir(directory);
@@ -128,6 +129,7 @@ const findFiles = async (directory) => {
  * @param {boolean}         [forceDirectory=true] If `false`, the directory itself won't be copied,
  *                                                just its contents.
  * @returns {Promise<CJS2ESMCopiedFile[]>}
+ * @ignore
  */
 const copyDirectory = async (directory, output, useExtension, forceDirectory = true) => {
   const cwd = process.cwd();
@@ -168,8 +170,7 @@ const copyDirectory = async (directory, output, useExtension, forceDirectory = t
  *                                          thing copied will be its contents, instead of the
  *                                          directory itself; this parameter can be used to force
  *                                          it and always copy the directory.
- *
- * @returns {string[]}
+ * @returns {Promise<CJS2ESMCopiedFile[]>}
  */
 const copyFiles = async (input, output, useExtension, forceDirectory) => {
   let result;
@@ -260,6 +261,7 @@ const transformOutput = async (files, options) => {
  *
  * @param {string} absPath The absolute path to the folder.
  * @returns {?string} If there's no `index`, the function will return `null`.
+ * @ignore
  */
 const findFolderEntryPath = async (absPath) => {
   const file = await findFile(['index.mjs', 'index.js'], absPath);

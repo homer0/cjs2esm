@@ -75,6 +75,7 @@ const findFileSync = (list, directory) => {
  *
  * @param {string} filepath The file path to parse.
  * @returns {ParsedPath}
+ * @ignore
  */
 const parseJSPath = (filepath) => {
   const result = path.parse(filepath);
@@ -90,6 +91,7 @@ const parseJSPath = (filepath) => {
  *
  * @param {string} absPath The generated absolute path for the file.
  * @returns {?string}
+ * @ignore
  */
 const findFileExtension = async (absPath) => {
   const info = parseJSPath(absPath);
@@ -106,6 +108,7 @@ const findFileExtension = async (absPath) => {
  *
  * @param {string} absPath The generated absolute path for the file.
  * @returns {?string}
+ * @ignore
  */
 const findFileExtensionSync = (absPath) => {
   const info = parseJSPath(absPath);
