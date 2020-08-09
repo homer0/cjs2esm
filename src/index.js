@@ -49,6 +49,7 @@ const getConfiguration = async () => {
     modules: [],
     extension: {},
     addModuleEntry: false,
+    addPackageJson: true,
     ...config,
   };
 
@@ -320,9 +321,25 @@ const updatePackageJSON = async (files) => {
 
   return result;
 };
+/**
+ * Adds a `package.json` with `type` set to `module` on the output directory. This is so Node
+ * can properly resolve the ESM files.
+ *
+ * @param {string} output The output directory the tool will use.
+ * @returns {Promise}
+ */
+const addPackageJSON = async (output) => {
+  await fs.writeJSON(
+    path.join(output, 'package.json'),
+    { type: 'module' },
+    { spaces: 2 },
+  );
+  log('green', 'The packages.json for the ESM version was successfully added!');
+};
 
 module.exports.getConfiguration = getConfiguration;
 module.exports.ensureOutput = ensureOutput;
 module.exports.copyFiles = copyFiles;
 module.exports.transformOutput = transformOutput;
 module.exports.updatePackageJSON = updatePackageJSON;
+module.exports.addPackageJSON = addPackageJSON;

@@ -37,6 +37,8 @@
  * Whether or not to modify the project `package.json` and add a `module` property with the
  * path to the transformed entry file. This will only work if the project has a `main` property
  * and the file it points to is being transformed.
+ * @property {boolean} addPackageJson
+ * Whether or not to add a `package.json` with `type` set to `module` on the `output` directory.
  */
 
 /**

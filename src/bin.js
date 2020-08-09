@@ -5,6 +5,7 @@ const {
   copyFiles,
   transformOutput,
   updatePackageJSON,
+  addPackageJSON,
 } = require('.');
 
 (async () => {
@@ -19,5 +20,8 @@ const {
   await transformOutput(files, config);
   if (config.addModuleEntry) {
     await updatePackageJSON(files);
+  }
+  if (config.addPackageJson) {
+    await addPackageJSON(config.output);
   }
 })();
