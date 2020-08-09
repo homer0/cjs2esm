@@ -356,4 +356,18 @@ describe('utils', () => {
       expect(fs.pathExistsSync).toHaveBeenCalledWith(folder);
     });
   });
+
+  describe('requireModule', () => {
+    it('should work as a proxy for `require`', () => {
+      // Given
+      const modPath = '../package.json';
+      let result = null;
+      // eslint-disable-next-line global-require, import/no-dynamic-require
+      const expectedResult = require(modPath);
+      // When
+      result = utils.requireModule(modPath);
+      // Then
+      expect(result).toEqual(expectedResult);
+    });
+  });
 });

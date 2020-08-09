@@ -197,9 +197,24 @@ const getAbsPathInfoSync = (absPath) => {
 
   return result;
 };
+/**
+ * This function is just a proxy for `require` and it only exists to make testing the tool
+ * easier: the test for this is just that returns the same as `require`, but on the files that
+ * use it, with mocking this funcion is enough and there won't be any need for `resetModules`.
+ *
+ * @param {string} modulePath The path to the module to be required.
+ * @returns {Object}
+ */
+const requireModule = (modulePath) => {
+  // eslint-disable-next-line global-require, import/no-dynamic-require
+  const result = require(modulePath);
+  // And this variable only exists to avoid issues between the JSDoc block and ESLint.
+  return result;
+};
 
 module.exports.log = log;
 module.exports.findFile = findFile;
 module.exports.findFileSync = findFileSync;
 module.exports.getAbsPathInfo = getAbsPathInfo;
 module.exports.getAbsPathInfoSync = getAbsPathInfoSync;
+module.exports.requireModule = requireModule;

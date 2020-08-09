@@ -1,7 +1,12 @@
 const path = require('path');
 const fs = require('fs-extra');
 const Runner = require('jscodeshift/src/Runner');
-const { log, findFile, getAbsPathInfo } = require('./utils');
+const {
+  log,
+  findFile,
+  getAbsPathInfo,
+  requireModule,
+} = require('./utils');
 
 /**
  * Loads the configuration for the project.
@@ -22,8 +27,7 @@ const getConfiguration = async () => {
 
   let config = {};
   if (file === null) {
-    // eslint-disable-next-line global-require, import/no-dynamic-require
-    const pkgJson = require(path.join(cwd, 'package.json'));
+    const pkgJson = requireModule(path.join(cwd, 'package.json'));
     if (pkgJson.config && pkgJson.config.cjs2esm) {
       config = pkgJson.config.cjs2esm;
       log('green', 'Using configuration from the package.json');
@@ -34,8 +38,7 @@ const getConfiguration = async () => {
       log('gray', 'No configuration was found, using defaults...');
     }
   } else if (file.match(/\.js$/i)) {
-    // eslint-disable-next-line global-require, import/no-dynamic-require
-    config = require(file);
+    config = requireModule(file);
     log('green', `Configuration file found: \`${file}\``);
   } else {
     config = await fs.readJSON(file);
@@ -287,8 +290,7 @@ const findFolderEntryPath = async (absPath) => {
 const updatePackageJSON = async (files) => {
   const cwd = process.cwd();
   const pkgJsonPath = path.join(cwd, 'package.json');
-  // eslint-disable-next-line global-require, import/no-dynamic-require
-  const pkgJson = require(pkgJsonPath);
+  const pkgJson = requireModule(pkgJsonPath);
   let result;
   if (pkgJson.main) {
     let mainPath = path.join(cwd, pkgJson.main);
