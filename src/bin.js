@@ -12,7 +12,7 @@ const {
   const files = await copyFiles(
     config.input,
     config.output,
-    config.extension.change,
+    config.extension.use,
     config.forceDirectory,
   );
   await transformOutput(files, config);

@@ -13,14 +13,15 @@ const { name } = require('../package.json');
  */
 
 /**
+ * @typedef {'js'|'mjs'} ModuleExtension
+ */
+
+/**
  * @typedef {Object} CJS2ESMExtensionOptions
- * @property {boolean}  change        Whether or not to change the `.js` extension to `.mjs` of
- *                                    the files transformed.
- * @property {boolean}  addOnImports  Whether or not to add `.mjs` or `/index.mjs` to the import
- *                                    statements.
- * @property {string[]} ignoreImports A list of expressions (strings that will be converted on
- *                                    `RegExp`) to ignore import statements when adding the `.mjs`
- *                                    extension or the `/index.mjs`.
+ * @property {ModuleExtension} use    Which extension should be used.
+ * @property {string[]}        ignore A list of expressions (strings that will be converted on
+ *                                    `RegExp`) to ignore import statements when validating the use
+ *                                    of extensions.
  */
 
 /**
@@ -52,7 +53,8 @@ const log = (color, ...args) => {
 };
 
 /**
- * Given a list of file names and a directory, the function will find the first file that exists.
+ * Given a list of file names and a directory, the function will try find the first file that
+ * exists.
  *
  * @param {string[]} list      The list of files to test.
  * @param {string}   directory The base directory where the paths will be tested.
@@ -121,9 +123,8 @@ const getConfiguration = async () => {
   };
 
   result.extension = {
-    change: true,
-    addOnImports: true,
-    ignoreImports: [],
+    use: 'js',
+    ignore: [],
     ...result.extension,
   };
 
@@ -185,15 +186,18 @@ const findFiles = async (directory) => {
  * Copies all the files from a source directory to the output directory, changing the extensions
  * if required.
  *
- * @param {string}  directory             The source directory from where the files will be copied.
- * @param {string}  output                The output directory where the files should be copied to.
- * @param {boolean} changeExtension       Whether or not to change the extensions to `.mjs`.
- * @param {boolean} [forceDirectory=true] If `false`, the directory itself won't be copied, just
- *                                        its contents.
+ * @param {string}          directory             The source directory from where the files will be
+ *                                                copied.
+ * @param {string}          output                The output directory where the files should be
+ *                                                copied to.
+ * @param {ModuleExtension} useExtension          The extension the modules should use.
+ * @param {boolean}         [forceDirectory=true] If `false`, the directory itself won't be copied,
+ *                                                just its contents.
  * @returns {Promise<string[]>}
  */
-const copyDirectory = async (directory, output, changeExtension, forceDirectory = true) => {
+const copyDirectory = async (directory, output, useExtension, forceDirectory = true) => {
   const cwd = process.cwd();
+  const extension = `.${useExtension}`;
   let contents = await findFiles(directory);
   contents = await Promise.all(contents.map(async (item) => {
     let cleanPath = item.substr(cwd.length + 1);
@@ -204,8 +208,9 @@ const copyDirectory = async (directory, output, changeExtension, forceDirectory 
     }
 
     let newPath = path.join(output, cleanPath);
-    if (changeExtension) {
-      newPath = newPath.replace(/\.js$/i, '.mjs');
+    const { ext } = path.parse(newPath);
+    if (ext !== extension) {
+      newPath = newPath.replace(new RegExp(`\\${ext}$`), extension);
     }
 
     await fs.ensureDir(path.dirname(newPath));
@@ -218,31 +223,32 @@ const copyDirectory = async (directory, output, changeExtension, forceDirectory 
 /**
  * Copies all the files the tool will transpile.
  *
- * @param {string[]} input           The list of source paths where the files are located.
- * @param {string}   output          The output path where all the files will be transpiled to.
- * @param {boolean}  changeExtension Whether or not to change the extensions to `.mjs`.
- * @param {?boolean} forceDirectory  By default, if `input` has only one directory, the only thing
- *                                   copied will be its contents, instead of the directory itself;
- *                                   this parameter can be used to force it and always copy the
- *                                   directory.
+ * @param {string[]}        input           The list of source paths where the files are located.
+ * @param {string}          output          The output path where all the files will be transpiled
+ *                                          to.
+ * @param {ModuleExtension} useExtension    The extension the modules should use.
+ * @param {?boolean}        forceDirectory  By default, if `input` has only one directory, the only
+ *                                          thing copied will be its contents, instead of the
+ *                                          directory itself; this parameter can be used to force
+ *                                          it and always copy the directory.
  *
  * @returns {string[]}
  */
-const copyFiles = async (input, output, changeExtension, forceDirectory) => {
+const copyFiles = async (input, output, useExtension, forceDirectory) => {
   let result;
   if (input.length === 1) {
     const [firstInput] = input;
     result = await copyDirectory(
       firstInput,
       output,
-      changeExtension,
+      useExtension,
       forceDirectory === true,
     );
   } else {
     result = await Promise.all(input.map((item) => copyDirectory(
       item,
       output,
-      changeExtension,
+      useExtension,
     )));
 
     result = result.reduce((acc, item) => [...acc, ...item], []);
@@ -274,15 +280,13 @@ const transformOutput = async (files, options) => {
     cjs2esm: options,
   };
 
+  const fiveToSixCodeModPath = path.resolve('node_modules', '5to6-codemod', 'transforms');
   const transformations = [
-    path.resolve('node_modules', '5to6-codemod', 'transforms', 'cjs.js'),
-    path.resolve('node_modules', '5to6-codemod', 'transforms', 'exports.js'),
-    path.resolve('node_modules', '5to6-codemod', 'transforms', 'named-export-generation.js'),
+    path.join(fiveToSixCodeModPath, 'cjs.js'),
+    path.join(fiveToSixCodeModPath, 'exports.js'),
+    path.join(fiveToSixCodeModPath, 'named-export-generation.js'),
+    path.join(__dirname, 'transformer.js'),
   ];
-
-  if (options.extension.addOnImports || options.modules.length) {
-    transformations.push(path.resolve(__dirname, 'transformer.js'));
-  }
 
   log('yellow', `Transforming ${files.length} files...`);
 
