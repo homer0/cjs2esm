@@ -32,11 +32,11 @@
  * @property {CJS2ESMModuleOption[]} modules
  * Special configurations for modules with ESM versions.
  * @property {CJS2ESMExtensionOptions} extension
- * How should the tool handle the `.mjs` extension.
+ * How should the tool handle the file extensions.
  * @property {boolean} addModuleEntry
  * Whether or not to modify the project `package.json` and add a `module` property with the
  * path to the transformed entry file. This will only work if the project has a `main` property
- * and the file it points to is being transformed.
+ * and the file it points to was transformed.
  * @property {boolean} addPackageJson
  * Whether or not to add a `package.json` with `type` set to `module` on the `output` directory.
  */
