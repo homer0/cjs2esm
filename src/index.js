@@ -241,7 +241,14 @@ const transformOutput = async (files, options) => {
 
   const cwd = process.cwd();
   files.forEach((file) => log('gray', `> ${file.to.substr(cwd.length + 1)}`));
-  log('green', 'All files were successfully transformed!');
+  let totalTime = results.reduce(
+    (acc, { timeElapsed }) => acc + parseFloat(timeElapsed),
+    0.00,
+  );
+  const decimals = 2;
+  totalTime = totalTime.toFixed(decimals);
+
+  log('green', `All files were successfully transformed (${totalTime}s)!`);
 };
 /**
  * Given an absolute path for a folder, the function will try to find its "entry file": if there's
