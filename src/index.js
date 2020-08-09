@@ -3,42 +3,6 @@ const chalk = require('chalk');
 const fs = require('fs-extra');
 const Runner = require('jscodeshift/src/Runner');
 const { name } = require('../package.json');
-/**
- * @typedef {Object} CJS2ESMModuleOption
- * @property {string}  name The name of the module, or the beginning of an import path. This will
- *                          be converted into a `RegExp`, so it can be a expression too.
- * @property {?string} find Optionally, instead of replacing `name` on the path, this property can
- *                          be used to define a custom `RegExp` string.
- * @property {string}  path The custom path for the ESM version.
- */
-
-/**
- * @typedef {'js'|'mjs'} ModuleExtension
- */
-
-/**
- * @typedef {Object} CJS2ESMExtensionOptions
- * @property {ModuleExtension} use    Which extension should be used.
- * @property {string[]}        ignore A list of expressions (strings that will be converted on
- *                                    `RegExp`) to ignore import statements when validating the use
- *                                    of extensions.
- */
-
-/**
- * @typedef {Object} CJS2ESMOptions
- * @property {string[]} input
- * The list of directories that should be transformed.
- * @property {string} output
- * The directory where the transformed code should be placed.
- * @property {?boolean} forceDirectory
- * By default, if `input` has only one directory, the only thing copied will be its contents,
- * instead of the directory itself; this flag can be used to force force it and always copy the
- * directory.
- * @property {CJS2ESMModuleOption[]} modules
- * Special configurations for modules with ESM versions.
- * @property {CJS2ESMExtensionOptions} extension
- * How should the tool handle the `.mjs` extension.
- */
 
 /**
  * Logs messages prefixed with the name of the project and with a specified color.
@@ -193,7 +157,7 @@ const findFiles = async (directory) => {
  * @param {ModuleExtension} useExtension          The extension the modules should use.
  * @param {boolean}         [forceDirectory=true] If `false`, the directory itself won't be copied,
  *                                                just its contents.
- * @returns {Promise<string[]>}
+ * @returns {Promise<CJS2ESMCopiedFile[]>}
  */
 const copyDirectory = async (directory, output, useExtension, forceDirectory = true) => {
   const cwd = process.cwd();
@@ -215,7 +179,10 @@ const copyDirectory = async (directory, output, useExtension, forceDirectory = t
 
     await fs.ensureDir(path.dirname(newPath));
     await fs.copyFile(item, newPath);
-    return newPath;
+    return {
+      from: item,
+      to: newPath,
+    };
   }));
 
   return contents;
@@ -259,9 +226,9 @@ const copyFiles = async (input, output, useExtension, forceDirectory) => {
 /**
  * Transforms all files from the output directory into ES Modules.
  *
- * @param {string[]}       files   The list of files that were copied to the output directory.
- * @param {CJS2ESMOptions} options The options of the tool, so they can be sent to the
- *                                 transformers.
+ * @param {CJS2ESMCopiedFile[]} files   The list of files that were copied to the output directory.
+ * @param {CJS2ESMOptions}      options The options of the tool, so they can be sent to the
+ *                                      transformers.
  * @returns {Promise}
  * @throws {Error} If there's a problem while transforming a file.
  */
@@ -271,7 +238,7 @@ const transformOutput = async (files, options) => {
     dry: false,
     print: false,
     babel: true,
-    extension: files[0].match(/\.mjs$/i) ? 'mjs' : 'js',
+    extension: files[0].to.match(/\.mjs$/i) ? 'mjs' : 'js',
     ignorePattern: [],
     ignoreConfig: [],
     runInBand: false,
@@ -307,7 +274,7 @@ const transformOutput = async (files, options) => {
   }
 
   const cwd = process.cwd();
-  files.forEach((file) => log('gray', `> ${file.substr(cwd.length + 1)}`));
+  files.forEach((file) => log('gray', `> ${file.to.substr(cwd.length + 1)}`));
   log('green', 'All files were successfully transformed!');
 };
 

@@ -3,21 +3,7 @@ const fs = require('fs-extra');
 /**
  * @typedef {import('jscodeshift').API} API
  * @typedef {import('jscodeshift').FileInfo} FileInfo
- * @typedef {import('./').CJS2ESMOptions} CJS2ESMOptions
  * @typedef {import('path').ParsedPath} ParsedPath
- */
-
-/**
- * @typedef {Object} TransformOptions
- * @property {CJS2ESMOptions} cjs2esm The options sent to the main tool. Needed to validate how
- *                                    the extension should be handled.
- */
-
-/**
- * @typedef {Object} ImportTypeInfo
- * @property {string}  path      The complete, absolute, path to the file/folder.
- * @property {boolean} isFile    Whether or not the import is for a file.
- * @property {?string} extension If the import is for a file, this will be its extension.
  */
 
 /**
