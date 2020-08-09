@@ -255,28 +255,17 @@ const transformOutput = async (files, options) => {
   log('green', `All files were successfully transformed (${totalTime}s)!`);
 };
 /**
- * Given an absolute path for a folder, the function will try to find its "entry file": if there's
- * a `package.json`, the same path will be returned (as Node will resolve it with the `main`
- * property), otherwise, it will check for `index.mjs` and `index.js`.
+ * Given an absolute path for a folder, the function will try to find its "entry file": it will
+ * check for `index.mjs` and `index.js`.
  *
  * @param {string} absPath The absolute path to the folder.
- * @returns {?string} If there's no `package.json` and no `index` was found, the function will
- *                    return `null`.
+ * @returns {?string} If there's no `index`, the function will return `null`.
  */
 const findFolderEntryPath = async (absPath) => {
-  let result;
-  const pkgPath = path.join(absPath, 'package.json');
-  const pkgExists = await fs.pathExists(pkgPath);
-  if (pkgExists) {
-    result = absPath;
-  } else {
-    const file = await findFile(['index.mjs', 'index.js'], absPath);
-    result = file ?
-      path.join(absPath, path.basename(file)) :
-      null;
-  }
-
-  return result;
+  const file = await findFile(['index.mjs', 'index.js'], absPath);
+  return file ?
+    path.join(absPath, path.basename(file)) :
+    null;
 };
 /**
  * Updates the project `package.json` by adding a `module` property that points to the transformed
@@ -305,8 +294,8 @@ const updatePackageJSON = async (files) => {
     }
     const file = files.find((item) => item.from === mainPath);
     if (file) {
-      const relPath = path.relative(cwd, file.to).replace(/^(\w)/, './$1');
-      pkgJson.module = relPath;
+      result = path.relative(cwd, file.to).replace(/^(\w)/, './$1');
+      pkgJson.module = result;
       await fs.writeJSON(pkgJsonPath, pkgJson, { spaces: 2 });
       log('green', 'The module property was successfully added to the package.json!');
     } else {
