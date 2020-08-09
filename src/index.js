@@ -1,13 +1,43 @@
 const path = require('path');
 const fs = require('fs-extra');
 const Runner = require('jscodeshift/src/Runner');
+const { repository } = require('../package.json');
 const {
   log,
   findFile,
   getAbsPathInfo,
   requireModule,
 } = require('./utils');
-
+/**
+ * This is called every time an unexpected error is thrown; it logs the error using the `log`
+ * function, with _nice_ colors, and adds a message to create an issue on the repository.
+ *
+ * @param {Error} error The exception to _"handle"_.
+ * @ignore
+ */
+const handleAnError = (error) => {
+  const stack = error.stack.split('\n');
+  const message = stack.shift();
+  log('red', message);
+  stack.forEach((line) => log('gray', line.trim()));
+  const link = `https://github.com/${repository}/issues/new`;
+  log('gray');
+  log('gray', `If the issue persist, create a ticket and I may be able to help you: ${link} :D`);
+};
+/**
+ * Adds an error handler to the process so if something fails, it will be logged with a nice style
+ * and a custom emssage.
+ *
+ * @returns {Function} To remove the listeners.
+ */
+const addErrorHandler = () => {
+  process.on('uncaughtException', handleAnError);
+  process.on('unhandledRejection', handleAnError);
+  return () => {
+    process.removeListener('uncaughtException', handleAnError);
+    process.removeListener('unhandledRejection', handleAnError);
+  };
+};
 /**
  * Loads the configuration for the project.
  *
@@ -330,6 +360,7 @@ const addPackageJSON = async (output) => {
   log('green', 'The packages.json for the ESM version was successfully added!');
 };
 
+module.exports.addErrorHandler = addErrorHandler;
 module.exports.getConfiguration = getConfiguration;
 module.exports.ensureOutput = ensureOutput;
 module.exports.copyFiles = copyFiles;

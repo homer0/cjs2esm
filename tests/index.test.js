@@ -12,6 +12,7 @@ const {
   transformOutput,
   updatePackageJSON,
   addPackageJSON,
+  addErrorHandler,
 } = require('../src');
 const utils = require('../src/utils');
 
@@ -821,6 +822,96 @@ describe('index', () => {
         { spaces: 2 },
       );
       expect(utils.log).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('addErrorHandler', () => {
+    const originalProcessOn = process.on;
+    const originalProcessRemoveListener = process.removeListener;
+
+    beforeEach(() => {
+      process.on = originalProcessOn;
+      process.removeListener = originalProcessRemoveListener;
+      utils.log.mockReset();
+    });
+
+    it('should add the listers', () => {
+      // Given
+      const onMock = jest.fn();
+      process.on = onMock;
+      let sut = null;
+      // When
+      sut = addErrorHandler();
+      // Then
+      expect(sut).toBeInstanceOf(Function);
+      expect(onMock).toHaveBeenCalledTimes(2);
+      expect(onMock).toHaveBeenNthCalledWith(
+        1,
+        'uncaughtException',
+        expect.any(Function),
+      );
+      expect(onMock).toHaveBeenNthCalledWith(
+        2,
+        'unhandledRejection',
+        expect.any(Function),
+      );
+    });
+
+    it('should add and remove the listeners', () => {
+      // Given
+      const onMock = jest.fn();
+      process.on = onMock;
+      const removeListenerMock = jest.fn();
+      process.removeListener = removeListenerMock;
+      let sut = null;
+      // When
+      sut = addErrorHandler();
+      sut();
+      // Then
+      expect(onMock).toHaveBeenCalledTimes(2);
+      expect(onMock).toHaveBeenNthCalledWith(
+        1,
+        'uncaughtException',
+        expect.any(Function),
+      );
+      expect(onMock).toHaveBeenNthCalledWith(
+        2,
+        'unhandledRejection',
+        expect.any(Function),
+      );
+      expect(removeListenerMock).toHaveBeenCalledTimes(2);
+      expect(removeListenerMock).toHaveBeenNthCalledWith(
+        1,
+        'uncaughtException',
+        expect.any(Function),
+      );
+      expect(removeListenerMock).toHaveBeenNthCalledWith(
+        2,
+        'unhandledRejection',
+        expect.any(Function),
+      );
+    });
+
+    it('should handle an error', () => {
+      // Given
+      const onMock = jest.fn();
+      process.on = onMock;
+      const error = new Error('DAMN');
+      const stack = error.stack.split('\n');
+      const errorTitle = stack.shift();
+      let handler = null;
+      // When
+      addErrorHandler();
+      [[, handler]] = onMock.mock.calls;
+      handler(error);
+      // Then
+      expect(utils.log).toHaveBeenCalledTimes(stack.length + 3);
+      expect(utils.log).toHaveBeenNthCalledWith(1, 'red', errorTitle);
+      stack.forEach((line, index) => {
+        expect(utils.log).toHaveBeenNthCalledWith(index + 2, 'gray', line.trim());
+      });
+      expect(utils.log).toHaveBeenNthCalledWith(stack.length + 2, 'gray');
+      expect(utils.log).toHaveBeenNthCalledWith(stack.length + 3, 'gray', expect.any(String));
     });
   });
 });

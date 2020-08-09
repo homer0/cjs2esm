@@ -6,9 +6,11 @@ const {
   transformOutput,
   updatePackageJSON,
   addPackageJSON,
+  addErrorHandler,
 } = require('.');
 
 (async () => {
+  addErrorHandler();
   const config = await getConfiguration();
   await ensureOutput(config.output);
   const files = await copyFiles(
