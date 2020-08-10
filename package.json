@@ -2,10 +2,16 @@
   "name": "cjs2esm",
   "description": "Transforms a project that uses CommonJS to ES Modules.",
   "homepage": "https://homer0.github.io/cjs2esm/",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "repository": "homer0/cjs2esm",
   "author": "Leonardo Apiwan (@homer0) <me@homer0.com>",
-  "keywords": ["commonjs", "esmodules", "cjs", "esm", "es-modules"],
+  "keywords": [
+    "commonjs",
+    "esmodules",
+    "cjs",
+    "esm",
+    "es-modules"
+  ],
   "license": "MIT",
   "dependencies": {
     "@babel/core": "^7.11.1",
@@ -61,7 +67,9 @@
   },
   "config": {
     "cjs2esm": {
-      "filesWithShebang": ["src/bin.js"]
+      "filesWithShebang": [
+        "src/bin.js"
+      ]
     },
     "commitizen": {
       "path": "cz-conventional-changelog"

@@ -1,3 +1,16 @@
+# [1.1.0](https://github.com/homer0/cjs2esm/compare/1.0.0...1.1.0) (2020-08-10)
+
+
+### Bug Fixes
+
+* add support for files with shebang ([f57f8db](https://github.com/homer0/cjs2esm/commit/f57f8db9550832e1f4fb39e03823b23cef522a19))
+* add support for require('.') ([a254a3f](https://github.com/homer0/cjs2esm/commit/a254a3fba739221c0f67c44908726a4d05d8a6be))
+
+
+### Features
+
+* add a prepublishOnly script to create a ESM version ([a83c5c7](https://github.com/homer0/cjs2esm/commit/a83c5c7765426b3729e2f070249962d324e65017))
+
 # 1.0.0 (2020-08-09)
 
 
