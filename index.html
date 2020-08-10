@@ -36,7 +36,30 @@
 
 <nav >
     
-    <h2><a href="index.html" class="home-link">cjs2esm</a></h2><h2><a href="https://github.com/homer0/cjs2esm" target="_blank" >GitHub</a></h2><h3>Global</h3><ul><li><a href="global.html#addErrorHandler">addErrorHandler</a></li><li><a href="global.html#addPackageJSON">addPackageJSON</a></li><li><a href="global.html#copyFiles">copyFiles</a></li><li><a href="global.html#createReplacementForFolder">createReplacementForFolder</a></li><li><a href="global.html#ensureOutput">ensureOutput</a></li><li><a href="global.html#findFile">findFile</a></li><li><a href="global.html#findFileSync">findFileSync</a></li><li><a href="global.html#getAbsPathInfo">getAbsPathInfo</a></li><li><a href="global.html#getAbsPathInfoSync">getAbsPathInfoSync</a></li><li><a href="global.html#getConfiguration">getConfiguration</a></li><li><a href="global.html#log">log</a></li><li><a href="global.html#requireModule">requireModule</a></li><li><a href="global.html#transform">transform</a></li><li><a href="global.html#transformOutput">transformOutput</a></li><li><a href="global.html#updatePackageJSON">updatePackageJSON</a></li></ul>
+    <h2><a href="index.html" class="home-link">cjs2esm</a></h2><ul class="ref-links">
+            <li><a
+                class="ref-link -yarn"
+                title="View the package on Yarn"
+                href="https://yarnpkg.com/package/cjs2esm"
+                target="_blank"
+            >View the package on Yarn</a></li>
+        
+
+            <li><a
+                class="ref-link -github"
+                title="Go to the GitHub repository"
+                href="https://github.com/homer0/cjs2esm"
+                target="_blank"
+            >Go to the GitHub repository</a></li>
+        
+
+            <li><a
+                class="ref-link -npm"
+                title="View the package on NPM"
+                href="https://www.npmjs.com/package/cjs2esm"
+                target="_blank"
+            >View the package on NPM</a></li>
+        </ul><h3>Global</h3><ul><li><a href="global.html#addErrorHandler">addErrorHandler</a></li><li><a href="global.html#addPackageJSON">addPackageJSON</a></li><li><a href="global.html#copyFiles">copyFiles</a></li><li><a href="global.html#createReplacementForFolder">createReplacementForFolder</a></li><li><a href="global.html#ensureOutput">ensureOutput</a></li><li><a href="global.html#findFile">findFile</a></li><li><a href="global.html#findFileSync">findFileSync</a></li><li><a href="global.html#getAbsPathInfo">getAbsPathInfo</a></li><li><a href="global.html#getAbsPathInfoSync">getAbsPathInfoSync</a></li><li><a href="global.html#getConfiguration">getConfiguration</a></li><li><a href="global.html#log">log</a></li><li><a href="global.html#requireModule">requireModule</a></li><li><a href="global.html#transform">transform</a></li><li><a href="global.html#transformOutput">transformOutput</a></li><li><a href="global.html#updatePackageJSON">updatePackageJSON</a></li></ul>
 </nav>
 
 <div id="main">
@@ -84,7 +107,7 @@
 const ObjectUtils = require('wootils/shared/objectUtils');
 require('./homer0');
 
-// Become
+// Becomes
 
 import { Jimpex } from 'jimpex';
 import ObjectUtils from 'wootils/shared/objectUtils.js';
@@ -134,6 +157,7 @@ npx cjs2esm
   },
   addModuleEntry: false,
   addPackageJson: true,
+  filesWithShebang: [],
 };
 </code></pre>
 <p>To modify the settings, you can...</p>
@@ -172,8 +196,10 @@ npx cjs2esm
 };
 </code></pre>
 <p>Now, when tool gets executed, it will perform the following change:</p>
-<pre class="prettyprint source lang-diff"><code>- const ObjectUtils = require('wootils/shared/objectUtils');
-+ import ObjectUtils from 'wootils/esm/shared/objectUtils.js';
+<pre class="prettyprint source lang-js"><code>// From
+const ObjectUtils = require('wootils/shared/objectUtils');
+// To
+import ObjectUtils from 'wootils/esm/shared/objectUtils.js';
 </code></pre>
 <blockquote>
 <p>Default <code>[]</code></p>
@@ -202,6 +228,22 @@ npx cjs2esm
 <blockquote>
 <p>Default <code>true</code></p>
 </blockquote>
+<h4>.filesWithShebang</h4>
+<p>The list of files that have a shebang, as the tool needs to remove it before transforming them in order to avoid issues with the parsers. The list are strings that will be converted on into <code>RegExp</code>s, so they can be a parts of the path, or expressions.</p>
+<p>For example, this project uses <code>src/bin.js</code>.</p>
+<blockquote>
+<p>Default <code>[]</code></p>
+</blockquote>
+<h2>ES Modules</h2>
+<p>Yes, if you want to use the tool as a library, the tool uses itself to generate a ESM version, so you can use the <code>/esm</code> path to access it:</p>
+<pre class="prettyprint source lang-js"><code>// commonjs
+const { getConfiguration } = require('cjs2esm');
+
+// ESM
+import { getConfiguration } from 'cjs2esm/esm';
+
+// #dogfooding
+</code></pre>
 <h2>⚙️ Development</h2>
 <h3>NPM/Yarn tasks</h3>
 <table>

@@ -36,7 +36,30 @@
 
 <nav >
     
-    <h2><a href="index.html" class="home-link">cjs2esm</a></h2><h2><a href="https://github.com/homer0/cjs2esm" target="_blank" >GitHub</a></h2><h3>Global</h3><ul><li><a href="global.html#addErrorHandler">addErrorHandler</a></li><li><a href="global.html#addPackageJSON">addPackageJSON</a></li><li><a href="global.html#copyFiles">copyFiles</a></li><li><a href="global.html#createReplacementForFolder">createReplacementForFolder</a></li><li><a href="global.html#ensureOutput">ensureOutput</a></li><li><a href="global.html#findFile">findFile</a></li><li><a href="global.html#findFileSync">findFileSync</a></li><li><a href="global.html#getAbsPathInfo">getAbsPathInfo</a></li><li><a href="global.html#getAbsPathInfoSync">getAbsPathInfoSync</a></li><li><a href="global.html#getConfiguration">getConfiguration</a></li><li><a href="global.html#log">log</a></li><li><a href="global.html#requireModule">requireModule</a></li><li><a href="global.html#transform">transform</a></li><li><a href="global.html#transformOutput">transformOutput</a></li><li><a href="global.html#updatePackageJSON">updatePackageJSON</a></li></ul>
+    <h2><a href="index.html" class="home-link">cjs2esm</a></h2><ul class="ref-links">
+            <li><a
+                class="ref-link -yarn"
+                title="View the package on Yarn"
+                href="https://yarnpkg.com/package/cjs2esm"
+                target="_blank"
+            >View the package on Yarn</a></li>
+        
+
+            <li><a
+                class="ref-link -github"
+                title="Go to the GitHub repository"
+                href="https://github.com/homer0/cjs2esm"
+                target="_blank"
+            >Go to the GitHub repository</a></li>
+        
+
+            <li><a
+                class="ref-link -npm"
+                title="View the package on NPM"
+                href="https://www.npmjs.com/package/cjs2esm"
+                target="_blank"
+            >View the package on NPM</a></li>
+        </ul><h3>Global</h3><ul><li><a href="global.html#addErrorHandler">addErrorHandler</a></li><li><a href="global.html#addPackageJSON">addPackageJSON</a></li><li><a href="global.html#copyFiles">copyFiles</a></li><li><a href="global.html#createReplacementForFolder">createReplacementForFolder</a></li><li><a href="global.html#ensureOutput">ensureOutput</a></li><li><a href="global.html#findFile">findFile</a></li><li><a href="global.html#findFileSync">findFileSync</a></li><li><a href="global.html#getAbsPathInfo">getAbsPathInfo</a></li><li><a href="global.html#getAbsPathInfoSync">getAbsPathInfoSync</a></li><li><a href="global.html#getConfiguration">getConfiguration</a></li><li><a href="global.html#log">log</a></li><li><a href="global.html#requireModule">requireModule</a></li><li><a href="global.html#transform">transform</a></li><li><a href="global.html#transformOutput">transformOutput</a></li><li><a href="global.html#updatePackageJSON">updatePackageJSON</a></li></ul>
 </nav>
 
 <div id="main">
@@ -92,6 +115,10 @@
  * and the file it points to was transformed.
  * @property {boolean} addPackageJson
  * Whether or not to add a `package.json` with `type` set to `module` on the `output` directory.
+ * @property {string[]} filesWithShebang
+ * The list of files that have a shebang, as the tool needs to remove it before transforming them
+ * in order to avoid issues with the parsers. The list are strings that will be converted on into
+ * `RegExp`s, so they can be a parts of the path, or expressions.
  */
 
 /**
