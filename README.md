@@ -24,7 +24,7 @@ const { Jimpex } = require('jimpex');
 const ObjectUtils = require('wootils/shared/objectUtils');
 require('./homer0');
 
-// Become
+// Becomes
 
 import { Jimpex } from 'jimpex';
 import ObjectUtils from 'wootils/shared/objectUtils.js';
@@ -137,9 +137,11 @@ const options = {
 
 Now, when tool gets executed, it will perform the following change:
 
-```diff
-- const ObjectUtils = require('wootils/shared/objectUtils');
-+ import ObjectUtils from 'wootils/esm/shared/objectUtils.js';
+```js
+// From
+const ObjectUtils = require('wootils/shared/objectUtils');
+// To
+import ObjectUtils from 'wootils/esm/shared/objectUtils.js';
 ```
 
 > Default `[]`
