@@ -5,6 +5,7 @@
   "version": "1.0.0",
   "repository": "homer0/cjs2esm",
   "author": "Leonardo Apiwan (@homer0) <me@homer0.com>",
+  "keywords": ["commonjs", "esmodules", "cjs", "esm", "es-modules"],
   "license": "MIT",
   "dependencies": {
     "@babel/core": "^7.11.1",
