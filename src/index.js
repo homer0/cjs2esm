@@ -83,6 +83,7 @@ const getConfiguration = async () => {
     extension: {},
     addModuleEntry: false,
     addPackageJson: true,
+    filesWithShebang: [],
     ...config,
   };
 
@@ -225,6 +226,57 @@ const copyFiles = async (input, output, useExtension, forceDirectory) => {
   return result;
 };
 /**
+ * Takes a list of copied files, opens them, find if they have a shebang and removes it, saves
+ * the files and returns a dictionary with the filepath and the shebang that was removed.
+ * This is necessary because the jscodeshift parser can't handle shebangs, and the whole process
+ * explodes when a file has one.
+ *
+ * @param {CJS2ESMCopiedFile[]} files The list of copied files with shebangs.
+ * @returns {Object.<string,string>} The keys are the path to the copied files and the values the
+ *                                   shebangs they had.
+ * @ignore
+ */
+const removeShebangs = async (files) => {
+  const result = await Promise.all(files.map(async (file) => {
+    let contents = await fs.readFile(file.to, 'utf-8');
+    let item;
+    const match = /^#!.*?$/m.exec(contents);
+    if (match) {
+      const [shebang] = match;
+      item = {
+        shebang,
+        file,
+      };
+      contents = contents.replace(shebang, '').trimLeft();
+      await fs.writeFile(file.to, contents);
+    } else {
+      item = null;
+    }
+
+    return item;
+  }));
+
+  return result
+  .filter((item) => item)
+  .reduce((acc, item) => ({ ...acc, [item.file.to]: item.shebang }), {});
+};
+/**
+ * This is a complementary function for `removeShebangs`: it's used to restore the removed
+ * shebangs once the transformation process its finished.
+ * The function basically opens the files, adds the shebangs and saves them.
+ *
+ * @param {Object.<string,string>} shebangs The keys are the path to the copied files and the
+ *                                          values the shebangs they had.
+ * @returns {Promise}
+ * @ignore
+ */
+const restoreShebangs = (shebangs) => Promise.all(Object.keys(shebangs).map(async (filepath) => {
+  const shebang = shebangs[filepath];
+  let contents = await fs.readFile(filepath, 'utf-8');
+  contents = `${shebang}\n\n${contents}`;
+  await fs.writeFile(filepath, contents);
+}));
+/**
  * Transforms all files from the output directory into ES Modules.
  *
  * @param {CJS2ESMCopiedFile[]} files   The list of files that were copied to the output directory.
@@ -248,6 +300,16 @@ const transformOutput = async (files, options) => {
     cjs2esm: options,
   };
 
+  const shebangExpressions = options.filesWithShebang.map((expression) => new RegExp(expression));
+  const filesWithShebang = files.filter(({ from }) => (
+    shebangExpressions.some((expression) => from.match(expression))
+  ));
+
+  let shebangs;
+  if (filesWithShebang.length) {
+    shebangs = await removeShebangs(filesWithShebang);
+  }
+
   const fiveToSixCodeModPath = path.resolve('node_modules', '5to6-codemod', 'transforms');
   const transformations = [
     path.join(fiveToSixCodeModPath, 'cjs.js'),
@@ -265,6 +327,10 @@ const transformOutput = async (files, options) => {
     )),
     Promise.resolve([null]),
   );
+
+  if (shebangs) {
+    await restoreShebangs(shebangs);
+  }
 
   results.shift();
   const errorIndex = results.findIndex((stats) => (stats.ok + stats.nochange) !== files.length);

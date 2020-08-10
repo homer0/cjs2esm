@@ -87,6 +87,7 @@ module.exports = {
   },
   addModuleEntry: false,
   addPackageJson: true,
+  filesWithShebang: [],
 };
 ```
 
@@ -174,6 +175,14 @@ Whether or not to modify the project `package.json` and add a `module` property 
 Whether or not to add a `package.json` with `type` set to `module` on the `output` directory.
 
 > Default `true`
+
+#### .filesWithShebang
+
+The list of files that have a shebang, as the tool needs to remove it before transforming them in order to avoid issues with the parsers. The list are strings that will be converted on into `RegExp`s, so they can be a parts of the path, or expressions.
+
+For example, this project uses `src/bin.js`.
+
+> Default `[]`
 
 ## ⚙️ Development
 
