@@ -184,6 +184,19 @@ For example, this project uses `src/bin.js`.
 
 > Default `[]`
 
+## ES Modules
+
+Yes, if you want to use the tool as a library, the tool uses itself to generate a ESM version, so you can use the `/esm` path to access it:
+
+```js
+// commonjs
+const { getConfiguration } = require('cjs2esm');
+
+// ESM
+import { getConfiguration } from 'cjs2esm/esm';
+
+// #dogfooding
+```
 ## ⚙️ Development
 
 ### NPM/Yarn tasks

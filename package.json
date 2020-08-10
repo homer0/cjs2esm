@@ -33,6 +33,7 @@
     "lint-staged": "^10.2.11",
     "semantic-release": "^17.1.1"
   },
+  "main": "src/index.js",
   "bin": {
     "cjs2esm": "./src/bin.js"
   },
@@ -51,6 +52,7 @@
     "*.js": "eslint"
   },
   "scripts": {
+    "prepublishOnly": "./utils/scripts/prepublishOnly",
     "test": "./utils/scripts/test",
     "lint": "./utils/scripts/lint",
     "lint:all": "./utils/scripts/lint-all",
@@ -58,6 +60,9 @@
     "todo": "./utils/scripts/todo"
   },
   "config": {
+    "cjs2esm": {
+      "filesWithShebang": ["src/bin.js"]
+    },
     "commitizen": {
       "path": "cz-conventional-changelog"
     }
