@@ -96,7 +96,10 @@ const transform = (file, api, options) => {
      * function removes it, but that's needed for import statements: if they path doesn't
      * starts with `.`, it assumes that it's on `node_modules`.
      */
-    if (importPath.startsWith('./') && !replacement.startsWith('./')) {
+    if (
+      (importPath === '.' || importPath.startsWith('./')) &&
+      !replacement.startsWith('./')
+    ) {
       replacement = `./${replacement}`;
     }
 

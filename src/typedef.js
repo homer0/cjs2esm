@@ -39,6 +39,10 @@
  * and the file it points to was transformed.
  * @property {boolean} addPackageJson
  * Whether or not to add a `package.json` with `type` set to `module` on the `output` directory.
+ * @property {string[]} filesWithShebang
+ * The list of files that have a shebang, as the tool needs to remove it before transforming them
+ * in order to avoid issues with the parsers. The list are strings that will be converted on into
+ * `RegExp`s, so they can be a parts of the path, or expressions.
  */
 
 /**

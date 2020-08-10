@@ -29,11 +29,22 @@ module.exports = {
     },
     sectionOrder: [],
     collapse: true,
-    menu: {
-      'GitHub': {
-        href: `https://github.com/${packageJson.repository}`,
-        target: '_blank',
+    refLinks: [
+      {
+        title: 'View the package on Yarn',
+        url: `https://yarnpkg.com/package/${packageJson.name}`,
+        type: 'yarn',
       },
-    },
+      {
+        title: 'Go to the GitHub repository',
+        url: `https://github.com/${packageJson.repository}`,
+        type: 'github',
+      },
+      {
+        title: 'View the package on NPM',
+        url: `https://www.npmjs.com/package/${packageJson.name}`,
+        type: 'npm',
+      },
+    ],
   },
 };

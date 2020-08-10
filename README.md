@@ -24,7 +24,7 @@ const { Jimpex } = require('jimpex');
 const ObjectUtils = require('wootils/shared/objectUtils');
 require('./homer0');
 
-// Become
+// Becomes
 
 import { Jimpex } from 'jimpex';
 import ObjectUtils from 'wootils/shared/objectUtils.js';
@@ -87,6 +87,7 @@ module.exports = {
   },
   addModuleEntry: false,
   addPackageJson: true,
+  filesWithShebang: [],
 };
 ```
 
@@ -136,9 +137,11 @@ const options = {
 
 Now, when tool gets executed, it will perform the following change:
 
-```diff
-- const ObjectUtils = require('wootils/shared/objectUtils');
-+ import ObjectUtils from 'wootils/esm/shared/objectUtils.js';
+```js
+// From
+const ObjectUtils = require('wootils/shared/objectUtils');
+// To
+import ObjectUtils from 'wootils/esm/shared/objectUtils.js';
 ```
 
 > Default `[]`
@@ -175,6 +178,27 @@ Whether or not to add a `package.json` with `type` set to `module` on the `outpu
 
 > Default `true`
 
+#### .filesWithShebang
+
+The list of files that have a shebang, as the tool needs to remove it before transforming them in order to avoid issues with the parsers. The list are strings that will be converted on into `RegExp`s, so they can be a parts of the path, or expressions.
+
+For example, this project uses `src/bin.js`.
+
+> Default `[]`
+
+## ES Modules
+
+Yes, if you want to use the tool as a library, the tool uses itself to generate a ESM version, so you can use the `/esm` path to access it:
+
+```js
+// commonjs
+const { getConfiguration } = require('cjs2esm');
+
+// ESM
+import { getConfiguration } from 'cjs2esm/esm';
+
+// #dogfooding
+```
 ## ⚙️ Development
 
 ### NPM/Yarn tasks

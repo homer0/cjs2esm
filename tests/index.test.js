@@ -46,6 +46,7 @@ describe('index', () => {
         },
         addModuleEntry: false,
         addPackageJson: true,
+        filesWithShebang: [],
       });
       expect(utils.findFile).toHaveBeenCalledTimes(1);
       expect(utils.findFile).toHaveBeenCalledWith(
@@ -92,6 +93,7 @@ describe('index', () => {
         },
         addModuleEntry: false,
         addPackageJson: true,
+        filesWithShebang: [],
       });
     });
 
@@ -124,6 +126,7 @@ describe('index', () => {
         },
         addModuleEntry: false,
         addPackageJson: true,
+        filesWithShebang: [],
       });
     });
 
@@ -155,6 +158,7 @@ describe('index', () => {
         },
         addModuleEntry: false,
         addPackageJson: true,
+        filesWithShebang: [],
       });
     });
 
@@ -186,6 +190,7 @@ describe('index', () => {
         },
         addModuleEntry: false,
         addPackageJson: true,
+        filesWithShebang: [],
       });
     });
   });
@@ -545,6 +550,8 @@ describe('index', () => {
   describe('transformOutput', () => {
     beforeEach(() => {
       Runner.run.mockClear();
+      fs.readFile.mockReset();
+      fs.writeFile.mockReset();
     });
 
     it('should transform a list of files', async () => {
@@ -559,6 +566,7 @@ describe('index', () => {
       ];
       const options = {
         output: path.join(cwd, 'esm'),
+        filesWithShebang: [],
       };
       const stats = {
         timeElapsed: 25.09,
@@ -592,7 +600,68 @@ describe('index', () => {
       );
     });
 
-    it('should failt to transform a list of files', () => {
+    it('should remove and restore the shebang of a file', async () => {
+      // Given
+      const files = [
+        {
+          from: 'index.js',
+          to: 'index.js',
+        },
+        {
+          from: 'utils.js',
+          to: 'utils.js',
+        },
+      ];
+      const options = {
+        output: path.join(cwd, 'esm'),
+        filesWithShebang: ['index', 'utils'],
+      };
+      const stats = {
+        timeElapsed: 25.09,
+        ok: files.length,
+        nochange: 0,
+      };
+      const indexShebang = '#!/usr/bin/env node';
+      const indexRest = 'something else;';
+      const indexContent = `${indexShebang}\n\n${indexRest}`;
+      fs.readFile.mockImplementationOnce(() => indexContent);
+      fs.readFile.mockImplementationOnce(() => 'some other file;');
+      fs.readFile.mockImplementationOnce(() => indexRest);
+      Runner.run.mockImplementationOnce(() => Promise.resolve(stats));
+      Runner.run.mockImplementationOnce(() => Promise.resolve(stats));
+      Runner.run.mockImplementationOnce(() => Promise.resolve(stats));
+      Runner.run.mockImplementationOnce(() => Promise.resolve(stats));
+      // When
+      await transformOutput(files, options);
+      // Then
+      expect(fs.readFile).toHaveBeenCalledTimes(3);
+      expect(fs.readFile).toHaveBeenNthCalledWith(1, files[0].to, 'utf-8');
+      expect(fs.readFile).toHaveBeenNthCalledWith(2, files[1].to, 'utf-8');
+      expect(fs.readFile).toHaveBeenNthCalledWith(3, files[0].to, 'utf-8');
+      expect(fs.writeFile).toHaveBeenCalledTimes(2);
+      expect(fs.writeFile).toHaveBeenNthCalledWith(1, files[0].to, indexRest);
+      expect(fs.writeFile).toHaveBeenNthCalledWith(2, files[0].to, indexContent);
+      expect(Runner.run).toHaveBeenCalledTimes(4);
+      expect(Runner.run).toHaveBeenCalledWith(
+        expect.any(String),
+        [options.output],
+        {
+          verbose: 0,
+          dry: false,
+          print: false,
+          babel: true,
+          extension: 'js',
+          ignorePattern: [],
+          ignoreConfig: [],
+          runInBand: false,
+          silent: true,
+          parser: 'babel',
+          cjs2esm: options,
+        },
+      );
+    });
+
+    it('should fail to transform a list of files', () => {
       // Given
       const files = [
         {
@@ -604,6 +673,7 @@ describe('index', () => {
       ];
       const options = {
         output: path.join(cwd, 'esm'),
+        filesWithShebang: [],
       };
       const stats = {
         timeElapsed: 25.09,

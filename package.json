@@ -5,6 +5,7 @@
   "version": "1.0.0",
   "repository": "homer0/cjs2esm",
   "author": "Leonardo Apiwan (@homer0) <me@homer0.com>",
+  "keywords": ["commonjs", "esmodules", "cjs", "esm", "es-modules"],
   "license": "MIT",
   "dependencies": {
     "@babel/core": "^7.11.1",
@@ -27,11 +28,12 @@
     "jimple": "^1.5.0",
     "jsdoc": "^3.6.5",
     "jsdoc-ts-utils": "^1.0.0",
-    "docdash": "homer0/docdash#semver:^2.0.0",
+    "docdash": "homer0/docdash#semver:^2.1.0",
     "leasot": "^11.1.0",
     "lint-staged": "^10.2.11",
     "semantic-release": "^17.1.1"
   },
+  "main": "src/index.js",
   "bin": {
     "cjs2esm": "./src/bin.js"
   },
@@ -50,6 +52,7 @@
     "*.js": "eslint"
   },
   "scripts": {
+    "prepublishOnly": "./utils/scripts/prepublishOnly",
     "test": "./utils/scripts/test",
     "lint": "./utils/scripts/lint",
     "lint:all": "./utils/scripts/lint-all",
@@ -57,6 +60,9 @@
     "todo": "./utils/scripts/todo"
   },
   "config": {
+    "cjs2esm": {
+      "filesWithShebang": ["src/bin.js"]
+    },
     "commitizen": {
       "path": "cz-conventional-changelog"
     }
