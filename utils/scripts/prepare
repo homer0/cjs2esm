@@ -1,2 +1,2 @@
 #!/bin/bash -e
-husky install
+is-ci || husky install
