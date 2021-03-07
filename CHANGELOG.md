@@ -1,3 +1,10 @@
+## [1.1.2](https://github.com/homer0/cjs2esm/compare/1.1.1...1.1.2) (2021-03-07)
+
+
+### Bug Fixes
+
+* downgrade jscodeshift to prevent issues with exports ([befa6a6](https://github.com/homer0/cjs2esm/commit/befa6a6117f7b658d26c4c9a18639e2546fe5e5d))
+
 ## [1.1.1](https://github.com/homer0/cjs2esm/compare/1.1.0...1.1.1) (2021-03-07)
 
 
