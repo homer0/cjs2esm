@@ -1,3 +1,12 @@
+## [1.1.1](https://github.com/homer0/cjs2esm/compare/1.1.0...1.1.1) (2021-03-07)
+
+
+### Bug Fixes
+
+* disable husky on CD action ([6986dbf](https://github.com/homer0/cjs2esm/commit/6986dbffd054e77fa736a5145a16697d59138a7f))
+* update dependencies ([9f97fea](https://github.com/homer0/cjs2esm/commit/9f97fea8d021c331d1dd10ca4b4da7ff3fdc7ddd))
+* use is-ci to prevent husky from running on the CI ([ed5e7ae](https://github.com/homer0/cjs2esm/commit/ed5e7aee0f0799f3984d11e08415137b3015cb5e))
+
 # [1.1.0](https://github.com/homer0/cjs2esm/compare/1.0.0...1.1.0) (2020-08-10)
 
 

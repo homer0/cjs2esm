@@ -2,7 +2,7 @@
   "name": "cjs2esm",
   "description": "Transforms a project that uses CommonJS to ES Modules.",
   "homepage": "https://homer0.github.io/cjs2esm/",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "repository": "homer0/cjs2esm",
   "author": "Leonardo Apiwan (@homer0) <me@homer0.com>",
   "keywords": [
@@ -49,7 +49,9 @@
     "node": ">=10"
   },
   "commitlint": {
-    "extends": ["@commitlint/config-conventional"]
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
   },
   "lint-staged": {
     "*.js": "eslint"
