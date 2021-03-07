@@ -19,7 +19,7 @@ jobs:
           node-version: '${{ steps.nvm.outputs.NVMRC }}'
       - name: Install dependencies
         env:
-          HUSKY_SKIP_INSTALL: 1
+          HUSKY: 0
         run: yarn --frozen-lockfile
       - run: yarn semantic-release
         env:
