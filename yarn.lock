@@ -5237,10 +5237,10 @@ kleur@^3.0.3:
   resolved "https://registry.yarnpkg.com/kleur/-/kleur-3.0.3.tgz#a79c9ecc86ee1ce3fa6206d1216c501f147fc07e"
   integrity sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==
 
-leasot@^11.6.0:
-  version "11.6.0"
-  resolved "https://registry.yarnpkg.com/leasot/-/leasot-11.6.0.tgz#deb4c4f13d0b095912a370029853c2506f73a764"
-  integrity sha512-NIny3rKwJ/RnNgaJs19+bE9MAzm0MIteofOALVLtJ2wyFFoPUxziGXmk+5VOrmOCxj5vBjWPgsbJwP5oiSOGqQ==
+leasot@^12.0.0:
+  version "12.0.0"
+  resolved "https://registry.yarnpkg.com/leasot/-/leasot-12.0.0.tgz#78c5df2c941c7285374c8d992866e22163241b22"
+  integrity sha512-TMe3cJTRUMpXsOFNXCig5U84wM44y84vawkl2fC7iAJif88l/b7BtTt49VrkMsivlxlqHYVu5PjuxB9sRQf39w==
   dependencies:
     async "^3.2.0"
     chalk "^4.1.0"
