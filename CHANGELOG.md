@@ -1,3 +1,15 @@
+# [2.0.0](https://github.com/homer0/cjs2esm/compare/1.1.2...2.0.0) (2021-04-11)
+
+
+### Bug Fixes
+
+* drop support for Node 10 ([7359caa](https://github.com/homer0/cjs2esm/commit/7359caa401ec6dba1adee075eb3c18a3e9da246e))
+
+
+### BREAKING CHANGES
+
+* This package no longer supports Node 10.
+
 ## [1.1.2](https://github.com/homer0/cjs2esm/compare/1.1.1...1.1.2) (2021-03-07)
 
 
