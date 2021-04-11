@@ -5034,10 +5034,10 @@ jscodeshift@^0.6.3:
     temp "^0.8.1"
     write-file-atomic "^2.3.0"
 
-jsdoc-ts-utils@^1.1.2:
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/jsdoc-ts-utils/-/jsdoc-ts-utils-1.1.2.tgz#adcb3f525b9bdbca02d14131cdc14f57355f42fa"
-  integrity sha512-9KfXP3tA9p7H+LN3/strsbrNqO818vSG5WMVwEkUy//hehLOaO20IoMyevETRjpyoCviIVB469T3eUrn/WiSag==
+jsdoc-ts-utils@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/jsdoc-ts-utils/-/jsdoc-ts-utils-2.0.0.tgz#680ec1bbfbf87a81cca798e3915be83e74131f78"
+  integrity sha512-xTwLOGJ7K4xs1ZL+YHTl5cYHO2idNgY0FzRJPp/WCw7t61L2fU8odK5Hteos0B+1sEN+ZSLceoBfXXJnVJNokQ==
   dependencies:
     jsdoc "^3.6.6"
 
