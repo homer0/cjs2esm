@@ -25,10 +25,12 @@
   "devDependencies": {
     "@commitlint/cli": "^12.1.1",
     "@commitlint/config-conventional": "^12.1.1",
+    "@homer0/eslint-plugin": "^7.0.0",
+    "@homer0/prettier-config": "^1.1.1",
+    "@homer0/prettier-plugin-jsdoc": "^4.0.0",
     "@semantic-release/changelog": "^5.0.1",
     "@semantic-release/git": "^9.0.0",
     "eslint": "^7.24.0",
-    "eslint-plugin-homer0": "^5.0.2",
     "husky": "^6.0.0",
     "is-ci": "^3.0.0",
     "jest": "^26.6.3",
@@ -38,6 +40,7 @@
     "docdash": "homer0/docdash#semver:^2.1.0",
     "leasot": "^11.6.0",
     "lint-staged": "^10.5.4",
+    "prettier": "^2.2.1",
     "semantic-release": "^17.4.2"
   },
   "main": "src/index.js",
