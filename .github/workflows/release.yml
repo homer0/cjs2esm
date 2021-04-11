@@ -3,7 +3,7 @@ name: Release NPM package
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   release:
