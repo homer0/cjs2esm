@@ -85,28 +85,28 @@ const pkgJson = require('../package.json');
 
 /**
  * @typedef {Object} AbsPathInfo
- * @property {string}  path      The complete, absolute, path to the file/folder.
- * @property {boolean} isFile    Whether or not the path is for a file.
- * @property {?string} extension If the path is for a file, this will be its extension.
+ * @property {string}  path       The complete, absolute, path to the file/folder.
+ * @property {boolean} isFile     Whether or not the path is for a file.
+ * @property {?string} extension  If the path is for a file, this will be its extension.
  */
 
 /**
  * Logs messages prefixed with the name of the project and with a specified color.
  * Yes, this is a proxy-like function for `console.log` with `chalk`.
  *
- * @param {string}   color The color from `chalk` that should be used.
- * @param {string[]} args  The list of messages to log.
+ * @param {string}   color  The color from `chalk` that should be used.
+ * @param {string[]} args   The list of messages to log.
  */
 const log = (color, ...args) => {
   // eslint-disable-next-line no-console
   console.log(...[`[${pkgJson.name}]`, ...args].map((item) => chalk[color](item)));
 };
 /**
- * Given a list of file names and a directory, the function will try find the first file that
- * exists.
+ * Given a list of file names and a directory, the function will try find the first file
+ * that exists.
  *
- * @param {string[]} list      The list of files to test.
- * @param {string}   directory The base directory where the paths will be tested.
+ * @param {string[]} list       The list of files to test.
+ * @param {string}   directory  The base directory where the paths will be tested.
  * @returns {Promise&lt;?string>}
  */
 const findFile = async (list, directory) => {
@@ -124,11 +124,11 @@ const findFile = async (list, directory) => {
   return result || null;
 };
 /**
- * Given a list of file names and a directory, the function will try to find the first file that
- * exists.
+ * Given a list of file names and a directory, the function will try to find the first
+ * file that exists.
  *
- * @param {string[]} list      The list of files to test.
- * @param {string}   directory The base directory where the paths will be tested.
+ * @param {string[]} list       The list of files to test.
+ * @param {string}   directory  The base directory where the paths will be tested.
  * @returns {?string}
  */
 const findFileSync = (list, directory) => {
@@ -145,11 +145,11 @@ const findFileSync = (list, directory) => {
   return result || null;
 };
 /**
- * A special version of `path.parse` that validates if the file extension is `.js` or `.mjs`, and
- * if is not, in case it's something like `.config` or `.service`, it moves the extension to the
- * `name` and leaves `ext` empty.
+ * A special version of `path.parse` that validates if the file extension is `.js` or
+ * `.mjs`, and if is not, in case it's something like `.config` or `.service`, it moves
+ * the extension to the `name` and leaves `ext` empty.
  *
- * @param {string} filepath The file path to parse.
+ * @param {string} filepath  The file path to parse.
  * @returns {ParsedPath}
  * @ignore
  */
@@ -165,42 +165,37 @@ const parseJSPath = (filepath) => {
 /**
  * Tries to find the extension for a file import path.
  *
- * @param {string} absPath The generated absolute path for the file.
+ * @param {string} absPath  The generated absolute path for the file.
  * @returns {?string}
  * @ignore
  */
 const findFileExtension = async (absPath) => {
   const info = parseJSPath(absPath);
   const name = info.name.replace(/\.$/, '');
-  const file = await findFile(
-    [`${name}.mjs`, `${name}.js`],
-    info.dir,
-  );
+  const file = await findFile([`${name}.mjs`, `${name}.js`], info.dir);
 
   return file ? path.parse(file).ext : null;
 };
 /**
  * Tries to find the extension for a file import path.
  *
- * @param {string} absPath The generated absolute path for the file.
+ * @param {string} absPath  The generated absolute path for the file.
  * @returns {?string}
  * @ignore
  */
 const findFileExtensionSync = (absPath) => {
   const info = parseJSPath(absPath);
   const name = info.name.replace(/\.$/, '');
-  const file = findFileSync(
-    [`${name}.mjs`, `${name}.js`],
-    info.dir,
-  );
+  const file = findFileSync([`${name}.mjs`, `${name}.js`], info.dir);
 
   return file ? path.parse(file).ext : null;
 };
 /**
- * Given an the aboslute path for an import/require statement, the method will validate if its for
- * a folder, a file, and if it's for a file, it will complete its extension in case it's missing.
+ * Given an the aboslute path for an import/require statement, the method will validate if
+ * its for a folder, a file, and if it's for a file, it will complete its extension in
+ * case it's missing.
  *
- * @param {string} absPath The absolute path for the resource.
+ * @param {string} absPath  The absolute path for the resource.
  * @returns {?AbsPathInfo}
  */
 const getAbsPathInfo = async (absPath) => {
@@ -237,10 +232,11 @@ const getAbsPathInfo = async (absPath) => {
   return result;
 };
 /**
- * Given an the aboslute path for an import/require statement, the method will validate if its for
- * a folder, a file, and if it's for a file, it will complete its extension in case it's missing.
+ * Given an the aboslute path for an import/require statement, the method will validate if
+ * its for a folder, a file, and if it's for a file, it will complete its extension in
+ * case it's missing.
  *
- * @param {string} absPath The absolute path for the resource.
+ * @param {string} absPath  The absolute path for the resource.
  * @returns {?AbsPathInfo}
  */
 const getAbsPathInfoSync = (absPath) => {
@@ -278,10 +274,11 @@ const getAbsPathInfoSync = (absPath) => {
 };
 /**
  * This function is just a proxy for `require` and it only exists to make testing the tool
- * easier: the test for this is just that returns the same as `require`, but on the files that
- * use it, with mocking this funcion is enough and there won't be any need for `resetModules`.
+ * easier: the test for this is just that returns the same as `require`, but on the files
+ * that use it, with mocking this funcion is enough and there won't be any need for
+ * `resetModules`.
  *
- * @param {string} modulePath The path to the module to be required.
+ * @param {string} modulePath  The path to the module to be required.
  * @returns {Object}
  */
 const requireModule = (modulePath) => {

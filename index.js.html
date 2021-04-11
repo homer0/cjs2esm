@@ -78,17 +78,13 @@
 const fs = require('fs-extra');
 const Runner = require('jscodeshift/src/Runner');
 const { repository } = require('../package.json');
-const {
-  log,
-  findFile,
-  getAbsPathInfo,
-  requireModule,
-} = require('./utils');
+const { log, findFile, getAbsPathInfo, requireModule } = require('./utils');
 /**
- * This is called every time an unexpected error is thrown; it logs the error using the `log`
+ * This is called every time an unexpected error is thrown; it logs the error using the
+ * `log`
  * function, with _nice_ colors, and adds a message to create an issue on the repository.
  *
- * @param {Error} error The exception to _"handle"_.
+ * @param {Error} error  The exception to _"handle"_.
  * @ignore
  */
 const handleAnError = (error) => {
@@ -98,11 +94,14 @@ const handleAnError = (error) => {
   stack.forEach((line) => log('gray', line.trim()));
   const link = `https://github.com/${repository}/issues/new`;
   log('gray');
-  log('gray', `If the issue persist, create a ticket and I may be able to help you: ${link} :D`);
+  log(
+    'gray',
+    `If the issue persist, create a ticket and I may be able to help you: ${link} :D`,
+  );
 };
 /**
- * Adds an error handler to the process so if something fails, it will be logged with a nice style
- * and a custom emssage.
+ * Adds an error handler to the process so if something fails, it will be logged with a
+ * nice style and a custom emssage.
  *
  * @returns {Function} To remove the listeners.
  */
@@ -122,14 +121,7 @@ const addErrorHandler = () => {
 const getConfiguration = async () => {
   log('yellow', 'Loading configuration...');
   const cwd = process.cwd();
-  const file = await findFile(
-    [
-      '.cjs2esm',
-      '.cjs2esm.json',
-      '.cjs2esm.js',
-    ],
-    cwd,
-  );
+  const file = await findFile(['.cjs2esm', '.cjs2esm.json', '.cjs2esm.js'], cwd);
 
   let config = {};
   if (file === null) {
@@ -174,10 +166,10 @@ const getConfiguration = async () => {
   return result;
 };
 /**
- * Ensures the output directory exists and it's empty. If the directory exists, it removes it and
- * then creates it again.
+ * Ensures the output directory exists and it's empty. If the directory exists, it removes
+ * it and then creates it again.
  *
- * @param {string} output The output directory the tool will use.
+ * @param {string} output  The output directory the tool will use.
  * @returns {Promise}
  */
 const ensureOutput = async (output) => {
@@ -192,49 +184,51 @@ const ensureOutput = async (output) => {
 /**
  * Finds all the JavaScript files on a given directory.
  *
- * @param {string} directory The absolute path to the directory.
+ * @param {string} directory  The absolute path to the directory.
  * @returns {Promise&lt;string[]>}
  * @ignore
  */
 const findFiles = async (directory) => {
   let result = await fs.readdir(directory);
   result = result.filter((item) => !item.startsWith('.'));
-  result = await Promise.all(result.map(async (item) => {
-    const itempath = path.join(directory, item);
-    const stats = await fs.stat(itempath);
-    let newItem;
-    if (stats.isDirectory()) {
-      newItem = await findFiles(itempath);
-    } else if (item.match(/\.js$/i)) {
-      newItem = itempath;
-    } else {
-      newItem = null;
-    }
+  result = await Promise.all(
+    result.map(async (item) => {
+      const itempath = path.join(directory, item);
+      const stats = await fs.stat(itempath);
+      let newItem;
+      if (stats.isDirectory()) {
+        newItem = await findFiles(itempath);
+      } else if (item.match(/\.js$/i)) {
+        newItem = itempath;
+      } else {
+        newItem = null;
+      }
 
-    return newItem;
-  }));
+      return newItem;
+    }),
+  );
 
   result = result
-  .filter((item) => item !== null)
-  .reduce((acc, item) => (
-    Array.isArray(item) ?
-      [...acc, ...item] :
-      [...acc, item]
-  ), []);
+    .filter((item) => item !== null)
+    .reduce(
+      (acc, item) => (Array.isArray(item) ? [...acc, ...item] : [...acc, item]),
+      [],
+    );
 
   return result;
 };
 /**
- * Copies all the files from a source directory to the output directory, changing the extensions
- * if required.
+ * Copies all the files from a source directory to the output directory, changing the
+ * extensions if required.
  *
- * @param {string}          directory             The source directory from where the files will be
- *                                                copied.
- * @param {string}          output                The output directory where the files should be
- *                                                copied to.
- * @param {ModuleExtension} useExtension          The extension the modules should use.
- * @param {boolean}         [forceDirectory=true] If `false`, the directory itself won't be copied,
- *                                                just its contents.
+ * @param {string}          directory              The source directory from where the
+ *                                                 files will be copied.
+ * @param {string}          output                 The output directory where the files
+ *                                                 should be copied to.
+ * @param {ModuleExtension} useExtension           The extension the modules should use.
+ * @param {boolean}         [forceDirectory=true]  If `false`, the directory itself won't
+ *                                                 be copied,
+ *                                                 just its contents.
  * @returns {Promise&lt;CJS2ESMCopiedFile[]>}
  * @ignore
  */
@@ -242,41 +236,45 @@ const copyDirectory = async (directory, output, useExtension, forceDirectory = t
   const cwd = process.cwd();
   const extension = `.${useExtension}`;
   let contents = await findFiles(directory);
-  contents = await Promise.all(contents.map(async (item) => {
-    let cleanPath = item.substr(cwd.length + 1);
-    if (!forceDirectory) {
-      cleanPath = cleanPath.split(path.sep);
-      cleanPath.shift();
-      cleanPath = cleanPath.join(path.sep);
-    }
+  contents = await Promise.all(
+    contents.map(async (item) => {
+      let cleanPath = item.substr(cwd.length + 1);
+      if (!forceDirectory) {
+        cleanPath = cleanPath.split(path.sep);
+        cleanPath.shift();
+        cleanPath = cleanPath.join(path.sep);
+      }
 
-    let newPath = path.join(output, cleanPath);
-    const { ext } = path.parse(newPath);
-    if (ext !== extension) {
-      newPath = newPath.replace(new RegExp(`\\${ext}$`), extension);
-    }
+      let newPath = path.join(output, cleanPath);
+      const { ext } = path.parse(newPath);
+      if (ext !== extension) {
+        newPath = newPath.replace(new RegExp(`\\${ext}$`), extension);
+      }
 
-    await fs.ensureDir(path.dirname(newPath));
-    await fs.copyFile(item, newPath);
-    return {
-      from: item,
-      to: newPath,
-    };
-  }));
+      await fs.ensureDir(path.dirname(newPath));
+      await fs.copyFile(item, newPath);
+      return {
+        from: item,
+        to: newPath,
+      };
+    }),
+  );
 
   return contents;
 };
 /**
  * Copies all the files the tool will transpile.
  *
- * @param {string[]}        input           The list of source paths where the files are located.
- * @param {string}          output          The output path where all the files will be transpiled
- *                                          to.
+ * @param {string[]}        input           The list of source paths where the files are
+ *                                          located.
+ * @param {string}          output          The output path where all the files will be
+ *                                          transpiled to.
  * @param {ModuleExtension} useExtension    The extension the modules should use.
- * @param {?boolean}        forceDirectory  By default, if `input` has only one directory, the only
- *                                          thing copied will be its contents, instead of the
- *                                          directory itself; this parameter can be used to force
- *                                          it and always copy the directory.
+ * @param {?boolean}        forceDirectory  By default, if `input` has only one directory,
+ *                                          the only thing copied will be its contents,
+ *                                          instead of the directory itself; this
+ *                                          parameter can be used to force it and always
+ *                                          copy the directory.
  * @returns {Promise&lt;CJS2ESMCopiedFile[]>}
  */
 const copyFiles = async (input, output, useExtension, forceDirectory) => {
@@ -290,11 +288,9 @@ const copyFiles = async (input, output, useExtension, forceDirectory) => {
       forceDirectory === true,
     );
   } else {
-    result = await Promise.all(input.map((item) => copyDirectory(
-      item,
-      output,
-      useExtension,
-    )));
+    result = await Promise.all(
+      input.map((item) => copyDirectory(item, output, useExtension)),
+    );
 
     result = result.reduce((acc, item) => [...acc, ...item], []);
   }
@@ -302,62 +298,69 @@ const copyFiles = async (input, output, useExtension, forceDirectory) => {
   return result;
 };
 /**
- * Takes a list of copied files, opens them, find if they have a shebang and removes it, saves
- * the files and returns a dictionary with the filepath and the shebang that was removed.
- * This is necessary because the jscodeshift parser can't handle shebangs, and the whole process
- * explodes when a file has one.
+ * Takes a list of copied files, opens them, find if they have a shebang and removes it,
+ * saves the files and returns a dictionary with the filepath and the shebang that was
+ * removed.
+ * This is necessary because the jscodeshift parser can't handle shebangs, and the whole
+ * process explodes when a file has one.
  *
- * @param {CJS2ESMCopiedFile[]} files The list of copied files with shebangs.
- * @returns {Object.&lt;string,string>} The keys are the path to the copied files and the values the
- *                                   shebangs they had.
+ * @param {CJS2ESMCopiedFile[]} files  The list of copied files with shebangs.
+ * @returns {Object.&lt;string, string>} The keys are the path to the copied files and the
+ *                                    values the shebangs they had.
  * @ignore
  */
 const removeShebangs = async (files) => {
-  const result = await Promise.all(files.map(async (file) => {
-    let contents = await fs.readFile(file.to, 'utf-8');
-    let item;
-    const match = /^#!.*?$/m.exec(contents);
-    if (match) {
-      const [shebang] = match;
-      item = {
-        shebang,
-        file,
-      };
-      contents = contents.replace(shebang, '').trimLeft();
-      await fs.writeFile(file.to, contents);
-    } else {
-      item = null;
-    }
+  const result = await Promise.all(
+    files.map(async (file) => {
+      let contents = await fs.readFile(file.to, 'utf-8');
+      let item;
+      const match = /^#!.*?$/m.exec(contents);
+      if (match) {
+        const [shebang] = match;
+        item = {
+          shebang,
+          file,
+        };
+        contents = contents.replace(shebang, '').trimLeft();
+        await fs.writeFile(file.to, contents);
+      } else {
+        item = null;
+      }
 
-    return item;
-  }));
+      return item;
+    }),
+  );
 
   return result
-  .filter((item) => item)
-  .reduce((acc, item) => ({ ...acc, [item.file.to]: item.shebang }), {});
+    .filter((item) => item)
+    .reduce((acc, item) => ({ ...acc, [item.file.to]: item.shebang }), {});
 };
 /**
  * This is a complementary function for `removeShebangs`: it's used to restore the removed
  * shebangs once the transformation process its finished.
  * The function basically opens the files, adds the shebangs and saves them.
  *
- * @param {Object.&lt;string,string>} shebangs The keys are the path to the copied files and the
- *                                          values the shebangs they had.
+ * @param {Object.&lt;string, string>} shebangs  The keys are the path to the copied files
+ *                                            and the values the shebangs they had.
  * @returns {Promise}
  * @ignore
  */
-const restoreShebangs = (shebangs) => Promise.all(Object.keys(shebangs).map(async (filepath) => {
-  const shebang = shebangs[filepath];
-  let contents = await fs.readFile(filepath, 'utf-8');
-  contents = `${shebang}\n\n${contents}`;
-  await fs.writeFile(filepath, contents);
-}));
+const restoreShebangs = (shebangs) =>
+  Promise.all(
+    Object.keys(shebangs).map(async (filepath) => {
+      const shebang = shebangs[filepath];
+      let contents = await fs.readFile(filepath, 'utf-8');
+      contents = `${shebang}\n\n${contents}`;
+      await fs.writeFile(filepath, contents);
+    }),
+  );
 /**
  * Transforms all files from the output directory into ES Modules.
  *
- * @param {CJS2ESMCopiedFile[]} files   The list of files that were copied to the output directory.
- * @param {CJS2ESMOptions}      options The options of the tool, so they can be sent to the
- *                                      transformers.
+ * @param {CJS2ESMCopiedFile[]} files    The list of files that were copied to the output
+ *                                       directory.
+ * @param {CJS2ESMOptions}      options  The options of the tool, so they can be sent to
+ *                                       the transformers.
  * @returns {Promise}
  * @throws {Error} If there's a problem while transforming a file.
  */
@@ -376,10 +379,12 @@ const transformOutput = async (files, options) => {
     cjs2esm: options,
   };
 
-  const shebangExpressions = options.filesWithShebang.map((expression) => new RegExp(expression));
-  const filesWithShebang = files.filter(({ from }) => (
-    shebangExpressions.some((expression) => from.match(expression))
-  ));
+  const shebangExpressions = options.filesWithShebang.map(
+    (expression) => new RegExp(expression),
+  );
+  const filesWithShebang = files.filter(({ from }) =>
+    shebangExpressions.some((expression) => from.match(expression)),
+  );
 
   let shebangs;
   if (filesWithShebang.length) {
@@ -397,10 +402,13 @@ const transformOutput = async (files, options) => {
   log('yellow', `Transforming ${files.length} files...`);
 
   const results = await transformations.reduce(
-    (acc, transformation) => acc.then((prevStats) => (
-      Runner.run(transformation, [options.output], transformOptions)
-      .then((stats) => [...prevStats, stats])
-    )),
+    (acc, transformation) =>
+      acc.then((prevStats) =>
+        Runner.run(transformation, [options.output], transformOptions).then((stats) => [
+          ...prevStats,
+          stats,
+        ]),
+      ),
     Promise.resolve([null]),
   );
 
@@ -409,18 +417,22 @@ const transformOutput = async (files, options) => {
   }
 
   results.shift();
-  const errorIndex = results.findIndex((stats) => (stats.ok + stats.nochange) !== files.length);
+  const errorIndex = results.findIndex(
+    (stats) => stats.ok + stats.nochange !== files.length,
+  );
   if (errorIndex > -1) {
     let transformationError = transformations[errorIndex];
     transformationError = path.parse(transformationError).name;
-    throw new Error(`At least one file couldn't be transformed with \`${transformationError}\``);
+    throw new Error(
+      `At least one file couldn't be transformed with \`${transformationError}\``,
+    );
   }
 
   const cwd = process.cwd();
   files.forEach((file) => log('gray', `> ${file.to.substr(cwd.length + 1)}`));
   let totalTime = results.reduce(
     (acc, { timeElapsed }) => acc + parseFloat(timeElapsed),
-    0.00,
+    0.0,
   );
   const decimals = 2;
   totalTime = totalTime.toFixed(decimals);
@@ -428,27 +440,26 @@ const transformOutput = async (files, options) => {
   log('green', `All files were successfully transformed (${totalTime}s)!`);
 };
 /**
- * Given an absolute path for a folder, the function will try to find its "entry file": it will
- * check for `index.mjs` and `index.js`.
+ * Given an absolute path for a folder, the function will try to find its "entry file": it
+ * will check for `index.mjs` and `index.js`.
  *
- * @param {string} absPath The absolute path to the folder.
+ * @param {string} absPath  The absolute path to the folder.
  * @returns {?string} If there's no `index`, the function will return `null`.
  * @ignore
  */
 const findFolderEntryPath = async (absPath) => {
   const file = await findFile(['index.mjs', 'index.js'], absPath);
-  return file ?
-    path.join(absPath, path.basename(file)) :
-    null;
+  return file ? path.join(absPath, path.basename(file)) : null;
 };
 /**
- * Updates the project `package.json` by adding a `module` property that points to the transformed
- * version of the current `main` property.
+ * Updates the project `package.json` by adding a `module` property that points to the
+ * transformed version of the current `main` property.
  *
- * @param {CJS2ESMCopiedFile[]} files The list of files that were copied, so the function can find
- *                                    the transformed path for the `main` file.
+ * @param {CJS2ESMCopiedFile[]} files  The list of files that were copied, so the function
+ *                                     can find the transformed path for the `main` file.
  * @returns {Promise}
- * @throws {Error} If the function can't find the transformed version of the `main` file.
+ * @throws {Error} If the function can't find the transformed version of the `main`
+ *                 file.
  */
 const updatePackageJSON = async (files) => {
   const cwd = process.cwd();
@@ -480,17 +491,17 @@ const updatePackageJSON = async (files) => {
       result = null;
     }
   } else {
-    log('yellow', 'There\'s no main property, package.json update aborted');
+    log('yellow', "There's no main property, package.json update aborted");
     result = null;
   }
 
   return result;
 };
 /**
- * Adds a `package.json` with `type` set to `module` on the output directory. This is so Node
- * can properly resolve the ESM files.
+ * Adds a `package.json` with `type` set to `module` on the output directory. This is so
+ * Node can properly resolve the ESM files.
  *
- * @param {string} output The output directory the tool will use.
+ * @param {string} output  The output directory the tool will use.
  * @returns {Promise}
  */
 const addPackageJSON = async (output) => {
