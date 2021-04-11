@@ -1,7 +1,7 @@
 # CJS 2 ESM
 
-[![GitHub Workflow Status (master)](https://img.shields.io/github/workflow/status/homer0/cjs2esm/Test/master?style=flat-square)](https://github.com/homer0/cjs2esm/actions?query=workflow%3ATest)
-[![Coveralls github](https://img.shields.io/coveralls/github/homer0/cjs2esm.svg?style=flat-square)](https://coveralls.io/github/homer0/cjs2esm?branch=master)
+[![GitHub Workflow Status (main)](https://img.shields.io/github/workflow/status/homer0/cjs2esm/Test/main?style=flat-square)](https://github.com/homer0/cjs2esm/actions?query=workflow%3ATest)
+[![Coveralls github](https://img.shields.io/coveralls/github/homer0/cjs2esm.svg?style=flat-square)](https://coveralls.io/github/homer0/cjs2esm?branch=main)
 [![David](https://img.shields.io/david/homer0/cjs2esm.svg?style=flat-square)](https://david-dm.org/homer0/cjs2esm)
 [![David](https://img.shields.io/david/dev/homer0/cjs2esm.svg?style=flat-square)](https://david-dm.org/homer0/cjs2esm)
 
@@ -224,7 +224,7 @@ The configuration is on the `commitlint` property of the `package.json`.
 
 ### Releases
 
-I use [`semantic-release`](https://yarnpkg.com/package/semantic-release) and a GitHub action to automatically release on NPM everything that gets merged to master.
+I use [`semantic-release`](https://yarnpkg.com/package/semantic-release) and a GitHub action to automatically release on NPM everything that gets merged to main.
 
 The configuration for `semantic-release` is on `./releaserc` and the workflow for the release is on `./.github/workflow/release.yml`.
 
@@ -250,13 +250,11 @@ I use `@todo` comments to write all the pending improvements and fixes, and [Lea
 
 ## 💡 Motivation
 
-I maintain a lot of open source projects (that only I use :P), and most of them are Node libraries and I alway respect the good practice of giving support to the oldes LTS, currently `v10`.
-
-Node started supporting ES Modules, without a flag, starting on `v14`, so I can't ship a ESM-only version... I would need to transpile the code.
+I maintain a lot of open source projects (that only I use :P), most of them are Node libraries, and I alway respect the good practice of giving support to the oldest LTS, currently `v10` (for two more weeks).
 
 **I don't want to add transpilation just for this**, Node `v10` has enough features that I don't need Babel, which means that I don't have to use `babel-eslint` to lint, nor configure Jest for transpilation.
 
-So I started looking for something that would transpile from CJS to ESM, but most of the tooling out there are for ESM to CJS, "code with modern syntax, transpile for legay"... Node `v12`, the active LTS, only supports ESM if you use a flag, so we are not talking about a really legacy functionality here.
+So I started looking for something that would transpile from CJS to ESM, but most of the tooling out there are for ESM to CJS, "code with modern syntax, transpile for legacy"... Node `v12`, the active LTS (soon to be the oldest), now supports ESM, but you cannot `require` an ESM module, even if it's natively supported.
 
 The thing I like the least from transpiling from ESM to CJS is that if you use CJS, you have to use `require('something').default`, as `export default` becomes `exports.default`; I've had to update a lot of tools for this kind of changes (on the `webpack` ecosystem)...That's a sh*#ty experience.
 
@@ -268,4 +266,5 @@ I believe it's a better experencie to have the ESM version on a different path :
 
 Enjoy 🤘!
 
-> Once `v14` becomes the oldest LTS, I'll archive this repository and deprecate the tool.
+> ~~Once `v14` becomes the oldest LTS, I'll archive this repository and deprecate the tool.~~
+> Node 12 now supports ESM without a flag, but there are still a lot of things that use CommonJS, and the fact that you can't `require` ESM makes things complicated, so I'm not sure yet when I'll deprecate the tool.

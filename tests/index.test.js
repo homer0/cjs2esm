@@ -50,11 +50,7 @@ describe('index', () => {
       });
       expect(utils.findFile).toHaveBeenCalledTimes(1);
       expect(utils.findFile).toHaveBeenCalledWith(
-        [
-          '.cjs2esm',
-          '.cjs2esm.json',
-          '.cjs2esm.js',
-        ],
+        ['.cjs2esm', '.cjs2esm.json', '.cjs2esm.js'],
         cwd,
       );
       expect(utils.requireModule).toHaveBeenCalledTimes(1);
@@ -218,7 +214,7 @@ describe('index', () => {
       expect(fs.mkdir).toHaveBeenCalledWith(output);
     });
 
-    it('shouldn\'t try to remove the directory if it doesn\'t exist', async () => {
+    it("shouldn't try to remove the directory if it doesn't exist", async () => {
       // Given
       const output = 'some/path/esm';
       fs.pathExists.mockImplementationOnce(() => false);
@@ -242,7 +238,7 @@ describe('index', () => {
      * Utility function to test the lists of copied files. The reason for this function is
      * that all files are copied in parallel, so we can't alaways expect the same order.
      *
-     * @param {CJS2ESMCopiedFile[]} list The list of copied files.
+     * @param {CJS2ESMCopiedFile[]} list  The list of copied files.
      * @returns {CJS2ESMCopiedFile[]}
      */
     const sortResults = (list) => {
@@ -270,16 +266,8 @@ describe('index', () => {
       const output = path.join(cwd, 'esm');
       const useExtension = 'js';
       const forceDirectory = false;
-      const filesRoot = [
-        'index.js',
-        'utils',
-        'README.md',
-        '.eslintrc',
-      ];
-      const filesUtils = [
-        'index.js',
-        'utils.js',
-      ];
+      const filesRoot = ['index.js', 'utils', 'README.md', '.eslintrc'];
+      const filesUtils = ['index.js', 'utils.js'];
       fs.readdir.mockImplementationOnce(() => filesRoot);
       fs.readdir.mockImplementationOnce(() => filesUtils);
       /* eslint-disable jsdoc/require-jsdoc */
@@ -305,21 +293,14 @@ describe('index', () => {
         },
       ];
       // When
-      result = await copyFiles(
-        input,
-        output,
-        useExtension,
-        forceDirectory,
-      );
+      result = await copyFiles(input, output, useExtension, forceDirectory);
       // Then
       expect(sortResults(result)).toEqual(expectedResult);
       expect(fs.readdir).toHaveBeenCalledTimes(2);
       expect(fs.readdir).toHaveBeenNthCalledWith(1, src);
       expect(fs.readdir).toHaveBeenNthCalledWith(2, path.join(src, 'utils'));
       expect(fs.stat).toHaveBeenCalledTimes(
-        filesRoot.length +
-        filesUtils.length -
-        1, // .eslintrc
+        filesRoot.length + filesUtils.length - 1, // .eslintrc
       );
       expect(fs.ensureDir).toHaveBeenCalledTimes(3);
       expect(fs.ensureDir).toHaveBeenNthCalledWith(1, output);
@@ -338,16 +319,8 @@ describe('index', () => {
       const output = path.join(cwd, 'esm');
       const useExtension = 'js';
       const forceDirectory = true;
-      const filesRoot = [
-        'index.js',
-        'utils',
-        'README.md',
-        '.eslintrc',
-      ];
-      const filesUtils = [
-        'index.js',
-        'utils.js',
-      ];
+      const filesRoot = ['index.js', 'utils', 'README.md', '.eslintrc'];
+      const filesUtils = ['index.js', 'utils.js'];
       fs.readdir.mockImplementationOnce(() => filesRoot);
       fs.readdir.mockImplementationOnce(() => filesUtils);
       /* eslint-disable jsdoc/require-jsdoc */
@@ -373,21 +346,14 @@ describe('index', () => {
         },
       ];
       // When
-      result = await copyFiles(
-        input,
-        output,
-        useExtension,
-        forceDirectory,
-      );
+      result = await copyFiles(input, output, useExtension, forceDirectory);
       // Then
       expect(sortResults(result)).toEqual(expectedResult);
       expect(fs.readdir).toHaveBeenCalledTimes(2);
       expect(fs.readdir).toHaveBeenNthCalledWith(1, src);
       expect(fs.readdir).toHaveBeenNthCalledWith(2, path.join(src, 'utils'));
       expect(fs.stat).toHaveBeenCalledTimes(
-        filesRoot.length +
-        filesUtils.length -
-        1, // .eslintrc
+        filesRoot.length + filesUtils.length - 1, // .eslintrc
       );
       expect(fs.ensureDir).toHaveBeenCalledTimes(3);
       expect(fs.ensureDir).toHaveBeenNthCalledWith(1, path.join(output, 'src'));
@@ -407,16 +373,8 @@ describe('index', () => {
       const output = path.join(cwd, 'esm');
       const useExtension = 'js';
       const forceDirectory = false;
-      const filesRoot = [
-        'index.js',
-        'utils',
-        'README.md',
-        '.eslintrc',
-      ];
-      const filesUtils = [
-        'index.js',
-        'utils.js',
-      ];
+      const filesRoot = ['index.js', 'utils', 'README.md', '.eslintrc'];
+      const filesUtils = ['index.js', 'utils.js'];
       const filesConfig = ['config.js'];
       fs.readdir.mockImplementationOnce(() => filesRoot);
       fs.readdir.mockImplementationOnce(() => filesConfig);
@@ -449,12 +407,7 @@ describe('index', () => {
         },
       ];
       // When
-      result = await copyFiles(
-        input,
-        output,
-        useExtension,
-        forceDirectory,
-      );
+      result = await copyFiles(input, output, useExtension, forceDirectory);
       // Then
       expect(sortResults(result)).toEqual(expectedResult);
       expect(fs.readdir).toHaveBeenCalledTimes(3);
@@ -462,10 +415,7 @@ describe('index', () => {
       expect(fs.readdir).toHaveBeenNthCalledWith(2, config);
       expect(fs.readdir).toHaveBeenNthCalledWith(3, path.join(src, 'utils'));
       expect(fs.stat).toHaveBeenCalledTimes(
-        filesRoot.length +
-        filesUtils.length +
-        filesConfig.length -
-        1, // .eslintrc
+        filesRoot.length + filesUtils.length + filesConfig.length - 1, // .eslintrc
       );
       expect(fs.ensureDir).toHaveBeenCalledTimes(4);
       expect(fs.ensureDir).toHaveBeenNthCalledWith(1, path.join(output, 'config'));
@@ -485,16 +435,8 @@ describe('index', () => {
       const output = path.join(cwd, 'esm');
       const useExtension = 'mjs';
       const forceDirectory = false;
-      const filesRoot = [
-        'index.js',
-        'utils',
-        'README.md',
-        '.eslintrc',
-      ];
-      const filesUtils = [
-        'index.js',
-        'utils.js',
-      ];
+      const filesRoot = ['index.js', 'utils', 'README.md', '.eslintrc'];
+      const filesUtils = ['index.js', 'utils.js'];
       fs.readdir.mockImplementationOnce(() => filesRoot);
       fs.readdir.mockImplementationOnce(() => filesUtils);
       /* eslint-disable jsdoc/require-jsdoc */
@@ -520,21 +462,14 @@ describe('index', () => {
         },
       ];
       // When
-      result = await copyFiles(
-        input,
-        output,
-        useExtension,
-        forceDirectory,
-      );
+      result = await copyFiles(input, output, useExtension, forceDirectory);
       // Then
       expect(sortResults(result)).toEqual(expectedResult);
       expect(fs.readdir).toHaveBeenCalledTimes(2);
       expect(fs.readdir).toHaveBeenNthCalledWith(1, src);
       expect(fs.readdir).toHaveBeenNthCalledWith(2, path.join(src, 'utils'));
       expect(fs.stat).toHaveBeenCalledTimes(
-        filesRoot.length +
-        filesUtils.length -
-        1, // .eslintrc
+        filesRoot.length + filesUtils.length - 1, // .eslintrc
       );
       expect(fs.ensureDir).toHaveBeenCalledTimes(3);
       expect(fs.ensureDir).toHaveBeenNthCalledWith(1, output);
@@ -581,23 +516,19 @@ describe('index', () => {
       await transformOutput(files, options);
       // Then
       expect(Runner.run).toHaveBeenCalledTimes(4);
-      expect(Runner.run).toHaveBeenCalledWith(
-        expect.any(String),
-        [options.output],
-        {
-          verbose: 0,
-          dry: false,
-          print: false,
-          babel: true,
-          extension: 'js',
-          ignorePattern: [],
-          ignoreConfig: [],
-          runInBand: false,
-          silent: true,
-          parser: 'babel',
-          cjs2esm: options,
-        },
-      );
+      expect(Runner.run).toHaveBeenCalledWith(expect.any(String), [options.output], {
+        verbose: 0,
+        dry: false,
+        print: false,
+        babel: true,
+        extension: 'js',
+        ignorePattern: [],
+        ignoreConfig: [],
+        runInBand: false,
+        silent: true,
+        parser: 'babel',
+        cjs2esm: options,
+      });
     });
 
     it('should remove and restore the shebang of a file', async () => {
@@ -642,23 +573,19 @@ describe('index', () => {
       expect(fs.writeFile).toHaveBeenNthCalledWith(1, files[0].to, indexRest);
       expect(fs.writeFile).toHaveBeenNthCalledWith(2, files[0].to, indexContent);
       expect(Runner.run).toHaveBeenCalledTimes(4);
-      expect(Runner.run).toHaveBeenCalledWith(
-        expect.any(String),
-        [options.output],
-        {
-          verbose: 0,
-          dry: false,
-          print: false,
-          babel: true,
-          extension: 'js',
-          ignorePattern: [],
-          ignoreConfig: [],
-          runInBand: false,
-          silent: true,
-          parser: 'babel',
-          cjs2esm: options,
-        },
-      );
+      expect(Runner.run).toHaveBeenCalledWith(expect.any(String), [options.output], {
+        verbose: 0,
+        dry: false,
+        print: false,
+        babel: true,
+        extension: 'js',
+        ignorePattern: [],
+        ignoreConfig: [],
+        runInBand: false,
+        silent: true,
+        parser: 'babel',
+        cjs2esm: options,
+      });
     });
 
     it('should fail to transform a list of files', () => {
@@ -686,27 +613,22 @@ describe('index', () => {
       Runner.run.mockImplementationOnce(() => Promise.resolve(stats));
       expect.assertions(3);
       // When
-      return transformOutput(files, options)
-      .catch((error) => {
+      return transformOutput(files, options).catch((error) => {
         expect(error.message).toMatch(/at least one file couldn't be transformed/i);
         expect(Runner.run).toHaveBeenCalledTimes(4);
-        expect(Runner.run).toHaveBeenCalledWith(
-          expect.any(String),
-          [options.output],
-          {
-            verbose: 0,
-            dry: false,
-            print: false,
-            babel: true,
-            extension: 'mjs',
-            ignorePattern: [],
-            ignoreConfig: [],
-            runInBand: false,
-            silent: true,
-            parser: 'babel',
-            cjs2esm: options,
-          },
-        );
+        expect(Runner.run).toHaveBeenCalledWith(expect.any(String), [options.output], {
+          verbose: 0,
+          dry: false,
+          print: false,
+          babel: true,
+          extension: 'mjs',
+          ignorePattern: [],
+          ignoreConfig: [],
+          runInBand: false,
+          silent: true,
+          parser: 'babel',
+          cjs2esm: options,
+        });
       });
     });
   });
@@ -749,10 +671,7 @@ describe('index', () => {
       expect(utils.getAbsPathInfo).toHaveBeenCalledTimes(1);
       expect(utils.getAbsPathInfo).toHaveBeenCalledWith(mainPath);
       expect(utils.findFile).toHaveBeenCalledTimes(1);
-      expect(utils.findFile).toHaveBeenCalledWith(
-        ['index.mjs', 'index.js'],
-        mainPath,
-      );
+      expect(utils.findFile).toHaveBeenCalledWith(['index.mjs', 'index.js'], mainPath);
       expect(fs.writeJSON).toHaveBeenCalledTimes(1);
       expect(fs.writeJSON).toHaveBeenCalledWith(
         pkgPath,
@@ -804,7 +723,7 @@ describe('index', () => {
       );
     });
 
-    it('shouldn\'t modify the package.json if it can\'t find the file', async () => {
+    it("shouldn't modify the package.json if it can't find the file", async () => {
       // Given
       const pkgJson = {
         main: 'src/index',
@@ -834,7 +753,7 @@ describe('index', () => {
       expect(fs.writeJSON).toHaveBeenCalledTimes(0);
     });
 
-    it('shouldn\'t modify the package.json if there\'s no main property', async () => {
+    it("shouldn't modify the package.json if there's no main property", async () => {
       // Given
       const pkgJson = {};
       const files = [];
@@ -847,7 +766,7 @@ describe('index', () => {
       expect(utils.getAbsPathInfo).toHaveBeenCalledTimes(0);
     });
 
-    it('should throw an error if the main file doesn\'t exist', () => {
+    it("should throw an error if the main file doesn't exist", () => {
       // Given
       const pkgJson = {
         main: 'src',
@@ -866,8 +785,7 @@ describe('index', () => {
       utils.findFile.mockImplementationOnce(() => null);
       expect.assertions(1);
       // When
-      return updatePackageJSON(files)
-      .catch((error) => {
+      return updatePackageJSON(files).catch((error) => {
         expect(error.message).toMatch(/the entry file can't be found/i);
       });
     });
@@ -981,7 +899,11 @@ describe('index', () => {
         expect(utils.log).toHaveBeenNthCalledWith(index + 2, 'gray', line.trim());
       });
       expect(utils.log).toHaveBeenNthCalledWith(stack.length + 2, 'gray');
-      expect(utils.log).toHaveBeenNthCalledWith(stack.length + 3, 'gray', expect.any(String));
+      expect(utils.log).toHaveBeenNthCalledWith(
+        stack.length + 3,
+        'gray',
+        expect.any(String),
+      );
     });
   });
 });

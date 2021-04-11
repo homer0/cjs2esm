@@ -3,7 +3,7 @@ name: Release NPM package
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   release:
@@ -28,7 +28,7 @@ jobs:
       - name: Generate documentation
         run: yarn docs
       - name: Deploy documentation
-        uses: JamesIves/github-pages-deploy-action@4.1.0
+        uses: JamesIves/github-pages-deploy-action@4.1.1
         with:
           BRANCH: gh-pages
           FOLDER: docs

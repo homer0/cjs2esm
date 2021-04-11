@@ -1,27 +1,34 @@
 /* eslint-disable no-console */
 jest.unmock('../src/utils');
-jest.mock('chalk', () => new Proxy({}, {
-  mocks: {},
-  clear() {
-    Object.keys(this.mocks).forEach((color) => {
-      this.mocks[color].mockClear();
-    });
-  },
-  get(target, name) {
-    let result;
-    if (this[name]) {
-      result = this[name];
-    } else {
-      if (!this.mocks[name]) {
-        this.mocks[name] = jest.fn((str) => str);
-      }
+jest.mock(
+  'chalk',
+  () =>
+    new Proxy(
+      {},
+      {
+        mocks: {},
+        clear() {
+          Object.keys(this.mocks).forEach((color) => {
+            this.mocks[color].mockClear();
+          });
+        },
+        get(target, name) {
+          let result;
+          if (this[name]) {
+            result = this[name];
+          } else {
+            if (!this.mocks[name]) {
+              this.mocks[name] = jest.fn((str) => str);
+            }
 
-      result = this.mocks[name];
-    }
+            result = this.mocks[name];
+          }
 
-    return result;
-  },
-}));
+          return result;
+        },
+      },
+    ),
+);
 jest.mock('fs-extra');
 
 const path = require('path');
@@ -51,10 +58,7 @@ describe('utils', () => {
       utils.log(color, message);
       // Then
       expect(console.log).toHaveBeenCalledTimes(1);
-      expect(console.log).toHaveBeenCalledWith(
-        `[${pkgJson.name}]`,
-        message,
-      );
+      expect(console.log).toHaveBeenCalledWith(`[${pkgJson.name}]`, message);
       expect(chalk[color]).toHaveBeenCalledTimes(2);
       expect(chalk[color]).toHaveBeenNthCalledWith(1, `[${pkgJson.name}]`);
       expect(chalk[color]).toHaveBeenNthCalledWith(2, message);
@@ -214,7 +218,7 @@ describe('utils', () => {
       expect(fs.pathExists).toHaveBeenNthCalledWith(2, expectedAbsFilePath);
     });
 
-    it('shouldn\'t be able to find the information for a file', async () => {
+    it("shouldn't be able to find the information for a file", async () => {
       // Given
       const file = 'myFile';
       const folder = '/src/utils';
@@ -319,7 +323,7 @@ describe('utils', () => {
       expect(fs.pathExistsSync).toHaveBeenNthCalledWith(2, expectedAbsFilePath);
     });
 
-    it('shouldn\'t be able to find the information for a file', () => {
+    it("shouldn't be able to find the information for a file", () => {
       // Given
       const file = 'myFile';
       const folder = '/src/utils';

@@ -168,10 +168,9 @@ describe('transformer', () => {
     }));
     fs.pathExistsSync.mockImplementationOnce(() => true);
     fs.pathExistsSync.mockImplementationOnce(() => false);
-    utils.findFileSync.mockImplementationOnce(() => path.join(
-      indexFolderPath,
-      'index.mjs',
-    ));
+    utils.findFileSync.mockImplementationOnce(() =>
+      path.join(indexFolderPath, 'index.mjs'),
+    );
 
     let result = null;
     // When
@@ -198,7 +197,7 @@ describe('transformer', () => {
     );
   });
 
-  it('shouldn\'t modify statements for paths it can\'t get info', () => {
+  it("shouldn't modify statements for paths it can't get info", () => {
     // Given
     const file = {
       path: path.join(cwd, 'index.js'),
@@ -485,9 +484,6 @@ describe('transformer', () => {
     result = transformer(file, api, options);
     // Then
     expect(result).toBe(message);
-    expect(currentNodes).toEqual([
-      'wootils/esm/shared/deepAssign.js',
-      'parserror/esm',
-    ]);
+    expect(currentNodes).toEqual(['wootils/esm/shared/deepAssign.js', 'parserror/esm']);
   });
 });
