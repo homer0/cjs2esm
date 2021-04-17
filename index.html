@@ -286,9 +286,10 @@ import { getConfiguration } from 'cjs2esm/esm';
 <p>The configuration for <code>semantic-release</code> is on <code>./releaserc</code> and the workflow for the release is on <code>./.github/workflow/release.yml</code>.</p>
 <h3>Testing</h3>
 <p>I use <a href="https://facebook.github.io/jest/">Jest</a> to test the project.</p>
-<p>The configuration file is on <code>./.jestrc.json</code>, the tests are on <code>./tests</code> and the script that runs it is on <code>./utils/scripts/test</code>.</p>
-<h3>Linting</h3>
-<p>I use <a href="http://eslint.org">ESlint</a> with <a href="http://yarnpkg.com/en/package/eslint-plugin-homer0">my own custom configuration</a> to validate all the JS code. The configuration file for the project code is on <code>./.eslintrc</code> and the one for the tests is on <code>./tests/.eslintrc</code>. There's also an <code>./.eslintignore</code> to exclude some files on the process. The script that runs it is on <code>./utils/scripts/lint</code>.</p>
+<p>The configuration file is on <code>./.jestrc.js</code>, the tests are on <code>./tests</code> and the script that runs it is on <code>./utils/scripts/test</code>.</p>
+<h3>Linting &amp;&amp; Formatting</h3>
+<p>I use <a href="https://eslint.org">ESlint</a> with <a href="https://yarnpkg.com/en/package/@homer0/eslint-plugin">my own custom configuration</a> to validate all the JS code. The configuration file for the project code is on <code>./.eslintrc</code> and the one for the tests is on <code>./tests/.eslintrc</code>. There's also an <code>./.eslintignore</code> to exclude some files on the process. The script that runs it is on <code>./utils/scripts/lint-all</code>.</p>
+<p>For formatting I use <a href="https://prettier.io">Prettier</a> with <a href="https://yarnpkg.com/en/package/@homer0/prettier-config">my custom configuration</a>. The configuration file for the project code is on <code>./.prettierrc</code>.</p>
 <h3>Documentation</h3>
 <p>I use <a href="https://jsdoc.app">JSDoc</a> to generate an HTML documentation site for the project.</p>
 <p>The configuration file is on <code>./.jsdoc.js</code> and the script that runs it is on <code>./utils/scripts/docs</code>.</p>
