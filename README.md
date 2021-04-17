@@ -232,11 +232,13 @@ The configuration for `semantic-release` is on `./releaserc` and the workflow fo
 
 I use [Jest](https://facebook.github.io/jest/) to test the project.
 
-The configuration file is on `./.jestrc.json`, the tests are on `./tests` and the script that runs it is on `./utils/scripts/test`.
+The configuration file is on `./.jestrc.js`, the tests are on `./tests` and the script that runs it is on `./utils/scripts/test`.
 
-### Linting
+### Linting && Formatting
 
-I use [ESlint](http://eslint.org) with [my own custom configuration](http://yarnpkg.com/en/package/eslint-plugin-homer0) to validate all the JS code. The configuration file for the project code is on `./.eslintrc` and the one for the tests is on `./tests/.eslintrc`. There's also an `./.eslintignore` to exclude some files on the process. The script that runs it is on `./utils/scripts/lint`.
+I use [ESlint](https://eslint.org) with [my own custom configuration](https://yarnpkg.com/en/package/@homer0/eslint-plugin) to validate all the JS code. The configuration file for the project code is on `./.eslintrc` and the one for the tests is on `./tests/.eslintrc`. There's also an `./.eslintignore` to exclude some files on the process. The script that runs it is on `./utils/scripts/lint-all`.
+
+For formatting I use [Prettier](https://prettier.io) with [my custom configuration](https://yarnpkg.com/en/package/@homer0/prettier-config). The configuration file for the project code is on `./.prettierrc`.
 
 ### Documentation
 
