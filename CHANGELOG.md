@@ -1,3 +1,10 @@
+## [2.0.2](https://github.com/homer0/cjs2esm/compare/2.0.1...2.0.2) (2021-10-17)
+
+
+### Bug Fixes
+
+* update dependencies ([d9af83e](https://github.com/homer0/cjs2esm/commit/d9af83e8141108bee56755130511a48e02344f32))
+
 ## [2.0.1](https://github.com/homer0/cjs2esm/compare/2.0.0...2.0.1) (2021-09-04)
 
 
