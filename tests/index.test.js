@@ -266,13 +266,22 @@ describe('index', () => {
       const output = path.join(cwd, 'esm');
       const useExtension = 'js';
       const forceDirectory = false;
-      const filesRoot = ['index.js', 'utils', 'README.md', '.eslintrc'];
+      const filesRoot = [
+        '.',
+        '..',
+        'node_modules',
+        'index.js',
+        'utils',
+        'README.md',
+        '.eslintrc',
+      ];
       const filesUtils = ['index.js', 'utils.js'];
       fs.readdir.mockImplementationOnce(() => filesRoot);
       fs.readdir.mockImplementationOnce(() => filesUtils);
       /* eslint-disable jsdoc/require-jsdoc */
       fs.stat.mockImplementationOnce(() => ({ isDirectory: () => false }));
       fs.stat.mockImplementationOnce(() => ({ isDirectory: () => true }));
+      fs.stat.mockImplementationOnce(() => ({ isDirectory: () => false }));
       fs.stat.mockImplementationOnce(() => ({ isDirectory: () => false }));
       fs.stat.mockImplementationOnce(() => ({ isDirectory: () => false }));
       fs.stat.mockImplementationOnce(() => ({ isDirectory: () => false }));
@@ -300,7 +309,7 @@ describe('index', () => {
       expect(fs.readdir).toHaveBeenNthCalledWith(1, src);
       expect(fs.readdir).toHaveBeenNthCalledWith(2, path.join(src, 'utils'));
       expect(fs.stat).toHaveBeenCalledTimes(
-        filesRoot.length + filesUtils.length - 1, // .eslintrc
+        filesRoot.length + filesUtils.length - 3, // . .. node_modules
       );
       expect(fs.ensureDir).toHaveBeenCalledTimes(3);
       expect(fs.ensureDir).toHaveBeenNthCalledWith(1, output);
@@ -329,6 +338,7 @@ describe('index', () => {
       fs.stat.mockImplementationOnce(() => ({ isDirectory: () => false }));
       fs.stat.mockImplementationOnce(() => ({ isDirectory: () => false }));
       fs.stat.mockImplementationOnce(() => ({ isDirectory: () => false }));
+      fs.stat.mockImplementationOnce(() => ({ isDirectory: () => false }));
       /* eslint-enable jsdoc/require-jsdoc */
       let result = null;
       const expectedResult = [
@@ -352,9 +362,7 @@ describe('index', () => {
       expect(fs.readdir).toHaveBeenCalledTimes(2);
       expect(fs.readdir).toHaveBeenNthCalledWith(1, src);
       expect(fs.readdir).toHaveBeenNthCalledWith(2, path.join(src, 'utils'));
-      expect(fs.stat).toHaveBeenCalledTimes(
-        filesRoot.length + filesUtils.length - 1, // .eslintrc
-      );
+      expect(fs.stat).toHaveBeenCalledTimes(filesRoot.length + filesUtils.length);
       expect(fs.ensureDir).toHaveBeenCalledTimes(3);
       expect(fs.ensureDir).toHaveBeenNthCalledWith(1, path.join(output, 'src'));
       expect(fs.ensureDir).toHaveBeenNthCalledWith(2, path.join(output, 'src', 'utils'));
@@ -382,6 +390,7 @@ describe('index', () => {
       /* eslint-disable jsdoc/require-jsdoc */
       fs.stat.mockImplementationOnce(() => ({ isDirectory: () => false }));
       fs.stat.mockImplementationOnce(() => ({ isDirectory: () => true }));
+      fs.stat.mockImplementationOnce(() => ({ isDirectory: () => false }));
       fs.stat.mockImplementationOnce(() => ({ isDirectory: () => false }));
       fs.stat.mockImplementationOnce(() => ({ isDirectory: () => false }));
       fs.stat.mockImplementationOnce(() => ({ isDirectory: () => false }));
@@ -415,7 +424,7 @@ describe('index', () => {
       expect(fs.readdir).toHaveBeenNthCalledWith(2, config);
       expect(fs.readdir).toHaveBeenNthCalledWith(3, path.join(src, 'utils'));
       expect(fs.stat).toHaveBeenCalledTimes(
-        filesRoot.length + filesUtils.length + filesConfig.length - 1, // .eslintrc
+        filesRoot.length + filesUtils.length + filesConfig.length, // .eslintrc
       );
       expect(fs.ensureDir).toHaveBeenCalledTimes(4);
       expect(fs.ensureDir).toHaveBeenNthCalledWith(1, path.join(output, 'config'));
@@ -445,6 +454,7 @@ describe('index', () => {
       fs.stat.mockImplementationOnce(() => ({ isDirectory: () => false }));
       fs.stat.mockImplementationOnce(() => ({ isDirectory: () => false }));
       fs.stat.mockImplementationOnce(() => ({ isDirectory: () => false }));
+      fs.stat.mockImplementationOnce(() => ({ isDirectory: () => false }));
       /* eslint-enable jsdoc/require-jsdoc */
       let result = null;
       const expectedResult = [
@@ -468,9 +478,7 @@ describe('index', () => {
       expect(fs.readdir).toHaveBeenCalledTimes(2);
       expect(fs.readdir).toHaveBeenNthCalledWith(1, src);
       expect(fs.readdir).toHaveBeenNthCalledWith(2, path.join(src, 'utils'));
-      expect(fs.stat).toHaveBeenCalledTimes(
-        filesRoot.length + filesUtils.length - 1, // .eslintrc
-      );
+      expect(fs.stat).toHaveBeenCalledTimes(filesRoot.length + filesUtils.length);
       expect(fs.ensureDir).toHaveBeenCalledTimes(3);
       expect(fs.ensureDir).toHaveBeenNthCalledWith(1, output);
       expect(fs.ensureDir).toHaveBeenNthCalledWith(2, path.join(output, 'utils'));

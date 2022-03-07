@@ -114,7 +114,9 @@ const ensureOutput = async (output) => {
  */
 const findFiles = async (directory) => {
   let result = await fs.readdir(directory);
-  result = result.filter((item) => !item.startsWith('.'));
+  result = result.filter(
+    (item) => !(item === '.' || item === '..' || item === 'node_modules'),
+  );
   result = await Promise.all(
     result.map(async (item) => {
       const itempath = path.join(directory, item);
