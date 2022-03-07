@@ -1,2 +1,2 @@
-#!/bin/bash -e
-leasot src/**/*.js -x
+#!/bin/sh -e
+leasot 'src/**/*.js' -x

@@ -1,2 +1,2 @@
-#!/bin/bash -e
+#!/bin/sh -e
 eslint ./ --ext .js --ext .jsx
