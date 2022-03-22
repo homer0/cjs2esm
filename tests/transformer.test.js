@@ -47,15 +47,15 @@ describe('transformer', () => {
       find: jest.fn(() => ast),
       toSource: jest.fn(() => message),
     };
-    ast.filter.mockImplementationOnce((fn) => {
+    ast.filter.mockImplementation((fn) => {
       currentNodes = currentNodes.filter(fn);
       return ast;
     });
-    ast.filter.mockImplementationOnce((fn) => {
-      currentNodes = currentNodes.filter(fn);
-      return ast;
-    });
-    ast.replaceWith.mockImplementationOnce((fn) => {
+    // ast.filter.mockImplementationOnce((fn) => {
+    //   currentNodes = currentNodes.filter(fn);
+    //   return ast;
+    // });
+    ast.replaceWith.mockImplementation((fn) => {
       currentNodes = currentNodes.map(fn);
       return ast;
     });
@@ -147,6 +147,7 @@ describe('transformer', () => {
     const jscodeshift = jest.fn(() => ast);
     jscodeshift.ImportDeclaration = 'ImportDeclaration';
     jscodeshift.importDeclaration = jest.fn((_, str) => str);
+    jscodeshift.importDeclaration.from = jest.fn(({ source: str }) => str);
     jscodeshift.literal = jest.fn((str) => str);
     const api = { jscodeshift };
     const cjs2esm = {
