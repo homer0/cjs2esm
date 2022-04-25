@@ -33,7 +33,10 @@ describe('bin', () => {
    *
    * @returns {Promise}
    */
-  const sleep = () => new Promise((resolve) => setTimeout(resolve, 300));
+  const sleep = () =>
+    new Promise((resolve) => {
+      setTimeout(resolve, 300);
+    });
 
   it('should execute the tool', async () => {
     const config = {
