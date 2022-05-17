@@ -122,8 +122,15 @@ const transform = (file, api, options) => {
       .replaceWith((item) => {
         const importPath = item.value.source.value;
         const info = cjs2esm.modules.find((mod) => importPath.startsWith(mod.name));
-        const find = info.find ? new RegExp(info.find) : new RegExp(`^${info.name}`);
-        const replacement = importPath.replace(find, info.path);
+        let replacement;
+        if (info.find) {
+          replacement = importPath.replace(new RegExp(info.find), info.path);
+        } else {
+          replacement = importPath.replace(
+            new RegExp(`^${info.name}($|\\/)`),
+            (match, endChar) => (endChar.endsWith('/') ? `${info.path}/` : info.path),
+          );
+        }
 
         return j.importDeclaration(item.value.specifiers, j.literal(replacement));
       });

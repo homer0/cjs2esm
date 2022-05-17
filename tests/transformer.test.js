@@ -537,6 +537,22 @@ describe('transformer', () => {
           },
         },
       },
+      {
+        value: {
+          specifiers: 'specifier',
+          source: {
+            value: 'lodash',
+          },
+        },
+      },
+      {
+        value: {
+          specifiers: 'specifier',
+          source: {
+            value: 'lodash-es',
+          },
+        },
+      },
     ];
     let currentNodes = nodes.slice();
     const message = 'done';
@@ -550,10 +566,6 @@ describe('transformer', () => {
       find: jest.fn((type) => (type === 'Program' ? programUtils : ast)),
       toSource: jest.fn(() => message),
     };
-    ast.filter.mockImplementationOnce((fn) => {
-      currentNodes = currentNodes.filter(fn);
-      return ast;
-    });
     ast.filter.mockImplementationOnce((fn) => {
       currentNodes = currentNodes.filter(fn);
       return ast;
@@ -598,6 +610,7 @@ describe('transformer', () => {
           find: 'par\\w+or',
           path: 'parserror/esm',
         },
+        { name: 'lodash', path: 'lodash-es' },
       ],
     };
     const options = { cjs2esm };
@@ -608,11 +621,18 @@ describe('transformer', () => {
       path: deepAssignPath,
     }));
     utils.getAbsPathInfoSync.mockImplementationOnce(() => null);
+    utils.getAbsPathInfoSync.mockImplementationOnce(() => null);
+    utils.getAbsPathInfoSync.mockImplementationOnce(() => null);
     let result = null;
     // When
     result = transformer(file, api, options);
     // Then
     expect(result).toBe(message);
-    expect(currentNodes).toEqual(['wootils/esm/shared/deepAssign.js', 'parserror/esm']);
+    expect(currentNodes).toEqual([
+      'wootils/esm/shared/deepAssign.js',
+      'parserror/esm',
+      'lodash-es',
+      'lodash-es',
+    ]);
   });
 });
