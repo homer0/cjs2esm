@@ -303,7 +303,7 @@ const transformOutput = async (files, options) => {
     cjs2esm: options,
   };
 
-  const shebangExpressions = options.filesWithShebang.map(
+  const shebangExpressions = (options.filesWithShebang || []).map(
     (expression) => new RegExp(expression),
   );
   const filesWithShebang = files.filter(({ from }) =>
@@ -315,14 +315,36 @@ const transformOutput = async (files, options) => {
     shebangs = await removeShebangs(filesWithShebang);
   }
 
-  const cjsTransformPath = require.resolve(
-    path.join('5to6-codemod', 'transforms', 'cjs.js'),
-  );
-  const fiveToSixCodeModPath = path.dirname(cjsTransformPath);
+  const codemodOptions = {
+    path: null,
+    files: null,
+    ...options.codemod,
+  };
+
+  const codemodFiles = (
+    Array.isArray(codemodOptions.files) && codemodOptions.files.length
+      ? codemodOptions.files
+      : ['cjs', 'exports', 'named-export-generation']
+  ).map((file) => `${file}.js`);
+
+  const cwd = process.cwd();
+  const firstCodemodFile = codemodFiles.shift();
+  let firstCodemodFilepath;
+  if (codemodOptions.path) {
+    firstCodemodFilepath = path.join(cwd, codemodOptions.path, firstCodemodFile);
+  } else {
+    firstCodemodFilepath = require.resolve(
+      path.join('5to6-codemod', 'transforms', firstCodemodFile),
+    );
+  }
+
+  const codeModPath = path.dirname(firstCodemodFilepath);
   const transformations = [
-    cjsTransformPath,
-    path.join(fiveToSixCodeModPath, 'exports.js'),
-    path.join(fiveToSixCodeModPath, 'named-export-generation.js'),
+    firstCodemodFilepath,
+    ...codemodFiles.map((file) => path.join(codeModPath, file)),
+    /**
+     * @todo Add custom before and after transformations.
+     */
     path.join(__dirname, 'transformer.js'),
   ];
 
@@ -355,7 +377,6 @@ const transformOutput = async (files, options) => {
     );
   }
 
-  const cwd = process.cwd();
   files.forEach((file) => log('gray', `> ${file.to.substr(cwd.length + 1)}`));
   let totalTime = results.reduce(
     (acc, { timeElapsed }) => acc + parseFloat(timeElapsed),

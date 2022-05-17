@@ -512,11 +512,11 @@ describe('index', () => {
       Runner.run.mockImplementationOnce(() => Promise.resolve(stats));
       Runner.run.mockImplementationOnce(() => Promise.resolve(stats));
       Runner.run.mockImplementationOnce(() => Promise.resolve(stats));
-      // When
-      await transformOutput(files, options);
-      // Then
-      expect(Runner.run).toHaveBeenCalledTimes(4);
-      expect(Runner.run).toHaveBeenCalledWith(expect.any(String), [options.output], {
+      const expectedTransformations = ['cjs', 'exports', 'named-export-generation'].map(
+        (file) => require.resolve(path.join('5to6-codemod', 'transforms', `${file}.js`)),
+      );
+      expectedTransformations.push(path.resolve('src', 'transformer.js'));
+      const expectedOptions = {
         verbose: 0,
         dry: false,
         print: false,
@@ -528,6 +528,127 @@ describe('index', () => {
         silent: true,
         parser: 'babel',
         cjs2esm: options,
+      };
+      // When
+      await transformOutput(files, options);
+      // Then
+      expectedTransformations.forEach((file, index) => {
+        expect(Runner.run).toHaveBeenNthCalledWith(
+          index + 1,
+          file,
+          [options.output],
+          expectedOptions,
+        );
+      });
+    });
+
+    it('should transform a list of files using a custom version of 5to6-codemod', async () => {
+      // Given
+      const files = [
+        {
+          to: 'index.js',
+        },
+        {
+          to: 'utils.js',
+        },
+      ];
+      const options = {
+        output: path.join(cwd, 'esm'),
+        codemod: {
+          path: 'custom-codemod',
+        },
+      };
+      const stats = {
+        timeElapsed: 25.09,
+        ok: files.length,
+        nochange: 0,
+      };
+      Runner.run.mockImplementationOnce(() => Promise.resolve(stats));
+      Runner.run.mockImplementationOnce(() => Promise.resolve(stats));
+      Runner.run.mockImplementationOnce(() => Promise.resolve(stats));
+      Runner.run.mockImplementationOnce(() => Promise.resolve(stats));
+      const expectedTransformations = ['cjs', 'exports', 'named-export-generation'].map(
+        (file) => path.resolve(options.codemod.path, `${file}.js`),
+      );
+      expectedTransformations.push(path.resolve('src', 'transformer.js'));
+      const expectedOptions = {
+        verbose: 0,
+        dry: false,
+        print: false,
+        babel: true,
+        extension: 'js',
+        ignorePattern: [],
+        ignoreConfig: [],
+        runInBand: false,
+        silent: true,
+        parser: 'babel',
+        cjs2esm: options,
+      };
+      // When
+      await transformOutput(files, options);
+      // Then
+      expectedTransformations.forEach((file, index) => {
+        expect(Runner.run).toHaveBeenNthCalledWith(
+          index + 1,
+          file,
+          [options.output],
+          expectedOptions,
+        );
+      });
+    });
+
+    it('should transform a list of files using a single transformation', async () => {
+      // Given
+      const files = [
+        {
+          to: 'index.js',
+        },
+        {
+          to: 'utils.js',
+        },
+      ];
+      const options = {
+        output: path.join(cwd, 'esm'),
+        codemod: {
+          files: ['exports'],
+        },
+      };
+      const stats = {
+        timeElapsed: 25.09,
+        ok: files.length,
+        nochange: 0,
+      };
+      Runner.run.mockImplementationOnce(() => Promise.resolve(stats));
+      Runner.run.mockImplementationOnce(() => Promise.resolve(stats));
+      Runner.run.mockImplementationOnce(() => Promise.resolve(stats));
+      Runner.run.mockImplementationOnce(() => Promise.resolve(stats));
+      const expectedTransformations = options.codemod.files.map((file) =>
+        require.resolve(path.join('5to6-codemod', 'transforms', `${file}.js`)),
+      );
+      expectedTransformations.push(path.resolve('src', 'transformer.js'));
+      const expectedOptions = {
+        verbose: 0,
+        dry: false,
+        print: false,
+        babel: true,
+        extension: 'js',
+        ignorePattern: [],
+        ignoreConfig: [],
+        runInBand: false,
+        silent: true,
+        parser: 'babel',
+        cjs2esm: options,
+      };
+      // When
+      await transformOutput(files, options);
+      // Then
+      expectedTransformations.forEach((file, index) => {
+        expect(Runner.run).toHaveBeenNthCalledWith(
+          index + 1,
+          file,
+          [options.output],
+          expectedOptions,
+        );
       });
     });
 
