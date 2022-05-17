@@ -229,8 +229,8 @@ const copyFiles = async (input, output, useExtension, forceDirectory) => {
  * process explodes when a file has one.
  *
  * @param {CJS2ESMCopiedFile[]} files  The list of copied files with shebangs.
- * @returns {Object.<string, string>} The keys are the path to the copied files and the
- *                                    values the shebangs they had.
+ * @returns {Promise<Object.<string, string>>} The keys are the path to the copied files
+ *                                             and the values the shebangs they had.
  * @ignore
  */
 const removeShebangs = async (files) => {
@@ -392,7 +392,7 @@ const transformOutput = async (files, options) => {
  * will check for `index.mjs` and `index.js`.
  *
  * @param {string} absPath  The absolute path to the folder.
- * @returns {?string} If there's no `index`, the function will return `null`.
+ * @returns {Promise<?string>} If there's no `index`, the function will return `null`.
  * @ignore
  */
 const findFolderEntryPath = async (absPath) => {
