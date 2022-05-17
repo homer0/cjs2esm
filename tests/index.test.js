@@ -13,6 +13,7 @@ const {
   updatePackageJSON,
   addPackageJSON,
   addErrorHandler,
+  CJS2ESM_TRANSFORMATION_NAME,
 } = require('../src');
 const utils = require('../src/utils');
 
@@ -649,6 +650,82 @@ describe('index', () => {
           [options.output],
           expectedOptions,
         );
+      });
+    });
+
+    it('should transform a list of files with a custom order of transformations', async () => {
+      // Given
+      const files = [
+        {
+          to: 'index.js',
+        },
+        {
+          to: 'utils.js',
+        },
+      ];
+      const options = {
+        output: path.join(cwd, 'esm'),
+        codemod: {
+          files: ['exports', CJS2ESM_TRANSFORMATION_NAME, 'named-export-generation'],
+        },
+      };
+      const stats = {
+        timeElapsed: 25.09,
+        ok: files.length,
+        nochange: 0,
+      };
+      Runner.run.mockImplementationOnce(() => Promise.resolve(stats));
+      Runner.run.mockImplementationOnce(() => Promise.resolve(stats));
+      Runner.run.mockImplementationOnce(() => Promise.resolve(stats));
+      Runner.run.mockImplementationOnce(() => Promise.resolve(stats));
+      const expectedTransformations = options.codemod.files.map((file) =>
+        file === CJS2ESM_TRANSFORMATION_NAME
+          ? path.resolve('src', 'transformer.js')
+          : require.resolve(path.join('5to6-codemod', 'transforms', `${file}.js`)),
+      );
+      const expectedOptions = {
+        verbose: 0,
+        dry: false,
+        print: false,
+        babel: true,
+        extension: 'js',
+        ignorePattern: [],
+        ignoreConfig: [],
+        runInBand: false,
+        silent: true,
+        parser: 'babel',
+        cjs2esm: options,
+      };
+      // When
+      await transformOutput(files, options);
+      // Then
+      expectedTransformations.forEach((file, index) => {
+        expect(Runner.run).toHaveBeenNthCalledWith(
+          index + 1,
+          file,
+          [options.output],
+          expectedOptions,
+        );
+      });
+    });
+
+    it('should throw if the cjs2esm transformation is first in the list', () => {
+      // Given
+      const files = [
+        {
+          to: 'index.js',
+        },
+      ];
+      const options = {
+        output: path.join(cwd, 'esm'),
+        codemod: {
+          files: [CJS2ESM_TRANSFORMATION_NAME, 'named-export-generation'],
+        },
+      };
+      expect.assertions(1);
+      // When
+      return transformOutput(files, options).catch((error) => {
+        expect(error.message).toMatch(/cannot be the first one in the list/i);
       });
     });
 

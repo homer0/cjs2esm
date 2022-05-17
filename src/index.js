@@ -3,6 +3,14 @@ const fs = require('fs-extra');
 const Runner = require('jscodeshift/src/Runner');
 const { repository } = require('../package.json');
 const { log, findFile, getAbsPathInfo, requireModule } = require('./utils');
+
+/**
+ * The name that can be used in the list of files to specify the custom transformation
+ * this module does.
+ *
+ * @type {string}
+ */
+const CJS2ESM_TRANSFORMATION_NAME = '<cjs2esm>';
 /**
  * This is called every time an unexpected error is thrown; it logs the error using the
  * `log`
@@ -321,14 +329,23 @@ const transformOutput = async (files, options) => {
     ...options.codemod,
   };
 
-  const codemodFiles = (
+  const codemodFiles =
     Array.isArray(codemodOptions.files) && codemodOptions.files.length
       ? codemodOptions.files
-      : ['cjs', 'exports', 'named-export-generation']
-  ).map((file) => `${file}.js`);
+      : ['cjs', 'exports', 'named-export-generation'];
+
+  let firstCodemodFile = codemodFiles.shift();
+  if (firstCodemodFile === CJS2ESM_TRANSFORMATION_NAME) {
+    throw new Error(`${CJS2ESM_TRANSFORMATION_NAME} cannot be the first one in the list`);
+  }
+
+  firstCodemodFile = `${firstCodemodFile}.js`;
+
+  if (!codemodFiles.includes(CJS2ESM_TRANSFORMATION_NAME)) {
+    codemodFiles.push(CJS2ESM_TRANSFORMATION_NAME);
+  }
 
   const cwd = process.cwd();
-  const firstCodemodFile = codemodFiles.shift();
   let firstCodemodFilepath;
   if (codemodOptions.path) {
     firstCodemodFilepath = path.join(cwd, codemodOptions.path, firstCodemodFile);
@@ -341,11 +358,11 @@ const transformOutput = async (files, options) => {
   const codeModPath = path.dirname(firstCodemodFilepath);
   const transformations = [
     firstCodemodFilepath,
-    ...codemodFiles.map((file) => path.join(codeModPath, file)),
-    /**
-     * @todo Add custom before and after transformations.
-     */
-    path.join(__dirname, 'transformer.js'),
+    ...codemodFiles.map((file) =>
+      file === CJS2ESM_TRANSFORMATION_NAME
+        ? path.join(__dirname, 'transformer.js')
+        : path.join(codeModPath, `${file}.js`),
+    ),
   ];
 
   log('yellow', `Transforming ${files.length} files...`);
@@ -468,3 +485,4 @@ module.exports.copyFiles = copyFiles;
 module.exports.transformOutput = transformOutput;
 module.exports.updatePackageJSON = updatePackageJSON;
 module.exports.addPackageJSON = addPackageJSON;
+module.exports.CJS2ESM_TRANSFORMATION_NAME = CJS2ESM_TRANSFORMATION_NAME;
