@@ -1,3 +1,28 @@
+# [3.0.0](https://github.com/homer0/cjs2esm/compare/2.0.2...3.0.0) (2022-05-17)
+
+
+### Bug Fixes
+
+* add patch for 5to6 ([e819879](https://github.com/homer0/cjs2esm/commit/e819879635db0304d1a71b93fc9d896a61b48227))
+* drop support for Node 12 ([91a53d7](https://github.com/homer0/cjs2esm/commit/91a53d7f4e82be00d1d06b492a9de08ff2269aac))
+* preserve leading comments ([36c44cc](https://github.com/homer0/cjs2esm/commit/36c44cc9679dc23de231c9be193fc804f524c1a7))
+* properly resolve the path the transformations ([0069848](https://github.com/homer0/cjs2esm/commit/00698483cc2c0a903d06975fb508d23a697471fe))
+* update dependencies ([0a8c55d](https://github.com/homer0/cjs2esm/commit/0a8c55ddece403648a413adca79542957c6cd29f))
+* upgrade jscodeshift ([577afae](https://github.com/homer0/cjs2esm/commit/577afae0e5b72194dbac18d95f09866c77b20baa))
+* use a better exp to replace modules ([5902cee](https://github.com/homer0/cjs2esm/commit/5902ceec3a58469300303858c904747d2ac55a27))
+
+
+### Features
+
+* allow for custom transformations ([3361f7c](https://github.com/homer0/cjs2esm/commit/3361f7cb84a14bb88f034c30e4c57dbbecce2ea3))
+* allow to customize the codemod paths ([85f381b](https://github.com/homer0/cjs2esm/commit/85f381b556ec9ef0b85eb93ec31c4e3e82aa793f))
+* allow to set an order for the transformations ([9b35698](https://github.com/homer0/cjs2esm/commit/9b3569832c82f07278de65790f8c76259a3f21e2))
+
+
+### BREAKING CHANGES
+
+* This package no longer supports Node 12.
+
 ## [2.0.2](https://github.com/homer0/cjs2esm/compare/2.0.1...2.0.2) (2021-10-17)
 
 
