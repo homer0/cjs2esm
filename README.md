@@ -88,6 +88,10 @@ module.exports = {
   addModuleEntry: false,
   addPackageJson: true,
   filesWithShebang: [],
+  codemod: {
+    path: '',
+    files: ['cjs', 'exports', 'named-export-generation'],
+  },
 };
 ```
 
@@ -186,6 +190,55 @@ For example, this project uses `src/bin.js`.
 
 > Default `[]`
 
+#### .codemod
+
+Due to the `jscodeshift` and `5to6-codemod` projects not being updated quite often, it's not hard to run on scenarios in which your code is not compatible with the transformations, so this group of settings will allow you to run custom versions of the codemod, change the order fo the transformations, and even are your own.
+
+##### .path
+
+This is the path, relative to the working directory, in which the transformation files are located.
+
+> Default `''` // On runtime, it gets resolved to `5to6-codemod/transforms`
+
+##### .files
+
+These are the name of the files for the transformations, inside the `path` directory.
+
+The list can also be used to change the order of the default transformations, and it can also contain the `<cjs2esm>` special keyword, which references the tranformation file this package uses.
+
+For example:
+
+```json
+{
+  "files": [
+    "cjs",
+    "<cjs2esm>",
+    "named-export-generation",
+  ]
+}
+```
+
+With that, `exports` wouldn't be used, and the package transformation would run before `named-export-generation`.
+
+Local transformation files can also be specified, using path relatives to the working directory:
+
+```json
+{
+  "files": [
+    "cjs",
+    "<cjs2esm>",
+    "./my-custom-transformation",
+    "named-export-generation",
+  ]
+}
+```
+
+- ⚠️ If the list is empty, it will use the default value.
+- ⚠️ The `<cjs2esm>` cannot be used as the first item in the list.
+- ⚠️ The names can't contain the extension, and they need to be `.js` files.
+
+> Default `['cjs', 'exports', 'named-export-generation']`
+
 ## ES Modules
 
 Yes, if you want to use the tool as a library, the tool uses itself to generate a ESM version, so you can use the `/esm` path to access it:
@@ -270,3 +323,4 @@ Enjoy 🤘!
 
 > ~~Once `v14` becomes the oldest LTS, I'll archive this repository and deprecate the tool.~~
 > Node 12 now supports ESM without a flag, but there are still a lot of things that use CommonJS, and the fact that you can't `require` ESM makes things complicated, so I'm not sure yet when I'll deprecate the tool.
+> Update: 2022, and the interop is still a mess, so I'm not sure when I'll deprecate the tool.
