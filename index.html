@@ -59,7 +59,7 @@
                 href="https://www.npmjs.com/package/cjs2esm"
                 target="_blank"
             >View the package on NPM</a></li>
-        </ul><h3>Global</h3><ul><li><a href="global.html#addErrorHandler">addErrorHandler</a></li><li><a href="global.html#addPackageJSON">addPackageJSON</a></li><li><a href="global.html#copyFiles">copyFiles</a></li><li><a href="global.html#createReplacementForFolder">createReplacementForFolder</a></li><li><a href="global.html#ensureOutput">ensureOutput</a></li><li><a href="global.html#findFile">findFile</a></li><li><a href="global.html#findFileSync">findFileSync</a></li><li><a href="global.html#getAbsPathInfo">getAbsPathInfo</a></li><li><a href="global.html#getAbsPathInfoSync">getAbsPathInfoSync</a></li><li><a href="global.html#getConfiguration">getConfiguration</a></li><li><a href="global.html#log">log</a></li><li><a href="global.html#requireModule">requireModule</a></li><li><a href="global.html#transform">transform</a></li><li><a href="global.html#transformOutput">transformOutput</a></li><li><a href="global.html#updatePackageJSON">updatePackageJSON</a></li></ul>
+        </ul><h3>Global</h3><ul><li><a href="global.html#addErrorHandler">addErrorHandler</a></li><li><a href="global.html#addPackageJSON">addPackageJSON</a></li><li><a href="global.html#CJS2ESM_TRANSFORMATION_NAME">CJS2ESM_TRANSFORMATION_NAME</a></li><li><a href="global.html#copyFiles">copyFiles</a></li><li><a href="global.html#createReplacementForFolder">createReplacementForFolder</a></li><li><a href="global.html#ensureOutput">ensureOutput</a></li><li><a href="global.html#findFile">findFile</a></li><li><a href="global.html#findFileSync">findFileSync</a></li><li><a href="global.html#getAbsPathInfo">getAbsPathInfo</a></li><li><a href="global.html#getAbsPathInfoSync">getAbsPathInfoSync</a></li><li><a href="global.html#getConfiguration">getConfiguration</a></li><li><a href="global.html#log">log</a></li><li><a href="global.html#path">path</a></li><li><a href="global.html#requireModule">requireModule</a></li><li><a href="global.html#transform">transform</a></li><li><a href="global.html#transformOutput">transformOutput</a></li><li><a href="global.html#updatePackageJSON">updatePackageJSON</a></li></ul>
 </nav>
 
 <div id="main">
@@ -158,6 +158,10 @@ npx cjs2esm
   addModuleEntry: false,
   addPackageJson: true,
   filesWithShebang: [],
+  codemod: {
+    path: '',
+    files: ['cjs', 'exports', 'named-export-generation'],
+  },
 };
 </code></pre>
 <p>To modify the settings, you can...</p>
@@ -234,6 +238,44 @@ import ObjectUtils from 'wootils/esm/shared/objectUtils.js';
 <blockquote>
 <p>Default <code>[]</code></p>
 </blockquote>
+<h4>.codemod</h4>
+<p>Due to the <code>jscodeshift</code> and <code>5to6-codemod</code> projects not being updated quite often, it's not hard to run on scenarios in which your code is not compatible with the transformations, so this group of settings will allow you to run custom versions of the codemod, change the order fo the transformations, and even are your own.</p>
+<h5>.path</h5>
+<p>This is the path, relative to the working directory, in which the transformation files are located.</p>
+<blockquote>
+<p>Default <code>''</code> // On runtime, it gets resolved to <code>5to6-codemod/transforms</code></p>
+</blockquote>
+<h5>.files</h5>
+<p>These are the name of the files for the transformations, inside the <code>path</code> directory.</p>
+<p>The list can also be used to change the order of the default transformations, and it can also contain the <code>&lt;cjs2esm&gt;</code> special keyword, which references the tranformation file this package uses.</p>
+<p>For example:</p>
+<pre class="prettyprint source lang-json"><code>{
+  &quot;files&quot;: [
+    &quot;cjs&quot;,
+    &quot;&lt;cjs2esm>&quot;,
+    &quot;named-export-generation&quot;,
+  ]
+}
+</code></pre>
+<p>With that, <code>exports</code> wouldn't be used, and the package transformation would run before <code>named-export-generation</code>.</p>
+<p>Local transformation files can also be specified, using path relatives to the working directory:</p>
+<pre class="prettyprint source lang-json"><code>{
+  &quot;files&quot;: [
+    &quot;cjs&quot;,
+    &quot;&lt;cjs2esm>&quot;,
+    &quot;./my-custom-transformation&quot;,
+    &quot;named-export-generation&quot;,
+  ]
+}
+</code></pre>
+<ul>
+<li>⚠️ If the list is empty, it will use the default value.</li>
+<li>⚠️ The <code>&lt;cjs2esm&gt;</code> cannot be used as the first item in the list.</li>
+<li>⚠️ The names can't contain the extension, and they need to be <code>.js</code> files.</li>
+</ul>
+<blockquote>
+<p>Default <code>['cjs', 'exports', 'named-export-generation']</code></p>
+</blockquote>
 <h2>ES Modules</h2>
 <p>Yes, if you want to use the tool as a library, the tool uses itself to generate a ESM version, so you can use the <code>/esm</code> path to access it:</p>
 <pre class="prettyprint source lang-js"><code>// commonjs
@@ -306,7 +348,8 @@ import { getConfiguration } from 'cjs2esm/esm';
 <p>Enjoy 🤘!</p>
 <blockquote>
 <p><s>Once <code>v14</code> becomes the oldest LTS, I'll archive this repository and deprecate the tool.</s>
-Node 12 now supports ESM without a flag, but there are still a lot of things that use CommonJS, and the fact that you can't <code>require</code> ESM makes things complicated, so I'm not sure yet when I'll deprecate the tool.</p>
+Node 12 now supports ESM without a flag, but there are still a lot of things that use CommonJS, and the fact that you can't <code>require</code> ESM makes things complicated, so I'm not sure yet when I'll deprecate the tool.
+Update: 2022, and the interop is still a mess, so I'm not sure when I'll deprecate the tool.</p>
 </blockquote></article>
     </section>
 
@@ -322,7 +365,7 @@ Node 12 now supports ESM without a flag, but there are still a lot of things tha
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.7</a> using a forked <a href="https://github.com/homer0/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.10</a> using a forked <a href="https://github.com/homer0/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>
