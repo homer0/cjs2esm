@@ -14,32 +14,33 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@babel/core": "^7.17.9",
-    "@babel/preset-env": "^7.16.11",
+    "@babel/core": "^7.17.12",
+    "@babel/preset-env": "^7.17.12",
     "5to6-codemod": "1.8.0",
     "chalk": "^4.1.2",
     "del": "^6.0.0",
     "fs-extra": "^10.1.0",
-    "jscodeshift": "0.10.0"
+    "jscodeshift": "0.13.1",
+    "patch-package": "^6.4.7"
   },
   "devDependencies": {
-    "@commitlint/cli": "^16.2.3",
-    "@commitlint/config-conventional": "^16.2.1",
+    "@commitlint/cli": "^17.0.0",
+    "@commitlint/config-conventional": "^17.0.0",
     "@homer0/eslint-plugin": "^9.0.2",
     "@homer0/prettier-config": "^1.1.1",
     "@homer0/prettier-plugin-jsdoc": "^5.1.1",
     "@semantic-release/changelog": "^6.0.1",
     "@semantic-release/git": "^10.0.1",
-    "eslint": "^8.14.0",
-    "husky": "^7.0.4",
+    "eslint": "^8.15.0",
+    "husky": "^8.0.1",
     "is-ci": "^3.0.1",
-    "jest": "^27.5.1",
+    "jest": "^28.1.0",
     "jimple": "^1.5.0",
     "jsdoc": "^3.6.10",
     "jsdoc-ts-utils": "^2.0.1",
     "docdash": "homer0/docdash#semver:^2.1.0",
     "leasot": "^13.1.0",
-    "lint-staged": "^12.4.0",
+    "lint-staged": "^12.4.1",
     "prettier": "^2.6.2",
     "semantic-release": "^19.0.2"
   },
@@ -69,7 +70,8 @@
     "lint:all": "./utils/scripts/lint-all",
     "docs": "./utils/scripts/docs",
     "todo": "./utils/scripts/todo",
-    "prepare": "./utils/scripts/prepare"
+    "prepare": "./utils/scripts/prepare",
+    "postinstall": "./utils/scripts/postinstall"
   },
   "config": {
     "cjs2esm": {
