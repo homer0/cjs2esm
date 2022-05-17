@@ -70,7 +70,8 @@
     "lint:all": "./utils/scripts/lint-all",
     "docs": "./utils/scripts/docs",
     "todo": "./utils/scripts/todo",
-    "prepare": "./utils/scripts/prepare"
+    "prepare": "./utils/scripts/prepare",
+    "postinstall": "./utils/scripts/postinstall"
   },
   "config": {
     "cjs2esm": {
