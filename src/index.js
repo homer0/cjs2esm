@@ -333,37 +333,46 @@ const transformOutput = async (files, options) => {
     Array.isArray(codemodOptions.files) && codemodOptions.files.length
       ? codemodOptions.files
       : ['cjs', 'exports', 'named-export-generation'];
-
-  let firstCodemodFile = codemodFiles.shift();
-  if (firstCodemodFile === CJS2ESM_TRANSFORMATION_NAME) {
-    throw new Error(`${CJS2ESM_TRANSFORMATION_NAME} cannot be the first one in the list`);
-  }
-
-  firstCodemodFile = `${firstCodemodFile}.js`;
-
   if (!codemodFiles.includes(CJS2ESM_TRANSFORMATION_NAME)) {
     codemodFiles.push(CJS2ESM_TRANSFORMATION_NAME);
   }
 
+  const fileForResolveIndex = codemodFiles.findIndex(
+    (file) => file !== CJS2ESM_TRANSFORMATION_NAME && file.match(/^\w/),
+  );
+
+  if (codemodFiles[0] === CJS2ESM_TRANSFORMATION_NAME) {
+    throw new Error(`${CJS2ESM_TRANSFORMATION_NAME} cannot be the first one in the list`);
+  }
+
+  const fileForResolve = `${codemodFiles[fileForResolveIndex]}.js`;
+
   const cwd = process.cwd();
-  let firstCodemodFilepath;
+  let filepathForResolve;
   if (codemodOptions.path) {
-    firstCodemodFilepath = path.join(cwd, codemodOptions.path, firstCodemodFile);
+    filepathForResolve = path.join(cwd, codemodOptions.path, fileForResolve);
   } else {
-    firstCodemodFilepath = require.resolve(
-      path.join('5to6-codemod', 'transforms', firstCodemodFile),
+    filepathForResolve = require.resolve(
+      path.join('5to6-codemod', 'transforms', fileForResolve),
     );
   }
 
-  const codeModPath = path.dirname(firstCodemodFilepath);
-  const transformations = [
-    firstCodemodFilepath,
-    ...codemodFiles.map((file) =>
-      file === CJS2ESM_TRANSFORMATION_NAME
-        ? path.join(__dirname, 'transformer.js')
-        : path.join(codeModPath, `${file}.js`),
-    ),
-  ];
+  const codeModPath = path.dirname(filepathForResolve);
+  const transformations = codemodFiles.map((file, index) => {
+    if (index === fileForResolveIndex) {
+      return filepathForResolve;
+    }
+    if (file === CJS2ESM_TRANSFORMATION_NAME) {
+      return path.join(__dirname, 'transformer.js');
+    }
+
+    const fileWithExt = `${file}.js`;
+    if (fileWithExt.startsWith('.')) {
+      return path.resolve(fileWithExt);
+    }
+
+    return path.join(codeModPath, `${file}.js`);
+  });
 
   log('yellow', `Transforming ${files.length} files...`);
 
