@@ -90,7 +90,7 @@ const parseJSPath = (filepath) => {
  * Tries to find the extension for a file import path.
  *
  * @param {string} absPath  The generated absolute path for the file.
- * @returns {?string}
+ * @returns {Promise<?string>}
  * @ignore
  */
 const findFileExtension = async (absPath) => {
@@ -120,7 +120,7 @@ const findFileExtensionSync = (absPath) => {
  * case it's missing.
  *
  * @param {string} absPath  The absolute path for the resource.
- * @returns {?AbsPathInfo}
+ * @returns {Promise<?AbsPathInfo>}
  */
 const getAbsPathInfo = async (absPath) => {
   const info = parseJSPath(absPath);

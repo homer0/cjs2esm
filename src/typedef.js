@@ -21,6 +21,17 @@
  */
 
 /**
+ * @typedef {Object} CJS2CodemodOptions
+ * @property {?string}   path   The path, relative to the cwd, to the transformations
+ *                              directory. By default, `5to6-codemod`, relative to this
+ *                              module.
+ * @property {?string[]} files  The list of transformations to use, without extension, as
+ *                              `.js` will be used`. If not defined, empty, or not an
+ *                              array, it will use the defaults: `cjs`, `exports` and
+ *                              `named-export-generation`.
+ */
+
+/**
  * @typedef {Object} CJS2ESMOptions
  * @property {string[]} input
  * The list of directories that should be transformed.
@@ -47,6 +58,8 @@
  * transforming them in order to avoid issues with the parsers. The list are strings that
  * will be converted on into `RegExp`s, so they can be a parts of the path, or
  * expressions.
+ * @property {?CJS2ESMOptions} codemod
+ * Options to customize integration with the codemod tool, for the transformations.
  */
 
 /**

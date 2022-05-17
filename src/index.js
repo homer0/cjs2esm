@@ -3,6 +3,14 @@ const fs = require('fs-extra');
 const Runner = require('jscodeshift/src/Runner');
 const { repository } = require('../package.json');
 const { log, findFile, getAbsPathInfo, requireModule } = require('./utils');
+
+/**
+ * The name that can be used in the list of files to specify the custom transformation
+ * this module does.
+ *
+ * @type {string}
+ */
+const CJS2ESM_TRANSFORMATION_NAME = '<cjs2esm>';
 /**
  * This is called every time an unexpected error is thrown; it logs the error using the
  * `log`
@@ -229,8 +237,8 @@ const copyFiles = async (input, output, useExtension, forceDirectory) => {
  * process explodes when a file has one.
  *
  * @param {CJS2ESMCopiedFile[]} files  The list of copied files with shebangs.
- * @returns {Object.<string, string>} The keys are the path to the copied files and the
- *                                    values the shebangs they had.
+ * @returns {Promise<Object.<string, string>>} The keys are the path to the copied files
+ *                                             and the values the shebangs they had.
  * @ignore
  */
 const removeShebangs = async (files) => {
@@ -303,7 +311,7 @@ const transformOutput = async (files, options) => {
     cjs2esm: options,
   };
 
-  const shebangExpressions = options.filesWithShebang.map(
+  const shebangExpressions = (options.filesWithShebang || []).map(
     (expression) => new RegExp(expression),
   );
   const filesWithShebang = files.filter(({ from }) =>
@@ -315,16 +323,56 @@ const transformOutput = async (files, options) => {
     shebangs = await removeShebangs(filesWithShebang);
   }
 
-  const cjsTransformPath = require.resolve(
-    path.join('5to6-codemod', 'transforms', 'cjs.js'),
+  const codemodOptions = {
+    path: null,
+    files: null,
+    ...options.codemod,
+  };
+
+  const codemodFiles =
+    Array.isArray(codemodOptions.files) && codemodOptions.files.length
+      ? codemodOptions.files
+      : ['cjs', 'exports', 'named-export-generation'];
+  if (!codemodFiles.includes(CJS2ESM_TRANSFORMATION_NAME)) {
+    codemodFiles.push(CJS2ESM_TRANSFORMATION_NAME);
+  }
+
+  const fileForResolveIndex = codemodFiles.findIndex(
+    (file) => file !== CJS2ESM_TRANSFORMATION_NAME && file.match(/^\w/),
   );
-  const fiveToSixCodeModPath = path.dirname(cjsTransformPath);
-  const transformations = [
-    cjsTransformPath,
-    path.join(fiveToSixCodeModPath, 'exports.js'),
-    path.join(fiveToSixCodeModPath, 'named-export-generation.js'),
-    path.join(__dirname, 'transformer.js'),
-  ];
+
+  if (codemodFiles[0] === CJS2ESM_TRANSFORMATION_NAME) {
+    throw new Error(`${CJS2ESM_TRANSFORMATION_NAME} cannot be the first one in the list`);
+  }
+
+  const fileForResolve = `${codemodFiles[fileForResolveIndex]}.js`;
+
+  const cwd = process.cwd();
+  let filepathForResolve;
+  if (codemodOptions.path) {
+    filepathForResolve = path.join(cwd, codemodOptions.path, fileForResolve);
+  } else {
+    filepathForResolve = require.resolve(
+      path.join('5to6-codemod', 'transforms', fileForResolve),
+    );
+  }
+
+  const codeModPath = path.dirname(filepathForResolve);
+  const transformations = codemodFiles.map((file, index) => {
+    if (index === fileForResolveIndex) {
+      return filepathForResolve;
+    }
+    if (file === CJS2ESM_TRANSFORMATION_NAME) {
+      return path.join(__dirname, 'transformer.js');
+    }
+
+    const fileWithExt = `${file}.js`;
+    if (fileWithExt.startsWith('.')) {
+      return path.resolve(fileWithExt);
+    }
+
+    return path.join(codeModPath, `${file}.js`);
+  });
 
   log('yellow', `Transforming ${files.length} files...`);
 
@@ -355,7 +403,6 @@ const transformOutput = async (files, options) => {
     );
   }
 
-  const cwd = process.cwd();
   files.forEach((file) => log('gray', `> ${file.to.substr(cwd.length + 1)}`));
   let totalTime = results.reduce(
     (acc, { timeElapsed }) => acc + parseFloat(timeElapsed),
@@ -371,7 +418,7 @@ const transformOutput = async (files, options) => {
  * will check for `index.mjs` and `index.js`.
  *
  * @param {string} absPath  The absolute path to the folder.
- * @returns {?string} If there's no `index`, the function will return `null`.
+ * @returns {Promise<?string>} If there's no `index`, the function will return `null`.
  * @ignore
  */
 const findFolderEntryPath = async (absPath) => {
@@ -447,3 +494,4 @@ module.exports.copyFiles = copyFiles;
 module.exports.transformOutput = transformOutput;
 module.exports.updatePackageJSON = updatePackageJSON;
 module.exports.addPackageJSON = addPackageJSON;
+module.exports.CJS2ESM_TRANSFORMATION_NAME = CJS2ESM_TRANSFORMATION_NAME;
