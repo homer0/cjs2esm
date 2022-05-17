@@ -41,10 +41,14 @@ describe('transformer', () => {
     ];
     let currentNodes = nodes.slice();
     const message = 'done';
+    const firstNode = 'first-node';
+    const programUtils = {
+      get: jest.fn(() => firstNode),
+    };
     const ast = {
       filter: jest.fn(),
       replaceWith: jest.fn(),
-      find: jest.fn(() => ast),
+      find: jest.fn((type) => (type === 'Program' ? programUtils : ast)),
       toSource: jest.fn(() => message),
     };
     ast.filter.mockImplementationOnce((fn) => {
@@ -61,6 +65,7 @@ describe('transformer', () => {
     });
     const jscodeshift = jest.fn(() => ast);
     jscodeshift.ImportDeclaration = 'ImportDeclaration';
+    jscodeshift.Program = 'Program';
     jscodeshift.importDeclaration = jest.fn((_, str) => str);
     jscodeshift.literal = jest.fn((str) => str);
     const api = { jscodeshift };
@@ -90,6 +95,110 @@ describe('transformer', () => {
       'specifier',
       './some/file.js',
     );
+    expect(ast.find).toHaveBeenCalledTimes(3);
+    expect(ast.find).toHaveBeenNthCalledWith(1, 'Program');
+    expect(ast.find).toHaveBeenNthCalledWith(2, 'ImportDeclaration');
+    expect(ast.find).toHaveBeenNthCalledWith(3, 'Program');
+    expect(programUtils.get).toHaveBeenCalledTimes(2);
+    expect(programUtils.get).toHaveBeenNthCalledWith(1, 'body', 0);
+    expect(programUtils.get).toHaveBeenNthCalledWith(2, 'body', 0);
+  });
+
+  it('should transform a file and preserve the leading comments', () => {
+    // Given
+    const file = {
+      path: path.join(cwd, 'index.js'),
+      source: 'magic',
+    };
+    const nodes = [
+      {
+        value: {
+          specifiers: 'specifier',
+          source: {
+            value: './some/file',
+          },
+        },
+      },
+      {
+        value: {
+          specifiers: 'specifier',
+          source: {
+            value: '~/some/weird/import/that/will/be/ignored',
+          },
+        },
+      },
+    ];
+    let currentNodes = nodes.slice();
+    const message = 'done';
+    const originalFirstNode = {
+      node: {
+        comments: 'original-first-node-comments',
+      },
+    };
+    const newFirstNode = {
+      node: {
+        comments: 'new-first-node-comments',
+      },
+    };
+    let getFirstNodeCount = 0;
+    const programUtils = {
+      get: jest.fn(() => {
+        const result = getFirstNodeCount ? newFirstNode : originalFirstNode;
+        getFirstNodeCount++;
+        return result;
+      }),
+    };
+    const ast = {
+      filter: jest.fn(),
+      replaceWith: jest.fn(),
+      find: jest.fn((type) => (type === 'Program' ? programUtils : ast)),
+      toSource: jest.fn(() => message),
+    };
+    ast.filter.mockImplementationOnce((fn) => {
+      currentNodes = currentNodes.filter(fn);
+      return ast;
+    });
+    ast.filter.mockImplementationOnce((fn) => {
+      currentNodes = currentNodes.filter(fn);
+      return ast;
+    });
+    ast.replaceWith.mockImplementationOnce((fn) => {
+      currentNodes = currentNodes.map(fn);
+      return ast;
+    });
+    const jscodeshift = jest.fn(() => ast);
+    jscodeshift.ImportDeclaration = 'ImportDeclaration';
+    jscodeshift.Program = 'Program';
+    jscodeshift.importDeclaration = jest.fn((_, str) => str);
+    jscodeshift.literal = jest.fn((str) => str);
+    const api = { jscodeshift };
+    const cjs2esm = {
+      extension: {
+        ignore: [],
+      },
+      modules: [],
+    };
+    const options = { cjs2esm };
+    utils.getAbsPathInfoSync.mockImplementationOnce(() => ({
+      isFile: true,
+      path: path.join(cwd, 'some', 'file.js'),
+    }));
+    let result = null;
+    // When
+    result = transformer(file, api, options);
+    // Then
+    expect(result).toBe(message);
+    expect(currentNodes).toEqual(['./some/file.js']);
+    expect(jscodeshift).toHaveBeenCalledTimes(1);
+    expect(jscodeshift).toHaveBeenCalledWith(file.source);
+    expect(utils.getAbsPathInfoSync).toHaveBeenCalledTimes(1);
+    expect(utils.getAbsPathInfoSync).toHaveBeenCalledWith(path.join(cwd, 'some', 'file'));
+    expect(jscodeshift.importDeclaration).toHaveBeenCalledTimes(1);
+    expect(jscodeshift.importDeclaration).toHaveBeenCalledWith(
+      'specifier',
+      './some/file.js',
+    );
+    expect(newFirstNode.comments).toBe(originalFirstNode.comments);
   });
 
   it('should transform a file that imports a directories', () => {
@@ -126,10 +235,14 @@ describe('transformer', () => {
     ];
     let currentNodes = nodes.slice();
     const message = 'done';
+    const firstNode = 'first-node';
+    const programUtils = {
+      get: jest.fn(() => firstNode),
+    };
     const ast = {
       filter: jest.fn(),
       replaceWith: jest.fn(),
-      find: jest.fn(() => ast),
+      find: jest.fn((type) => (type === 'Program' ? programUtils : ast)),
       toSource: jest.fn(() => message),
     };
     ast.filter.mockImplementationOnce((fn) => {
@@ -146,6 +259,7 @@ describe('transformer', () => {
     });
     const jscodeshift = jest.fn(() => ast);
     jscodeshift.ImportDeclaration = 'ImportDeclaration';
+    jscodeshift.Program = 'Program';
     jscodeshift.importDeclaration = jest.fn((_, str) => str);
     jscodeshift.literal = jest.fn((str) => str);
     const api = { jscodeshift };
@@ -231,10 +345,14 @@ describe('transformer', () => {
     ];
     let currentNodes = nodes.slice();
     const message = 'done';
+    const firstNode = 'first-node';
+    const programUtils = {
+      get: jest.fn(() => firstNode),
+    };
     const ast = {
       filter: jest.fn(),
       replaceWith: jest.fn(),
-      find: jest.fn(() => ast),
+      find: jest.fn((type) => (type === 'Program' ? programUtils : ast)),
       toSource: jest.fn(() => message),
     };
     ast.filter.mockImplementationOnce((fn) => {
@@ -251,6 +369,7 @@ describe('transformer', () => {
     });
     const jscodeshift = jest.fn(() => ast);
     jscodeshift.ImportDeclaration = 'ImportDeclaration';
+    jscodeshift.Program = 'Program';
     jscodeshift.importDeclaration = jest.fn((_, str) => str);
     jscodeshift.literal = jest.fn((str) => str);
     const api = { jscodeshift };
@@ -331,10 +450,14 @@ describe('transformer', () => {
       },
     ];
     let currentNodes = nodes.slice();
+    const firstNode = 'first-node';
+    const programUtils = {
+      get: jest.fn(() => firstNode),
+    };
     const ast = {
       filter: jest.fn(),
       replaceWith: jest.fn(),
-      find: jest.fn(() => ast),
+      find: jest.fn((type) => (type === 'Program' ? programUtils : ast)),
       toSource: jest.fn(),
     };
     ast.filter.mockImplementationOnce((fn) => {
@@ -351,6 +474,7 @@ describe('transformer', () => {
     });
     const jscodeshift = jest.fn(() => ast);
     jscodeshift.ImportDeclaration = 'ImportDeclaration';
+    jscodeshift.Program = 'Program';
     jscodeshift.importDeclaration = jest.fn((_, str) => str);
     jscodeshift.literal = jest.fn((str) => str);
     const api = { jscodeshift };
@@ -413,19 +537,35 @@ describe('transformer', () => {
           },
         },
       },
+      {
+        value: {
+          specifiers: 'specifier',
+          source: {
+            value: 'lodash',
+          },
+        },
+      },
+      {
+        value: {
+          specifiers: 'specifier',
+          source: {
+            value: 'lodash-es',
+          },
+        },
+      },
     ];
     let currentNodes = nodes.slice();
     const message = 'done';
+    const firstNode = 'first-node';
+    const programUtils = {
+      get: jest.fn(() => firstNode),
+    };
     const ast = {
       filter: jest.fn(),
       replaceWith: jest.fn(),
-      find: jest.fn(() => ast),
+      find: jest.fn((type) => (type === 'Program' ? programUtils : ast)),
       toSource: jest.fn(() => message),
     };
-    ast.filter.mockImplementationOnce((fn) => {
-      currentNodes = currentNodes.filter(fn);
-      return ast;
-    });
     ast.filter.mockImplementationOnce((fn) => {
       currentNodes = currentNodes.filter(fn);
       return ast;
@@ -452,6 +592,7 @@ describe('transformer', () => {
     });
     const jscodeshift = jest.fn(() => ast);
     jscodeshift.ImportDeclaration = 'ImportDeclaration';
+    jscodeshift.Program = 'Program';
     jscodeshift.importDeclaration = jest.fn((_, str) => str);
     jscodeshift.literal = jest.fn((str) => str);
     const api = { jscodeshift };
@@ -469,6 +610,7 @@ describe('transformer', () => {
           find: 'par\\w+or',
           path: 'parserror/esm',
         },
+        { name: 'lodash', path: 'lodash-es' },
       ],
     };
     const options = { cjs2esm };
@@ -479,11 +621,18 @@ describe('transformer', () => {
       path: deepAssignPath,
     }));
     utils.getAbsPathInfoSync.mockImplementationOnce(() => null);
+    utils.getAbsPathInfoSync.mockImplementationOnce(() => null);
+    utils.getAbsPathInfoSync.mockImplementationOnce(() => null);
     let result = null;
     // When
     result = transformer(file, api, options);
     // Then
     expect(result).toBe(message);
-    expect(currentNodes).toEqual(['wootils/esm/shared/deepAssign.js', 'parserror/esm']);
+    expect(currentNodes).toEqual([
+      'wootils/esm/shared/deepAssign.js',
+      'parserror/esm',
+      'lodash-es',
+      'lodash-es',
+    ]);
   });
 });

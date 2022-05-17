@@ -1,3 +1,6 @@
+/**
+ * Some comment about the function.
+ */
 const path = require('path');
 const fs = require('fs-extra');
 const { findFileSync, getAbsPathInfoSync } = require('./utils');
@@ -53,6 +56,8 @@ const transform = (file, api, options) => {
   const root = j(file.source);
   // Generate the list of expressions to ignore import statements.
   const ignoreListForExt = cjs2esm.extension.ignore.map((ignore) => new RegExp(ignore));
+
+  const originalFirstNode = root.find(j.Program).get('body', 0).node;
 
   // =================================================
   // Parse the import statements to add missing extensions.
@@ -117,11 +122,23 @@ const transform = (file, api, options) => {
       .replaceWith((item) => {
         const importPath = item.value.source.value;
         const info = cjs2esm.modules.find((mod) => importPath.startsWith(mod.name));
-        const find = info.find ? new RegExp(info.find) : new RegExp(`^${info.name}`);
-        const replacement = importPath.replace(find, info.path);
+        let replacement;
+        if (info.find) {
+          replacement = importPath.replace(new RegExp(info.find), info.path);
+        } else {
+          replacement = importPath.replace(
+            new RegExp(`^${info.name}($|\\/)`),
+            (match, endChar) => (endChar.endsWith('/') ? `${info.path}/` : info.path),
+          );
+        }
 
         return j.importDeclaration(item.value.specifiers, j.literal(replacement));
       });
+  }
+
+  const newFirstNode = root.find(j.Program).get('body', 0).node;
+  if (newFirstNode !== originalFirstNode) {
+    newFirstNode.comments = originalFirstNode.comments;
   }
 
   // Regenerate the file code.
