@@ -20,7 +20,7 @@
     "chalk": "^4.1.2",
     "del": "^6.0.0",
     "fs-extra": "^10.1.0",
-    "jscodeshift": "0.10.0"
+    "jscodeshift": "0.13.1"
   },
   "devDependencies": {
     "@commitlint/cli": "^16.2.3",
