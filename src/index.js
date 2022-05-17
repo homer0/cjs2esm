@@ -315,9 +315,12 @@ const transformOutput = async (files, options) => {
     shebangs = await removeShebangs(filesWithShebang);
   }
 
-  const fiveToSixCodeModPath = path.resolve('node_modules', '5to6-codemod', 'transforms');
+  const cjsTransformPath = require.resolve(
+    path.join('5to6-codemod', 'transforms', 'cjs.js'),
+  );
+  const fiveToSixCodeModPath = path.dirname(cjsTransformPath);
   const transformations = [
-    path.join(fiveToSixCodeModPath, 'cjs.js'),
+    cjsTransformPath,
     path.join(fiveToSixCodeModPath, 'exports.js'),
     path.join(fiveToSixCodeModPath, 'named-export-generation.js'),
     path.join(__dirname, 'transformer.js'),
