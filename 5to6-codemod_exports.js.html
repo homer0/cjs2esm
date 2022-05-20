@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8" />
+    <title>5to6-codemod/exports.js - cjs2esm docs</title>
+    
+    
+    
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css" />
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css" />
+    <script src="scripts/nav.js" defer></script>
+    <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no" />
+    <link rel="shortcut icon" href="icons/favicon-48.png" />
+    <link rel="apple-touch-icon" sizes="48x48" href="icons/favicon-48.png" />
+    <link rel="apple-touch-icon" sizes="72x72" href="icons/favicon-72.png" />
+    <link rel="apple-touch-icon" sizes="96x96" href="icons/favicon-96.png" />
+    <link rel="apple-touch-icon" sizes="144x144" href="icons/favicon-144.png" />
+    <link rel="apple-touch-icon" sizes="192x192" href="icons/favicon-192.png" />
+    <link rel="apple-touch-icon" sizes="256x256" href="icons/favicon-256.png" />
+    <link rel="apple-touch-icon" sizes="384x384" href="icons/favicon-384.png" />
+    <link rel="apple-touch-icon" sizes="512x512" href="icons/favicon-512.png" />
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <h2><a href="index.html" class="home-link">cjs2esm</a></h2><ul class="ref-links">
+            <li><a
+                class="ref-link -yarn"
+                title="View the package on Yarn"
+                href="https://yarnpkg.com/package/cjs2esm"
+                target="_blank"
+            >View the package on Yarn</a></li>
+        
+
+            <li><a
+                class="ref-link -github"
+                title="Go to the GitHub repository"
+                href="https://github.com/homer0/cjs2esm"
+                target="_blank"
+            >Go to the GitHub repository</a></li>
+        
+
+            <li><a
+                class="ref-link -npm"
+                title="View the package on NPM"
+                href="https://www.npmjs.com/package/cjs2esm"
+                target="_blank"
+            >View the package on NPM</a></li>
+        </ul><h3>Global</h3><ul><li><a href="global.html#addErrorHandler">addErrorHandler</a></li><li><a href="global.html#addPackageJSON">addPackageJSON</a></li><li><a href="global.html#copyFiles">copyFiles</a></li><li><a href="global.html#createReplacementForFolder">createReplacementForFolder</a></li><li><a href="global.html#ensureOutput">ensureOutput</a></li><li><a href="global.html#findFile">findFile</a></li><li><a href="global.html#findFileSync">findFileSync</a></li><li><a href="global.html#getAbsPathInfo">getAbsPathInfo</a></li><li><a href="global.html#getAbsPathInfoSync">getAbsPathInfoSync</a></li><li><a href="global.html#getConfiguration">getConfiguration</a></li><li><a href="global.html#log">log</a></li><li><a href="global.html#path">path</a></li><li><a href="global.html#requireModule">requireModule</a></li><li><a href="global.html#transform">transform</a></li><li><a href="global.html#transformOutput">transformOutput</a></li><li><a href="global.html#updatePackageJSON">updatePackageJSON</a></li><li><a href="global.html#util">util</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">5to6-codemod/exports.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * exports - Replace module.exports calls with es6 exports
+ */
+
+var util = require('5to6-codemod/utils/main');
+
+module.exports = function (file, api, options) {
+  var j = api.jscodeshift;
+  var root = j(file.source);
+  var firstNode = root.find(j.Program).get('body', 0).node;
+
+  /**
+   * Move `module.exports.thing()` to `thing()`
+   */
+  function exportsCall(p) {
+    var functionCall = j.callExpression(p.value.callee.property, p.value.arguments);
+    // console.log(util.toString(p), '=>', util.toString(functionCall));
+    functionCall.comments = p.comments;
+    j(p).replaceWith(functionCall);
+  }
+
+  /**
+   * Must be run before exportsToExport
+   * ```
+   * module.exports.foo = foo
+   * module.exports.bar = bar
+   * exports.baz = baz
+   * to
+   * export { foo, bar, baz }
+   * ```
+   */
+  function MultiExportsToExport(paths) {
+    var specifiers = [];
+    var filteredPaths = paths.filter(function (p) {
+      if (p.parentPath.parentPath.name !== 'body') return false;
+
+      var isModuleExport =
+        p.get('left', 'object', 'object', 'name').value === 'module' &amp;&amp;
+        p.get('left', 'object', 'property', 'name').value === 'exports';
+      var isExport = p.get('left', 'object', 'name').value === 'exports';
+
+      if (!isModuleExport &amp;&amp; !isExport) return false;
+
+      return p.value.left.property.name === p.value.right.name;
+    });
+    filteredPaths.forEach(function (p, i) {
+      // aggregate all specifiers
+      specifiers.push(
+        j.exportSpecifier.from({
+          exported: j.identifier(p.value.right.name),
+          local: j.identifier(p.value.right.name),
+        }),
+      );
+
+      // replace the last module.exports.*
+      if (i === filteredPaths.length - 1) {
+        j(p.parentPath).replaceWith(j.exportDeclaration(false, null, specifiers));
+      } else {
+        j(p.parentPath).remove();
+      }
+    });
+  }
+
+  /**
+   * Move `module.exports.thing` to `export const thing`
+   */
+  function exportsToExport(p) {
+    var declator = j.variableDeclarator(
+      j.identifier(p.value.left.property.name),
+      p.value.right,
+    );
+    var declaration = j.variableDeclaration('const', [declator]);
+    var exportDecl = j.exportDeclaration(false, declaration);
+    // console.log('[module.]exports.thing', util.toString(p), util.toString(exportDecl));
+    exportDecl.comments = p.parentPath.value.comments;
+    j(p.parentPath).replaceWith(exportDecl);
+  }
+
+  /**
+   * Move exports = module.exports to export default
+   */
+  function exportsAndModuleExportsToDefault(p) {
+    var exportDecl = j.exportDeclaration(true, p.value.right.right);
+    // console.log('exports = module.exports', util.toString(p.value.right.right), util.toString(exportDecl));
+    exportDecl.comments = p.parentPath.value.comments;
+    j(p.parentPath).replaceWith(exportDecl);
+  }
+
+  /**
+   * Move `module.exports` to `export default`
+   */
+  function exportsToDefault(p) {
+    var exportDecl = j.exportDeclaration(true, p.value.right);
+    // console.log('module.exports', util.toString(p), util.toString(exportDecl));
+    exportDecl.comments = p.parentPath.value.comments;
+    j(p.parentPath).replaceWith(exportDecl);
+  }
+
+  // find module.exports.thing = thing...
+  // find exports.thing = thing...
+  MultiExportsToExport(
+    root.find(j.AssignmentExpression, {
+      operator: '=',
+      left: {
+        type: 'MemberExpression',
+      },
+      right: {
+        type: 'Identifier',
+      },
+    }),
+  );
+
+  // find module.exports.thing = something....
+  root
+    .find(j.AssignmentExpression, {
+      operator: '=',
+      left: {
+        type: 'MemberExpression',
+        object: {
+          type: 'MemberExpression',
+          object: {
+            name: 'module',
+          },
+          property: { name: 'exports' },
+        },
+      },
+    })
+    .filter(function (p) {
+      return p.parentPath.parentPath.name === 'body';
+    })
+    .forEach(exportsToExport);
+
+  // find var House = module.exports = something....
+  root
+    .find(j.AssignmentExpression, {
+      operator: '=',
+      left: {
+        object: { name: 'module' },
+        property: { name: 'exports' },
+      },
+    })
+    .filter(function (p) {
+      var isVar = p.parentPath.value.type === 'VariableDeclarator';
+      var isOnBody = p.parentPath.parentPath.parentPath.parentPath.name === 'body';
+      return isVar &amp;&amp; isOnBody;
+    })
+    .forEach(function (p) {
+      var decl = j.variableDeclarator(p.parentPath.value.id, p.value.right);
+      var exportDecl = j.exportDeclaration(true, p.parentPath.value.id);
+      // console.log(util.toString(decl), '\n', util.toString(exportDecl));
+      j(p.parentPath).replaceWith(decl);
+      j(p.parentPath.parentPath.parentPath).insertAfter(exportDecl);
+    });
+
+  // find module.exports = something....
+  root
+    .find(j.AssignmentExpression, {
+      operator: '=',
+      left: {
+        object: { name: 'module' },
+        property: { name: 'exports' },
+      },
+    })
+    .filter(function (p) {
+      return p.parentPath.parentPath.name === 'body';
+    })
+    .forEach(exportsToDefault);
+
+  // find exports.thing = something....
+  root
+    .find(j.AssignmentExpression, {
+      operator: '=',
+      left: {
+        object: { name: 'exports' },
+      },
+    })
+    .filter(function (p) {
+      return p.parentPath.parentPath.name === 'body';
+    })
+    .forEach(exportsToExport);
+
+  // find exports = module.exports = something....
+  root
+    .find(j.AssignmentExpression, {
+      operator: '=',
+      left: {
+        name: 'exports',
+      },
+      right: {
+        type: 'AssignmentExpression',
+        operator: '=',
+        left: {
+          type: 'MemberExpression',
+          object: {
+            name: 'module',
+          },
+          property: {
+            name: 'exports',
+          },
+        },
+      },
+    })
+    .filter(function (p) {
+      return p.parentPath.parentPath.name === 'body';
+    })
+    .forEach(exportsAndModuleExportsToDefault);
+
+  // find exports.house()
+  root
+    .find(j.CallExpression, {
+      callee: {
+        type: 'MemberExpression',
+        object: { name: 'exports' },
+      },
+    })
+    .forEach(exportsCall);
+
+  // find module.exports.house()
+  root
+    .find(j.CallExpression, {
+      callee: {
+        type: 'MemberExpression',
+        object: {
+          type: 'MemberExpression',
+          object: { name: 'module' },
+          property: { name: 'exports' },
+        },
+      },
+    })
+    .forEach(exportsCall);
+
+  // find var House = module.exports something....
+  root
+    .find(j.AssignmentExpression, {
+      operator: '=',
+      left: {
+        type: 'MemberExpression',
+        object: {
+          type: 'MemberExpression',
+          object: {
+            name: 'module',
+          },
+          property: { name: 'exports' },
+        },
+      },
+    })
+    .filter(function (p) {
+      return p.parentPath.parentPath.name === 'body';
+    })
+    .forEach(exportsToExport);
+
+  // re-add comment to to the top if necessary
+  var firstNode2 = root.find(j.Program).get('body', 0).node;
+  if (firstNode !== firstNode2) {
+    firstNode2.comments = firstNode.leadingComments;
+  }
+
+  return root.toSource(util.getRecastConfig(options));
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.10</a> using a forked <a href="https://github.com/homer0/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+
+<script src="scripts/collapse.js" defer></script>
+
+
+</body>
+</html>

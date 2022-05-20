@@ -59,7 +59,7 @@
                 href="https://www.npmjs.com/package/cjs2esm"
                 target="_blank"
             >View the package on NPM</a></li>
-        </ul><h3>Global</h3><ul><li><a href="global.html#addErrorHandler">addErrorHandler</a></li><li><a href="global.html#addPackageJSON">addPackageJSON</a></li><li><a href="global.html#CJS2ESM_TRANSFORMATION_NAME">CJS2ESM_TRANSFORMATION_NAME</a></li><li><a href="global.html#copyFiles">copyFiles</a></li><li><a href="global.html#createReplacementForFolder">createReplacementForFolder</a></li><li><a href="global.html#ensureOutput">ensureOutput</a></li><li><a href="global.html#findFile">findFile</a></li><li><a href="global.html#findFileSync">findFileSync</a></li><li><a href="global.html#getAbsPathInfo">getAbsPathInfo</a></li><li><a href="global.html#getAbsPathInfoSync">getAbsPathInfoSync</a></li><li><a href="global.html#getConfiguration">getConfiguration</a></li><li><a href="global.html#log">log</a></li><li><a href="global.html#path">path</a></li><li><a href="global.html#requireModule">requireModule</a></li><li><a href="global.html#transform">transform</a></li><li><a href="global.html#transformOutput">transformOutput</a></li><li><a href="global.html#updatePackageJSON">updatePackageJSON</a></li></ul>
+        </ul><h3>Global</h3><ul><li><a href="global.html#addErrorHandler">addErrorHandler</a></li><li><a href="global.html#addPackageJSON">addPackageJSON</a></li><li><a href="global.html#copyFiles">copyFiles</a></li><li><a href="global.html#createReplacementForFolder">createReplacementForFolder</a></li><li><a href="global.html#ensureOutput">ensureOutput</a></li><li><a href="global.html#findFile">findFile</a></li><li><a href="global.html#findFileSync">findFileSync</a></li><li><a href="global.html#getAbsPathInfo">getAbsPathInfo</a></li><li><a href="global.html#getAbsPathInfoSync">getAbsPathInfoSync</a></li><li><a href="global.html#getConfiguration">getConfiguration</a></li><li><a href="global.html#log">log</a></li><li><a href="global.html#path">path</a></li><li><a href="global.html#requireModule">requireModule</a></li><li><a href="global.html#transform">transform</a></li><li><a href="global.html#transformOutput">transformOutput</a></li><li><a href="global.html#updatePackageJSON">updatePackageJSON</a></li><li><a href="global.html#util">util</a></li></ul>
 </nav>
 
 <div id="main">
@@ -85,8 +85,16 @@ const { log, findFile, getAbsPathInfo, requireModule } = require('./utils');
  * this module does.
  *
  * @type {string}
+ * @ignore
  */
 const CJS2ESM_TRANSFORMATION_NAME = '&lt;cjs2esm>';
+/**
+ * A list of 5to6-codemod transformations that are executed from local patches.
+ *
+ * @type {string[]}
+ * @ignore
+ */
+const CODEMOD_PATCHED_TRANSFORMATIONS = ['exports'];
 /**
  * This is called every time an unexpected error is thrown; it logs the error using the
  * `log`
@@ -440,9 +448,11 @@ const transformOutput = async (files, options) => {
 
   const cwd = process.cwd();
   let filepathForResolve;
+  let canUsePatch = false;
   if (codemodOptions.path) {
     filepathForResolve = path.join(cwd, codemodOptions.path, fileForResolve);
   } else {
+    canUsePatch = true;
     filepathForResolve = require.resolve(
       path.join('5to6-codemod', 'transforms', fileForResolve),
     );
@@ -450,19 +460,25 @@ const transformOutput = async (files, options) => {
 
   const codeModPath = path.dirname(filepathForResolve);
   const transformations = codemodFiles.map((file, index) => {
-    if (index === fileForResolveIndex) {
-      return filepathForResolve;
-    }
     if (file === CJS2ESM_TRANSFORMATION_NAME) {
       return path.join(__dirname, 'transformer.js');
     }
 
     const fileWithExt = `${file}.js`;
+
+    if (canUsePatch &amp;&amp; CODEMOD_PATCHED_TRANSFORMATIONS.includes(file)) {
+      return path.join(__dirname, '5to6-codemod', fileWithExt);
+    }
+
+    if (index === fileForResolveIndex) {
+      return filepathForResolve;
+    }
+
     if (fileWithExt.startsWith('.')) {
       return path.resolve(fileWithExt);
     }
 
-    return path.join(codeModPath, `${file}.js`);
+    return path.join(codeModPath, fileWithExt);
   });
 
   log('yellow', `Transforming ${files.length} files...`);
