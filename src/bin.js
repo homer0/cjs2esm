@@ -18,6 +18,7 @@ const {
     config.output,
     config.extension.use,
     config.forceDirectory,
+    config.ignore,
   );
   await transformOutput(files, config);
   if (config.addModuleEntry) {

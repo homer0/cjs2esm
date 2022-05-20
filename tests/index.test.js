@@ -410,7 +410,7 @@ describe('index', () => {
       // When
       result = await copyFiles(input, output, useExtension, forceDirectory);
       // Then
-      expect(sortResults(result)).toEqual(expectedResult);
+      expect(sortResults(result)).toEqual(sortResults(expectedResult));
       expect(fs.readdir).toHaveBeenCalledTimes(3);
       expect(fs.readdir).toHaveBeenNthCalledWith(1, src);
       expect(fs.readdir).toHaveBeenNthCalledWith(2, config);
@@ -423,6 +423,115 @@ describe('index', () => {
       expect(fs.ensureDir).toHaveBeenNthCalledWith(2, path.join(output, 'src'));
       expect(fs.ensureDir).toHaveBeenNthCalledWith(3, path.join(output, 'src', 'utils'));
       expect(fs.ensureDir).toHaveBeenNthCalledWith(4, path.join(output, 'src', 'utils'));
+      expect(fs.copyFile).toHaveBeenCalledTimes(expectedResult.length);
+      expectedResult.forEach((item, index) => {
+        expect(fs.copyFile).toHaveBeenNthCalledWith(index + 1, item.from, item.to);
+      });
+    });
+
+    it('should copy multiple directories and ignore others', async () => {
+      // Given
+      const src = path.join(cwd, 'src');
+      const config = path.join(cwd, 'config');
+      const input = [src, config];
+      const output = path.join(cwd, 'esm');
+      const ignore = ['node_modules', 'utils/@types'];
+      const useExtension = 'js';
+      const forceDirectory = false;
+      const filesSrc = ['index.js', 'utils', 'README.md', '.eslintrc', 'node_modules'];
+      const filesUtils = ['index.js', 'utils.js', '@types'];
+      const filesUtilsTypes = ['index.js'];
+      const filesNodeModules = ['modules.js'];
+      const filesConfig = ['config.js', '@types'];
+      const filesConfigTypes = ['index.js'];
+      /* eslint-disable jsdoc/require-jsdoc */
+      // - src
+      fs.readdir.mockImplementationOnce(() => filesSrc);
+      // - config
+      fs.readdir.mockImplementationOnce(() => filesConfig);
+      // - src/index.js
+      fs.stat.mockImplementationOnce(() => ({ isDirectory: () => false }));
+      // - src/utils
+      fs.stat.mockImplementationOnce(() => ({ isDirectory: () => true }));
+      // - src/README.md
+      fs.stat.mockImplementationOnce(() => ({ isDirectory: () => false }));
+      // - src/node_modules
+      fs.stat.mockImplementationOnce(() => ({ isDirectory: () => true }));
+      // - config/config.js
+      fs.stat.mockImplementationOnce(() => ({ isDirectory: () => false }));
+      // - config/@types
+      fs.stat.mockImplementationOnce(() => ({ isDirectory: () => true }));
+      // - src/utils
+      fs.readdir.mockImplementationOnce(() => filesUtils);
+      // - src/node_modules
+      fs.readdir.mockImplementationOnce(() => filesNodeModules);
+      // - config/@types
+      fs.readdir.mockImplementationOnce(() => filesConfigTypes);
+      // - src/utils/index.js
+      fs.stat.mockImplementationOnce(() => ({ isDirectory: () => false }));
+      // - src/utils/utils.js
+      fs.stat.mockImplementationOnce(() => ({ isDirectory: () => false }));
+      // - src/utils/@types
+      fs.stat.mockImplementationOnce(() => ({ isDirectory: () => true }));
+      // - src/node_modules/modules.js
+      fs.stat.mockImplementationOnce(() => ({ isDirectory: () => false }));
+      // - config/@types/index.js
+      fs.stat.mockImplementationOnce(() => ({ isDirectory: () => false }));
+      // - src/utils/@types
+      fs.readdir.mockImplementationOnce(() => filesUtilsTypes);
+      // - src/utils/@types/index.js
+      fs.stat.mockImplementationOnce(() => ({ isDirectory: () => false }));
+
+      /* eslint-enable jsdoc/require-jsdoc */
+      let result = null;
+      const expectedResult = [
+        {
+          from: path.join(config, 'config.js'),
+          to: path.join(output, 'config', 'config.js'),
+        },
+        {
+          from: path.join(config, '@types', 'index.js'),
+          to: path.join(output, 'config', '@types', 'index.js'),
+        },
+        {
+          from: path.join(src, 'index.js'),
+          to: path.join(output, 'src', 'index.js'),
+        },
+        {
+          from: path.join(src, 'utils', 'index.js'),
+          to: path.join(output, 'src', 'utils', 'index.js'),
+        },
+        {
+          from: path.join(src, 'utils', 'utils.js'),
+          to: path.join(output, 'src', 'utils', 'utils.js'),
+        },
+      ];
+      // When
+      result = await copyFiles(input, output, useExtension, forceDirectory, ignore);
+      // Then
+      expect(sortResults(result)).toEqual(sortResults(expectedResult));
+      expect(fs.readdir).toHaveBeenCalledTimes(6);
+      expect(fs.readdir).toHaveBeenNthCalledWith(1, src);
+      expect(fs.readdir).toHaveBeenNthCalledWith(2, config);
+      expect(fs.readdir).toHaveBeenNthCalledWith(3, path.join(src, 'utils'));
+      expect(fs.stat).toHaveBeenCalledTimes(
+        filesSrc.length +
+          filesUtils.length +
+          filesUtilsTypes.length +
+          filesNodeModules.length +
+          filesConfig.length +
+          filesConfigTypes.length -
+          1, // .eslintrc
+      );
+      expect(fs.ensureDir).toHaveBeenCalledTimes(5);
+      expect(fs.ensureDir).toHaveBeenNthCalledWith(1, path.join(output, 'config'));
+      expect(fs.ensureDir).toHaveBeenNthCalledWith(
+        2,
+        path.join(output, 'config', '@types'),
+      );
+      expect(fs.ensureDir).toHaveBeenNthCalledWith(3, path.join(output, 'src'));
+      expect(fs.ensureDir).toHaveBeenNthCalledWith(4, path.join(output, 'src', 'utils'));
+      expect(fs.ensureDir).toHaveBeenNthCalledWith(5, path.join(output, 'src', 'utils'));
       expect(fs.copyFile).toHaveBeenCalledTimes(expectedResult.length);
       expectedResult.forEach((item, index) => {
         expect(fs.copyFile).toHaveBeenNthCalledWith(index + 1, item.from, item.to);
@@ -465,7 +574,7 @@ describe('index', () => {
       // When
       result = await copyFiles(input, output, useExtension, forceDirectory);
       // Then
-      expect(sortResults(result)).toEqual(expectedResult);
+      expect(sortResults(result)).toEqual(sortResults(expectedResult));
       expect(fs.readdir).toHaveBeenCalledTimes(2);
       expect(fs.readdir).toHaveBeenNthCalledWith(1, src);
       expect(fs.readdir).toHaveBeenNthCalledWith(2, path.join(src, 'utils'));
