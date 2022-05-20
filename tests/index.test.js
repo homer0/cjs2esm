@@ -623,11 +623,18 @@ describe('index', () => {
       Runner.run.mockImplementationOnce(() => Promise.resolve(stats));
       Runner.run.mockImplementationOnce(() => Promise.resolve(stats));
       const expectedTransformations = [
-        ...['cjs', 'exports', 'named-export-generation'].map((file) =>
-          require.resolve(path.join('5to6-codemod', 'transforms', `${file}.js`)),
-        ),
-        path.resolve('src', 'transformer.js'),
-      ];
+        'cjs',
+        ':5to6-codemod/exports',
+        'named-export-generation',
+        ':transformer',
+      ].map((file) => {
+        if (file.startsWith(':')) {
+          const useFile = file.substring(1);
+          return path.resolve('src', ...`${useFile}.js`.split('/'));
+        }
+
+        return require.resolve(path.join('5to6-codemod', 'transforms', `${file}.js`));
+      });
       const expectedOptions = {
         verbose: 0,
         dry: false,
@@ -724,7 +731,7 @@ describe('index', () => {
       const options = {
         output: path.join(cwd, 'esm'),
         codemod: {
-          files: ['exports'],
+          files: ['named-export-generation'],
         },
       };
       const stats = {
@@ -793,11 +800,18 @@ describe('index', () => {
       Runner.run.mockImplementationOnce(() => Promise.resolve(stats));
       Runner.run.mockImplementationOnce(() => Promise.resolve(stats));
       Runner.run.mockImplementationOnce(() => Promise.resolve(stats));
-      const expectedTransformations = options.codemod.files.map((file) =>
-        file === CJS2ESM_TRANSFORMATION_NAME
-          ? path.resolve('src', 'transformer.js')
-          : require.resolve(path.join('5to6-codemod', 'transforms', `${file}.js`)),
-      );
+      const expectedTransformations = [
+        ':5to6-codemod/exports',
+        ':transformer',
+        'named-export-generation',
+      ].map((file) => {
+        if (file.startsWith(':')) {
+          const useFile = file.substring(1);
+          return path.resolve('src', ...`${useFile}.js`.split('/'));
+        }
+
+        return require.resolve(path.join('5to6-codemod', 'transforms', `${file}.js`));
+      });
       const expectedOptions = {
         verbose: 0,
         dry: false,
@@ -853,11 +867,7 @@ describe('index', () => {
       Runner.run.mockImplementationOnce(() => Promise.resolve(stats));
       const expectedTransformations = [
         path.resolve(`${customTransformationBefore}.js`),
-        ...options.codemod.files
-          .filter((file) => !file.startsWith('.'))
-          .map((file) =>
-            require.resolve(path.join('5to6-codemod', 'transforms', `${file}.js`)),
-          ),
+        path.resolve('src', '5to6-codemod', 'exports.js'),
         path.resolve(`${customTransformationAfter}.js`),
         path.resolve('src', 'transformer.js'),
       ];

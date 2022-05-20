@@ -9,8 +9,16 @@ const { log, findFile, getAbsPathInfo, requireModule } = require('./utils');
  * this module does.
  *
  * @type {string}
+ * @ignore
  */
 const CJS2ESM_TRANSFORMATION_NAME = '<cjs2esm>';
+/**
+ * A list of 5to6-codemod transformations that are executed from local patches.
+ *
+ * @type {string[]}
+ * @ignore
+ */
+const CODEMOD_PATCHED_TRANSFORMATIONS = ['exports'];
 /**
  * This is called every time an unexpected error is thrown; it logs the error using the
  * `log`
@@ -364,9 +372,11 @@ const transformOutput = async (files, options) => {
 
   const cwd = process.cwd();
   let filepathForResolve;
+  let canUsePatch = false;
   if (codemodOptions.path) {
     filepathForResolve = path.join(cwd, codemodOptions.path, fileForResolve);
   } else {
+    canUsePatch = true;
     filepathForResolve = require.resolve(
       path.join('5to6-codemod', 'transforms', fileForResolve),
     );
@@ -374,19 +384,25 @@ const transformOutput = async (files, options) => {
 
   const codeModPath = path.dirname(filepathForResolve);
   const transformations = codemodFiles.map((file, index) => {
-    if (index === fileForResolveIndex) {
-      return filepathForResolve;
-    }
     if (file === CJS2ESM_TRANSFORMATION_NAME) {
       return path.join(__dirname, 'transformer.js');
     }
 
     const fileWithExt = `${file}.js`;
+
+    if (canUsePatch && CODEMOD_PATCHED_TRANSFORMATIONS.includes(file)) {
+      return path.join(__dirname, '5to6-codemod', fileWithExt);
+    }
+
+    if (index === fileForResolveIndex) {
+      return filepathForResolve;
+    }
+
     if (fileWithExt.startsWith('.')) {
       return path.resolve(fileWithExt);
     }
 
-    return path.join(codeModPath, `${file}.js`);
+    return path.join(codeModPath, fileWithExt);
   });
 
   log('yellow', `Transforming ${files.length} files...`);
