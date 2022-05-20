@@ -1,3 +1,10 @@
+# [3.1.0](https://github.com/homer0/cjs2esm/compare/3.0.0...3.1.0) (2022-05-20)
+
+
+### Features
+
+* add option to ignore paths ([a61b430](https://github.com/homer0/cjs2esm/commit/a61b4307b68d287b339a2c31e3b81a6c56ac37eb))
+
 # [3.0.0](https://github.com/homer0/cjs2esm/compare/2.0.2...3.0.0) (2022-05-17)
 
 
