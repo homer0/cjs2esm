@@ -148,6 +148,7 @@ npx cjs2esm
 <p>The tool has a lot of different settings you can change to customize how the imports and extensions are handled:</p>
 <pre class="prettyprint source lang-js"><code>module.exports = {
   input: ['src'],
+  ignore: [],
   output: 'esm',
   forceDirectory: null,
   modules: [],
@@ -177,6 +178,9 @@ npx cjs2esm
 <blockquote>
 <p>Default <code>['src']</code></p>
 </blockquote>
+<h4>.ignore</h4>
+<p>A list of expressions (strings that will be converted on <code>RegExp</code>) to specify files/paths that should be ignored.</p>
+<p>When a path is ignored, not only doesn't it get transformed, but it also doesn't get copied to the output directory.</p>
 <h4>.output</h4>
 <p>The directory where the transformed code should be placed.</p>
 <blockquote>

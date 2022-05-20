@@ -237,13 +237,25 @@ const findFiles = async (directory) => {
  * @param {boolean}         [forceDirectory=true]  If `false`, the directory itself won't
  *                                                 be copied,
  *                                                 just its contents.
+ * @param {string[]}        [ignore=[]]            A list of expressions for paths that
+ *                                                 should be ignored.
  * @returns {Promise&lt;CJS2ESMCopiedFile[]>}
  * @ignore
  */
-const copyDirectory = async (directory, output, useExtension, forceDirectory = true) => {
+const copyDirectory = async (
+  directory,
+  output,
+  useExtension,
+  forceDirectory = true,
+  ignore = [],
+) => {
   const cwd = process.cwd();
   const extension = `.${useExtension}`;
   let contents = await findFiles(directory);
+  if (ignore.length) {
+    const ignoreExp = ignore.map((item) => new RegExp(item));
+    contents = contents.filter((item) => !ignoreExp.some((exp) => item.match(exp)));
+  }
   contents = await Promise.all(
     contents.map(async (item) => {
       let cleanPath = item.substr(cwd.length + 1);
@@ -283,9 +295,11 @@ const copyDirectory = async (directory, output, useExtension, forceDirectory = t
  *                                          instead of the directory itself; this
  *                                          parameter can be used to force it and always
  *                                          copy the directory.
+ * @param {?string[]}       ignore          A list of expressions for paths that should be
+ *                                          ignored.
  * @returns {Promise&lt;CJS2ESMCopiedFile[]>}
  */
-const copyFiles = async (input, output, useExtension, forceDirectory) => {
+const copyFiles = async (input, output, useExtension, forceDirectory, ignore) => {
   let result;
   if (input.length === 1) {
     const [firstInput] = input;
@@ -294,10 +308,11 @@ const copyFiles = async (input, output, useExtension, forceDirectory) => {
       output,
       useExtension,
       forceDirectory === true,
+      ignore,
     );
   } else {
     result = await Promise.all(
-      input.map((item) => copyDirectory(item, output, useExtension)),
+      input.map((item) => copyDirectory(item, output, useExtension, undefined, ignore)),
     );
 
     result = result.reduce((acc, item) => [...acc, ...item], []);
