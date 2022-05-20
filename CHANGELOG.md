@@ -1,3 +1,11 @@
+## [3.1.1](https://github.com/homer0/cjs2esm/compare/3.1.0...3.1.1) (2022-05-20)
+
+
+### Bug Fixes
+
+* have a local version of the exports patch ([6a12fa6](https://github.com/homer0/cjs2esm/commit/6a12fa6432fd3d4cb18764b770b3a5f3636b44d2))
+* remove patch-package ([21cd985](https://github.com/homer0/cjs2esm/commit/21cd98554aa531e96cd71b78f9fb411020c6cf8f))
+
 # [3.1.0](https://github.com/homer0/cjs2esm/compare/3.0.0...3.1.0) (2022-05-20)
 
 
