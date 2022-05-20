@@ -75,6 +75,7 @@
   },
   "config": {
     "cjs2esm": {
+      "ignore": ["5to6-codemod"],
       "filesWithShebang": [
         "src/bin.js"
       ]
