@@ -42,6 +42,7 @@ describe('bin', () => {
     const config = {
       input: 'some-input',
       output: 'some-output',
+      ignore: [],
       extension: {
         use: 'jsx',
       },
@@ -62,6 +63,7 @@ describe('bin', () => {
       config.output,
       config.extension.use,
       config.forceDirectory,
+      config.ignore,
     );
     expect(fns.transformOutput).toHaveBeenCalledTimes(1);
     expect(fns.transformOutput).toHaveBeenCalledWith(files, config);
@@ -77,6 +79,7 @@ describe('bin', () => {
         use: 'jsx',
       },
       forceDirectory: 'maybe',
+      ignore: [],
       addModuleEntry: true,
     };
     const files = ['file-a.js', 'file-b.mjs'];
@@ -94,6 +97,7 @@ describe('bin', () => {
       config.output,
       config.extension.use,
       config.forceDirectory,
+      config.ignore,
     );
     expect(fns.transformOutput).toHaveBeenCalledTimes(1);
     expect(fns.transformOutput).toHaveBeenCalledWith(files, config);
@@ -109,6 +113,7 @@ describe('bin', () => {
         use: 'jsx',
       },
       forceDirectory: 'maybe',
+      ignore: [],
       addPackageJson: true,
     };
     const files = ['file-a.js', 'file-b.mjs'];
@@ -126,6 +131,7 @@ describe('bin', () => {
       config.output,
       config.extension.use,
       config.forceDirectory,
+      config.ignore,
     );
     expect(fns.transformOutput).toHaveBeenCalledTimes(1);
     expect(fns.transformOutput).toHaveBeenCalledWith(files, config);

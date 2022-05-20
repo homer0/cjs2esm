@@ -78,6 +78,7 @@ The tool has a lot of different settings you can change to customize how the imp
 ```js
 module.exports = {
   input: ['src'],
+  ignore: [],
   output: 'esm',
   forceDirectory: null,
   modules: [],
@@ -108,6 +109,12 @@ To modify the settings, you can...
 The list of directories that should be transformed.
 
 > Default `['src']`
+
+#### .ignore
+
+A list of expressions (strings that will be converted on `RegExp`) to specify files/paths that should be ignored.
+
+When a path is ignored, not only doesn't it get transformed, but it also doesn't get copied to the output directory.
 
 #### .output
 
