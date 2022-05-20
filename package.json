@@ -20,8 +20,7 @@
     "chalk": "^4.1.2",
     "del": "^6.0.0",
     "fs-extra": "^10.1.0",
-    "jscodeshift": "0.13.1",
-    "patch-package": "^6.4.7"
+    "jscodeshift": "0.13.1"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.0.0",
@@ -70,8 +69,7 @@
     "lint:all": "./utils/scripts/lint-all",
     "docs": "./utils/scripts/docs",
     "todo": "./utils/scripts/todo",
-    "prepare": "./utils/scripts/prepare",
-    "postinstall": "./utils/scripts/postinstall"
+    "prepare": "./utils/scripts/prepare"
   },
   "config": {
     "cjs2esm": {
