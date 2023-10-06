@@ -1,6 +1,6 @@
 /**
  * @typedef {Object} ESMModules
- * @property {import('chalk')} chalk  To colorize the output.
+ * @property {Object} chalk  To colorize the output.
  * @ignore
  */
 
@@ -54,7 +54,7 @@ const getESMModule = (name) => {
 /**
  * Get a reference for `chalk` module.
  *
- * @returns {ESMModules['chalk']}
+ * @returns {Object}
  */
 const getChalk = () => getESMModule('chalk');
 
