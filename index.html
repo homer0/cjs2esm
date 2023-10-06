@@ -59,7 +59,7 @@
                 href="https://www.npmjs.com/package/cjs2esm"
                 target="_blank"
             >View the package on NPM</a></li>
-        </ul><h3>Global</h3><ul><li><a href="global.html#addErrorHandler">addErrorHandler</a></li><li><a href="global.html#addPackageJSON">addPackageJSON</a></li><li><a href="global.html#copyFiles">copyFiles</a></li><li><a href="global.html#createReplacementForFolder">createReplacementForFolder</a></li><li><a href="global.html#ensureOutput">ensureOutput</a></li><li><a href="global.html#findFile">findFile</a></li><li><a href="global.html#findFileSync">findFileSync</a></li><li><a href="global.html#getAbsPathInfo">getAbsPathInfo</a></li><li><a href="global.html#getAbsPathInfoSync">getAbsPathInfoSync</a></li><li><a href="global.html#getConfiguration">getConfiguration</a></li><li><a href="global.html#log">log</a></li><li><a href="global.html#path">path</a></li><li><a href="global.html#requireModule">requireModule</a></li><li><a href="global.html#transform">transform</a></li><li><a href="global.html#transformOutput">transformOutput</a></li><li><a href="global.html#updatePackageJSON">updatePackageJSON</a></li><li><a href="global.html#util">util</a></li></ul>
+        </ul><h3>Global</h3><ul><li><a href="global.html#addErrorHandler">addErrorHandler</a></li><li><a href="global.html#addPackageJSON">addPackageJSON</a></li><li><a href="global.html#copyFiles">copyFiles</a></li><li><a href="global.html#createReplacementForFolder">createReplacementForFolder</a></li><li><a href="global.html#ensureOutput">ensureOutput</a></li><li><a href="global.html#esmModules">esmModules</a></li><li><a href="global.html#findFile">findFile</a></li><li><a href="global.html#findFileSync">findFileSync</a></li><li><a href="global.html#getAbsPathInfo">getAbsPathInfo</a></li><li><a href="global.html#getAbsPathInfoSync">getAbsPathInfoSync</a></li><li><a href="global.html#getChalk">getChalk</a></li><li><a href="global.html#getConfiguration">getConfiguration</a></li><li><a href="global.html#log">log</a></li><li><a href="global.html#path">path</a></li><li><a href="global.html#prepare">prepare</a></li><li><a href="global.html#requireModule">requireModule</a></li><li><a href="global.html#transform">transform</a></li><li><a href="global.html#transformOutput">transformOutput</a></li><li><a href="global.html#updatePackageJSON">updatePackageJSON</a></li><li><a href="global.html#util">util</a></li></ul>
 </nav>
 
 <div id="main">
@@ -90,16 +90,15 @@
 
     <section class="readme usertext">
         <article><h1>CJS 2 ESM</h1>
-<p><a href="https://github.com/homer0/cjs2esm/actions?query=workflow%3ATest"><img src="https://img.shields.io/github/workflow/status/homer0/cjs2esm/Test/main?style=flat-square" alt="GitHub Workflow Status (main)"></a>
-<a href="https://coveralls.io/github/homer0/cjs2esm?branch=main"><img src="https://img.shields.io/coveralls/github/homer0/cjs2esm.svg?style=flat-square" alt="Coveralls github"></a>
-<a href="https://david-dm.org/homer0/cjs2esm"><img src="https://img.shields.io/david/homer0/cjs2esm.svg?style=flat-square" alt="David"></a>
-<a href="https://david-dm.org/homer0/cjs2esm"><img src="https://img.shields.io/david/dev/homer0/cjs2esm.svg?style=flat-square" alt="David"></a></p>
+<p><a href="https://github.com/homer0/cjs2esm/actions/workflows/test.yml?query=branch%3Amain"><img src="https://img.shields.io/github/actions/workflow/status/homer0/cjs2esm/test.yml?branch=main&amp;style=flat-square" alt="GitHub Workflow Status (main)"></a>
+<a href="https://coveralls.io/github/homer0/cjs2esm?branch=main"><img src="https://img.shields.io/coveralls/github/homer0/cjs2esm.svg?style=flat-square" alt="Coveralls GitHub"></a>
+<img src="https://img.shields.io/librariesio/release/npm/cjs2esm?style=flat-square" alt="Libraries.io dependency status for latest release"></p>
 <p>Transforms a project that uses CommonJS to ES Modules.</p>
 <h2>📝 Introduction</h2>
 <blockquote>
 <p>If you are wondering why I built this, go to the <a href="#motivation">Motivation</a> section.</p>
 </blockquote>
-<p>You can use this tool to transform a project that uses <strong>CommonJS</strong> to <strong>ES Modules</strong> and get it ready for Node <code>v14</code>, any module bundler with <strong>ESM</strong> support, or even <a href="https://github.com/homer0/jsdoc-ts-utils#import-type-defintions"><code>typedef</code> imports on JSDoc</a>.</p>
+<p>You can use this tool to transform a project that uses <strong>CommonJS</strong> to <strong>ES Modules</strong> and get it ready for an ESM world, any module bundler with <strong>ESM</strong> support, or even <a href="https://github.com/homer0/jsdoc-ts-utils#import-type-defintions"><code>typedef</code> imports on JSDoc</a>.</p>
 <p>This tool internally uses <a href="https://github.com/facebook/jscodeshift"><code>jscodeshift</code></a> with the transformations from <a href="https://github.com/5to6/5to6-codemod"><code>5to6</code></a> and an extra one created to fix missing extensions.</p>
 <h2>⚡️ Examples</h2>
 <h3>Require</h3>
@@ -138,11 +137,12 @@ export { Rosario, Pilar };
 <pre class="prettyprint source lang-bash"><code># From the package.json
 cjs2esm
 
+# NPM
+npx cjs2esm
+
 # Yarn
 yarn cjs2esm
 
-# NPM
-npx cjs2esm
 </code></pre>
 <h3>Configuration</h3>
 <p>The tool has a lot of different settings you can change to customize how the imports and extensions are handled:</p>
@@ -283,19 +283,22 @@ import ObjectUtils from 'wootils/esm/shared/objectUtils.js';
 <h2>ES Modules</h2>
 <p>Yes, if you want to use the tool as a library, the tool uses itself to generate a ESM version, so you can use the <code>/esm</code> path to access it:</p>
 <pre class="prettyprint source lang-js"><code>// commonjs
-const { getConfiguration } = require('cjs2esm');
+const { prepare, getConfiguration } = require('cjs2esm');
 
 // ESM
-import { getConfiguration } from 'cjs2esm/esm';
+import { prepare, getConfiguration } from 'cjs2esm/esm';
 
 // #dogfooding
 </code></pre>
+<blockquote>
+<p>Check <code>src/index.js</code> to see how the API is used.</p>
+</blockquote>
 <h2>⚙️ Development</h2>
-<h3>NPM/Yarn tasks</h3>
+<h3>Scripts</h3>
 <table>
 <thead>
 <tr>
-<th>Task</th>
+<th>Script</th>
 <th>Description</th>
 </tr>
 </thead>
@@ -323,24 +326,24 @@ import { getConfiguration } from 'cjs2esm/esm';
 </tbody>
 </table>
 <h3>Repository hooks</h3>
-<p>I use <a href="https://yarnpkg.com/package/husky"><code>husky</code></a> to automatically install the repository hooks so the code will be tested and linted before any commit, and the dependencies updated after every merge.</p>
+<p>I use <a href="https://www.npmjs.com/package/husky"><code>husky</code></a> to automatically install the repository hooks so the code will be tested and linted before any commit, and the dependencies updated after every merge.</p>
 <h4>Commits convention</h4>
 <p>I use <a href="https://www.conventionalcommits.org">conventional commits</a> with <a href="https://commitlint.js.org"><code>commitlint</code></a> in order to support semantic releases. The one that sets it up is actually husky, that installs a script that runs <code>commitlint</code> on the <code>git commit</code> command.</p>
 <p>The configuration is on the <code>commitlint</code> property of the <code>package.json</code>.</p>
 <h3>Releases</h3>
-<p>I use <a href="https://yarnpkg.com/package/semantic-release"><code>semantic-release</code></a> and a GitHub action to automatically release on NPM everything that gets merged to main.</p>
+<p>I use <a href="https://www.npmjs.com/package/semantic-release"><code>semantic-release</code></a> and a GitHub action to automatically release on NPM everything that gets merged to main.</p>
 <p>The configuration for <code>semantic-release</code> is on <code>./releaserc</code> and the workflow for the release is on <code>./.github/workflow/release.yml</code>.</p>
 <h3>Testing</h3>
 <p>I use <a href="https://facebook.github.io/jest/">Jest</a> to test the project.</p>
 <p>The configuration file is on <code>./.jestrc.js</code>, the tests are on <code>./tests</code> and the script that runs it is on <code>./utils/scripts/test</code>.</p>
 <h3>Linting &amp;&amp; Formatting</h3>
-<p>I use <a href="https://eslint.org">ESlint</a> with <a href="https://yarnpkg.com/en/package/@homer0/eslint-plugin">my own custom configuration</a> to validate all the JS code. The configuration file for the project code is on <code>./.eslintrc</code> and the one for the tests is on <code>./tests/.eslintrc</code>. There's also an <code>./.eslintignore</code> to exclude some files on the process. The script that runs it is on <code>./utils/scripts/lint-all</code>.</p>
-<p>For formatting I use <a href="https://prettier.io">Prettier</a> with <a href="https://yarnpkg.com/en/package/@homer0/prettier-config">my custom configuration</a>. The configuration file for the project code is on <code>./.prettierrc</code>.</p>
+<p>I use <a href="https://eslint.org">ESlint</a> with <a href="https://www.npmjs.com/package/@homer0/eslint-plugin">my own custom configuration</a> to validate all the JS code. The configuration file for the project code is on <code>./.eslintrc</code> and the one for the tests is on <code>./tests/.eslintrc</code>. There's also an <code>./.eslintignore</code> to exclude some files on the process. The script that runs it is on <code>./utils/scripts/lint-all</code>.</p>
+<p>For formatting I use <a href="https://prettier.io">Prettier</a> with <a href="https://www.npmjs.com/package/@homer0/prettier-config">my custom configuration</a>. The configuration file for the project code is on <code>./.prettierrc</code>.</p>
 <h3>Documentation</h3>
 <p>I use <a href="https://jsdoc.app">JSDoc</a> to generate an HTML documentation site for the project.</p>
 <p>The configuration file is on <code>./.jsdoc.js</code> and the script that runs it is on <code>./utils/scripts/docs</code>.</p>
 <h3>To-Dos</h3>
-<p>I use <code>@todo</code> comments to write all the pending improvements and fixes, and <a href="https://yarnpkg.com/en/package/leasot">Leasot</a> to generate a report. The script that runs it is on <code>./utils/scripts/todo</code>.</p>
+<p>I use <code>@todo</code> comments to write all the pending improvements and fixes, and <a href="https://www.npmjs.com/package/leasot">Leasot</a> to generate a report. The script that runs it is on <code>./utils/scripts/todo</code>.</p>
 <h2>💡 Motivation</h2>
 <p>I maintain a lot of open source projects (that only I use :P), most of them are Node libraries, and I alway respect the good practice of giving support to the oldest LTS, currently <code>v10</code> (for two more weeks).</p>
 <p><strong>I don't want to add transpilation just for this</strong>, Node <code>v10</code> has enough features that I don't need Babel, which means that I don't have to use <code>babel-eslint</code> to lint, nor configure Jest for transpilation.</p>
@@ -369,7 +372,7 @@ Update: 2022, and the interop is still a mess, so I'm not sure when I'll depreca
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.10</a> using a forked <a href="https://github.com/homer0/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.2</a> using a forked <a href="https://github.com/homer0/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>
