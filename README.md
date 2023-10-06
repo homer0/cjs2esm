@@ -64,11 +64,12 @@ The package comes with a binary that you can execute from your `package.json`, o
 # From the package.json
 cjs2esm
 
+# NPM
+npx cjs2esm
+
 # Yarn
 yarn cjs2esm
 
-# NPM
-npx cjs2esm
 ```
 
 ### Configuration
@@ -261,9 +262,9 @@ import { getConfiguration } from 'cjs2esm/esm';
 ```
 ## ⚙️ Development
 
-### NPM/Yarn tasks
+### Scripts
 
-| Task       | Description                         |
+| Script     | Description                         |
 |------------|-------------------------------------|
 | `test`     | Run the project unit tests.         |
 | `lint`     | Lint the modified files.            |
@@ -274,7 +275,7 @@ import { getConfiguration } from 'cjs2esm/esm';
 
 ### Repository hooks
 
-I use [`husky`](https://yarnpkg.com/package/husky) to automatically install the repository hooks so the code will be tested and linted before any commit, and the dependencies updated after every merge.
+I use [`husky`](https://www.npmjs.com/package/husky) to automatically install the repository hooks so the code will be tested and linted before any commit, and the dependencies updated after every merge.
 
 #### Commits convention
 
@@ -284,7 +285,7 @@ The configuration is on the `commitlint` property of the `package.json`.
 
 ### Releases
 
-I use [`semantic-release`](https://yarnpkg.com/package/semantic-release) and a GitHub action to automatically release on NPM everything that gets merged to main.
+I use [`semantic-release`](https://www.npmjs.com/package/semantic-release) and a GitHub action to automatically release on NPM everything that gets merged to main.
 
 The configuration for `semantic-release` is on `./releaserc` and the workflow for the release is on `./.github/workflow/release.yml`.
 
@@ -296,9 +297,9 @@ The configuration file is on `./.jestrc.js`, the tests are on `./tests` and the 
 
 ### Linting && Formatting
 
-I use [ESlint](https://eslint.org) with [my own custom configuration](https://yarnpkg.com/en/package/@homer0/eslint-plugin) to validate all the JS code. The configuration file for the project code is on `./.eslintrc` and the one for the tests is on `./tests/.eslintrc`. There's also an `./.eslintignore` to exclude some files on the process. The script that runs it is on `./utils/scripts/lint-all`.
+I use [ESlint](https://eslint.org) with [my own custom configuration](https://www.npmjs.com/package/@homer0/eslint-plugin) to validate all the JS code. The configuration file for the project code is on `./.eslintrc` and the one for the tests is on `./tests/.eslintrc`. There's also an `./.eslintignore` to exclude some files on the process. The script that runs it is on `./utils/scripts/lint-all`.
 
-For formatting I use [Prettier](https://prettier.io) with [my custom configuration](https://yarnpkg.com/en/package/@homer0/prettier-config). The configuration file for the project code is on `./.prettierrc`.
+For formatting I use [Prettier](https://prettier.io) with [my custom configuration](https://www.npmjs.com/package/@homer0/prettier-config). The configuration file for the project code is on `./.prettierrc`.
 
 ### Documentation
 
@@ -308,7 +309,7 @@ The configuration file is on `./.jsdoc.js` and the script that runs it is on `./
 
 ### To-Dos
 
-I use `@todo` comments to write all the pending improvements and fixes, and [Leasot](https://yarnpkg.com/en/package/leasot) to generate a report. The script that runs it is on `./utils/scripts/todo`.
+I use `@todo` comments to write all the pending improvements and fixes, and [Leasot](https://www.npmjs.com/package/leasot) to generate a report. The script that runs it is on `./utils/scripts/todo`.
 
 ## 💡 Motivation
 

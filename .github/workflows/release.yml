@@ -18,13 +18,13 @@ jobs:
       - name: Install dependencies
         env:
           HUSKY: 0
-        run: yarn --frozen-lockfile
-      - run: yarn semantic-release
+        run: npm ci
+      - run: npx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Generate documentation
-        run: yarn docs
+        run: npm run docs
       - name: Deploy documentation
         uses: JamesIves/github-pages-deploy-action@4
         with:
