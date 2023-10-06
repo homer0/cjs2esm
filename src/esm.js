@@ -19,6 +19,8 @@ let esmModules = null;
  */
 const prepareESMModules = async () => {
   if (esmModules) {
+    // eslint-disable-next-line no-console
+    console.warn('ESM modules are already loaded.');
     return;
   }
 
@@ -57,4 +59,5 @@ const getESMModule = (name) => {
 const getChalk = () => getESMModule('chalk');
 
 module.exports.prepareESMModules = prepareESMModules;
+module.exports.getESMModule = getESMModule;
 module.exports.getChalk = getChalk;
