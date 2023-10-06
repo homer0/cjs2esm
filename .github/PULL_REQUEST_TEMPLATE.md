@@ -4,8 +4,6 @@
 
 ```bash
 npm test
-# or
-yarn test
 ```
 
 ### TODOs

@@ -1,39 +1,47 @@
 /* eslint-disable no-console */
 jest.unmock('../src/utils');
-jest.mock(
-  'chalk',
-  () =>
-    new Proxy(
-      {},
-      {
-        mocks: {},
-        clear() {
-          Object.keys(this.mocks).forEach((color) => {
-            this.mocks[color].mockClear();
-          });
-        },
-        get(target, name) {
-          let result;
-          if (this[name]) {
-            result = this[name];
-          } else {
-            if (!this.mocks[name]) {
-              this.mocks[name] = jest.fn((str) => str);
-            }
-
-            result = this.mocks[name];
+jest.mock('../src/esm', () => {
+  const chalk = new Proxy(
+    {},
+    {
+      mocks: {},
+      clear() {
+        Object.keys(this.mocks).forEach((color) => {
+          this.mocks[color].mockClear();
+        });
+      },
+      get(target, name) {
+        let result;
+        if (this[name]) {
+          result = this[name];
+        } else {
+          if (!this.mocks[name]) {
+            this.mocks[name] = jest.fn((str) => str);
           }
 
-          return result;
-        },
+          result = this.mocks[name];
+        }
+
+        return result;
       },
-    ),
-);
+    },
+  );
+
+  return {
+    /**
+     * Get the Proxy-mock for `chalk`.
+     *
+     * @returns {Object}
+     */
+    getChalk: () => ({ default: chalk }),
+    chalk,
+  };
+});
 jest.mock('fs-extra');
 
 const path = require('path');
-const chalk = require('chalk');
 const fs = require('fs-extra');
+const { chalk } = require('../src/esm');
 const utils = require('../src/utils');
 const pkgJson = require('../package.json');
 

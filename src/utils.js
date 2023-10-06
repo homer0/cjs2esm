@@ -1,7 +1,7 @@
 const path = require('path');
-const chalk = require('chalk');
 const fs = require('fs-extra');
 const pkgJson = require('../package.json');
+const { getChalk } = require('./esm');
 
 /**
  * @typedef {import('path').ParsedPath} ParsedPath
@@ -22,8 +22,11 @@ const pkgJson = require('../package.json');
  * @param {string[]} args   The list of messages to log.
  */
 const log = (color, ...args) => {
+  const chalk = getChalk();
   // eslint-disable-next-line no-console
-  console.log(...[`[${pkgJson.name}]`, ...args].map((item) => chalk[color](item)));
+  console.log(
+    ...[`[${pkgJson.name}]`, ...args].map((item) => chalk.default[color](item)),
+  );
 };
 /**
  * Given a list of file names and a directory, the function will try find the first file

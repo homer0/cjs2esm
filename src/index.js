@@ -2,6 +2,7 @@ const path = require('path');
 const fs = require('fs-extra');
 const Runner = require('jscodeshift/src/Runner');
 const { repository } = require('../package.json');
+const { prepareESMModules } = require('./esm');
 const { log, findFile, getAbsPathInfo, requireModule } = require('./utils');
 
 /**
@@ -19,6 +20,15 @@ const CJS2ESM_TRANSFORMATION_NAME = '<cjs2esm>';
  * @ignore
  */
 const CODEMOD_PATCHED_TRANSFORMATIONS = ['exports'];
+/**
+ * Setups everything necessary for the library to work.
+ *
+ * @returns {Promise<void>}
+ */
+const prepare = async () => {
+  await prepareESMModules();
+};
+
 /**
  * This is called every time an unexpected error is thrown; it logs the error using the
  * `log`
@@ -518,6 +528,7 @@ const addPackageJSON = async (output) => {
   log('green', 'The packages.json for the ESM version was successfully added!');
 };
 
+module.exports.prepare = prepare;
 module.exports.addErrorHandler = addErrorHandler;
 module.exports.getConfiguration = getConfiguration;
 module.exports.ensureOutput = ensureOutput;

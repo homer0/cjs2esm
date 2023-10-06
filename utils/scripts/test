@@ -1,2 +1,2 @@
 #!/bin/bash -e
-jest -c ./.jestrc.js $@
+node --experimental-vm-modules node_modules/jest/bin/jest.js -c ./.jestrc.js $@

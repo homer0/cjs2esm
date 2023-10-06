@@ -10,25 +10,23 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Read .nvmrc
-        run: echo "::set-output name=NVMRC::$(cat .nvmrc)"
-        id: nvm
-      - uses: actions/setup-node@v1
+      - uses: actions/checkout@v3
+      - name: Node.js
+        uses: actions/setup-node@v3
         with:
-          node-version: '${{ steps.nvm.outputs.NVMRC }}'
+          node-version-file: '.nvmrc'
       - name: Install dependencies
         env:
           HUSKY: 0
-        run: yarn --frozen-lockfile
-      - run: yarn semantic-release
+        run: npm ci
+      - run: npx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Generate documentation
-        run: yarn docs
+        run: npm run docs
       - name: Deploy documentation
-        uses: JamesIves/github-pages-deploy-action@4.1.1
+        uses: JamesIves/github-pages-deploy-action@4
         with:
           BRANCH: gh-pages
           FOLDER: docs
