@@ -253,13 +253,16 @@ Yes, if you want to use the tool as a library, the tool uses itself to generate 
 
 ```js
 // commonjs
-const { getConfiguration } = require('cjs2esm');
+const { prepare, getConfiguration } = require('cjs2esm');
 
 // ESM
-import { getConfiguration } from 'cjs2esm/esm';
+import { prepare, getConfiguration } from 'cjs2esm/esm';
 
 // #dogfooding
 ```
+
+> Check `src/index.js` to see how the API is used.
+
 ## ⚙️ Development
 
 ### Scripts
