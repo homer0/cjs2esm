@@ -13,12 +13,27 @@ const {
   updatePackageJSON,
   addPackageJSON,
   addErrorHandler,
+  prepare,
   CJS2ESM_TRANSFORMATION_NAME,
 } = require('../src');
 const utils = require('../src/utils');
+const esm = require('../src/esm');
 
 describe('index', () => {
   const cwd = process.cwd();
+
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
+
+  describe('prepare', () => {
+    it('should load ESM modules from the prepare function', async () => {
+      // Given/When
+      await prepare();
+      // Then
+      expect(esm.prepareESMModules).toHaveBeenCalledTimes(1);
+    });
+  });
 
   describe('getConfiguration', () => {
     beforeEach(() => {
