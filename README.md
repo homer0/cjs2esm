@@ -1,9 +1,8 @@
 # CJS 2 ESM
 
-[![GitHub Workflow Status (main)](https://img.shields.io/github/workflow/status/homer0/cjs2esm/Test/main?style=flat-square)](https://github.com/homer0/cjs2esm/actions?query=workflow%3ATest)
-[![Coveralls github](https://img.shields.io/coveralls/github/homer0/cjs2esm.svg?style=flat-square)](https://coveralls.io/github/homer0/cjs2esm?branch=main)
-[![David](https://img.shields.io/david/homer0/cjs2esm.svg?style=flat-square)](https://david-dm.org/homer0/cjs2esm)
-[![David](https://img.shields.io/david/dev/homer0/cjs2esm.svg?style=flat-square)](https://david-dm.org/homer0/cjs2esm)
+[![GitHub Workflow Status (main)](https://img.shields.io/github/actions/workflow/status/homer0/cjs2esm/test.yml?branch=main&style=flat-square)](https://github.com/homer0/cjs2esm/actions/workflows/test.yml?query=branch%3Amain)
+[![Coveralls GitHub](https://img.shields.io/coveralls/github/homer0/cjs2esm.svg?style=flat-square)](https://coveralls.io/github/homer0/cjs2esm?branch=main)
+![Libraries.io dependency status for latest release](https://img.shields.io/librariesio/release/npm/cjs2esm?style=flat-square)
 
 Transforms a project that uses CommonJS to ES Modules.
 
@@ -11,7 +10,7 @@ Transforms a project that uses CommonJS to ES Modules.
 
 > If you are wondering why I built this, go to the [Motivation](#motivation) section.
 
-You can use this tool to transform a project that uses **CommonJS** to **ES Modules** and get it ready for Node `v14`, any module bundler with **ESM** support, or even [`typedef` imports on JSDoc](https://github.com/homer0/jsdoc-ts-utils#import-type-defintions).
+You can use this tool to transform a project that uses **CommonJS** to **ES Modules** and get it ready for an ESM world, any module bundler with **ESM** support, or even [`typedef` imports on JSDoc](https://github.com/homer0/jsdoc-ts-utils#import-type-defintions).
 
 This tool internally uses [`jscodeshift`](https://github.com/facebook/jscodeshift) with the transformations from [`5to6`](https://github.com/5to6/5to6-codemod) and an extra one created to fix missing extensions.
 
