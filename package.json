@@ -2,7 +2,7 @@
   "name": "cjs2esm",
   "description": "Transforms a project that uses CommonJS to ES Modules.",
   "homepage": "https://homer0.github.io/cjs2esm/",
-  "version": "3.1.1",
+  "version": "4.0.0",
   "repository": "homer0/cjs2esm",
   "author": "Leonardo Apiwan (@homer0) <me@homer0.com>",
   "keywords": [

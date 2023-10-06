@@ -1,3 +1,18 @@
+# [4.0.0](https://github.com/homer0/cjs2esm/compare/3.1.1...4.0.0) (2023-10-06)
+
+
+### Bug Fixes
+
+* add ESM loader ([d18fe1b](https://github.com/homer0/cjs2esm/commit/d18fe1b493eff4f0fa8990fc9fca7beae62267ab))
+* add warning when attempt to loading mod twice ([d6baed1](https://github.com/homer0/cjs2esm/commit/d6baed10a36f04e2ed0841c86d5819f5b74aebc8))
+* drop Node 14 support ([cde7fd4](https://github.com/homer0/cjs2esm/commit/cde7fd44c8e212a508e8c9a9b4bb2dc50a64291f))
+* update dependencies ([a4533b6](https://github.com/homer0/cjs2esm/commit/a4533b6719ce66e64ba9971194f4db5710134454))
+
+
+### BREAKING CHANGES
+
+* Node 14 is not longer supported. Node 18.17 is the minimum required version now.
+
 ## [3.1.1](https://github.com/homer0/cjs2esm/compare/3.1.0...3.1.1) (2022-05-20)
 
 
