@@ -932,6 +932,20 @@ describe('index', () => {
       });
     });
 
+    it('should throw if the no files are provided', () => {
+      // Given
+      const files = [];
+      const options = {
+        input: ['src'],
+        output: 'esm',
+      };
+      expect.assertions(1);
+      // When
+      return transformOutput(files, options).catch((error) => {
+        expect(error.message).toMatch(/No files to transform were found/i);
+      });
+    });
+
     it('should remove and restore the shebang of a file', async () => {
       // Given
       const files = [
