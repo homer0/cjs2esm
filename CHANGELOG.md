@@ -1,3 +1,13 @@
+## [4.0.1](https://github.com/homer0/cjs2esm/compare/4.0.0...4.0.1) (2024-02-19)
+
+
+### Bug Fixes
+
+* add missing at symbol ([6cffd59](https://github.com/homer0/cjs2esm/commit/6cffd59fe6c571d97a318ec954c97b9006804659))
+* change prop on CI release ([2318410](https://github.com/homer0/cjs2esm/commit/2318410775a2556812bdfaf3ad8d8d3cdf04a5e0))
+* throw a proper error when no files are found ([159e06f](https://github.com/homer0/cjs2esm/commit/159e06ff46c8abdf7efd07768dfcb5ba31f33b55))
+* update dependencies ([d38c7ef](https://github.com/homer0/cjs2esm/commit/d38c7efd61b2730d64eb68fac344a3be454dec3d))
+
 # [4.0.0](https://github.com/homer0/cjs2esm/compare/3.1.1...4.0.0) (2023-10-06)
 
 

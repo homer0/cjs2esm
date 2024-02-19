@@ -2,7 +2,7 @@
   "name": "cjs2esm",
   "description": "Transforms a project that uses CommonJS to ES Modules.",
   "homepage": "https://homer0.github.io/cjs2esm/",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "repository": "homer0/cjs2esm",
   "author": "Leonardo Apiwan (@homer0) <me@homer0.com>",
   "keywords": [
@@ -16,10 +16,13 @@
   "dependencies": {
     "@babel/core": "^7.23.9",
     "@babel/preset-env": "^7.23.9",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
     "5to6-codemod": "1.8.0",
     "chalk": "^5.3.0",
     "fs-extra": "^11.2.0",
-    "jscodeshift": "0.15.1"
+    "jscodeshift": "0.15.1",
+    "semantic-release": "^23.0.2"
   },
   "devDependencies": {
     "@commitlint/cli": "^18.6.1",
@@ -27,6 +30,7 @@
     "@homer0/eslint-plugin": "^12.0.1",
     "@homer0/prettier-config": "^1.1.3",
     "@homer0/prettier-plugin-jsdoc": "^8.0.0",
+    "docdash": "homer0/docdash#semver:^2.1.2",
     "eslint": "^8.56.0",
     "husky": "^9.0.11",
     "is-ci": "^3.0.1",
@@ -34,7 +38,6 @@
     "jimple": "^1.5.0",
     "jsdoc": "^4.0.2",
     "jsdoc-ts-utils": "^5.0.0",
-    "docdash": "homer0/docdash#semver:^2.1.2",
     "leasot": "^13.3.0",
     "lint-staged": "^15.2.2",
     "prettier": "^3.2.5"
