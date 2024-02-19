@@ -330,6 +330,10 @@ const restoreShebangs = (shebangs) =>
  * @throws {Error} If there's a problem while transforming a file.
  */
 const transformOutput = async (files, options) => {
+  if (!files.length) {
+    throw new Error('No files to transform were found');
+  }
+
   const transformOptions = {
     verbose: 0,
     dry: false,
