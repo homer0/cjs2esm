@@ -69,6 +69,9 @@ npx cjs2esm
 # Yarn
 yarn cjs2esm
 
+# PNPM
+pnpm exec cjs2esm
+
 ```
 
 ### Configuration
