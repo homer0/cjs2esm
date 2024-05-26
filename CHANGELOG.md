@@ -1,3 +1,10 @@
+## [4.0.2](https://github.com/homer0/cjs2esm/compare/4.0.1...4.0.2) (2024-05-26)
+
+
+### Bug Fixes
+
+* update dependencies ([0376a3a](https://github.com/homer0/cjs2esm/commit/0376a3a40e3e0b9e5194a10acc67e2bfbac88e36))
+
 ## [4.0.1](https://github.com/homer0/cjs2esm/compare/4.0.0...4.0.1) (2024-02-19)
 
 
