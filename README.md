@@ -40,20 +40,13 @@ If there's no `package.json`, it tries to find `index.mjs` or `index.js`.
 module.exports = Rosario;
 module.exports.Pilar = Pilar;
 
-module.exports = {
-  Rosario,
-  Pilar,
-};
-
 // Becomes
 
 export default Rosario;
 export { Pilar }
-
-const exported = { Rosario, Pilar };
-export default exported;
-export { Rosario, Pilar };
 ```
+
+> ⚠️: Do not do `module.exports = { Pilar }`, as the latest version of the parser doesn't support it.
 
 ## 🚀 Usage
 
@@ -68,6 +61,9 @@ npx cjs2esm
 
 # Yarn
 yarn cjs2esm
+
+# PNPM
+pnpm exec cjs2esm
 
 ```
 
