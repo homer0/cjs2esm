@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node: [ '18', '20' ]
+        node: [ '18', '20', '22' ]
     name: Run jest and ESLint (Node ${{ matrix.node }})
     steps:
       - uses: actions/checkout@v3
@@ -16,10 +16,10 @@ jobs:
           node-version: ${{ matrix.node }}
       - uses: pnpm/action-setup@v2
         with:
-          version: 8
+          version: 9
       - run: pnpm install --frozen-lockfile
       - run: pnpm run lint:all
       - run: pnpm test
       - name: Coveralls
-        if: ${{ matrix.node == '18' }}
+        if: ${{ matrix.node == '20' }}
         uses: coverallsapp/github-action@v2

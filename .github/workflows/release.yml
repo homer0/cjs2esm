@@ -14,17 +14,15 @@ jobs:
       - name: Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20.8.1'
+          node-version-file: '.nvmrc'
       - uses: pnpm/action-setup@v2
         with:
-          version: 8
+          version: 9
       - name: Install dependencies
         env:
           HUSKY_SKIP_INSTALL: 1
         run: pnpm install --frozen-lockfile
-      - name: Install semantic-release
-        run: pnpm add -g semantic-release@^23.0.7 @semantic-release/changelog@^6.0.3 @semantic-release/git@^10.0.1
-      - run: semantic-release
+      - run: pnpm exec semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
