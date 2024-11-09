@@ -45,7 +45,7 @@
   },
   "engine-strict": true,
   "engines": {
-    "node": ">=18.17 <21"
+    "node": ">=18.17 <23"
   },
   "commitlint": {
     "extends": [
