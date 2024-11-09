@@ -14,10 +14,10 @@ jobs:
       - name: Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20.8.1'
+          node-version-file: '.nvmrc'
       - uses: pnpm/action-setup@v2
         with:
-          version: 8
+          version: 9
       - name: Install dependencies
         env:
           HUSKY_SKIP_INSTALL: 1
