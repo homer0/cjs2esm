@@ -1,3 +1,17 @@
+# [5.0.0](https://github.com/homer0/cjs2esm/compare/4.0.2...5.0.0) (2024-11-09)
+
+
+### Bug Fixes
+
+* add support for Node v22 and set v20 for dev ([a7e9b20](https://github.com/homer0/cjs2esm/commit/a7e9b201d85f38cdc7e0fb4f70f6138e3766869a))
+* update dependencies ([caa1327](https://github.com/homer0/cjs2esm/commit/caa132788150dea65be2fa0d5125b7cd214987de))
+
+
+### BREAKING CHANGES
+
+* There shouldn't be any breaking change, but we are upgrading
+jscodeshift from v0.15 to v17 (two majors).
+
 ## [4.0.2](https://github.com/homer0/cjs2esm/compare/4.0.1...4.0.2) (2024-05-26)
 
 
