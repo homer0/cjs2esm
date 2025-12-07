@@ -50,7 +50,7 @@ export { Pilar }
 
 ## 🚀 Usage
 
-The package comes with a binary that you can execute from your `package.json`, or with `npm`/`yarn`:
+The package comes with a binary that you can execute from your `package.json`, or with `pnpm`/`npm`/`yarn`:
 
 ```bash
 # From the package.json
@@ -130,7 +130,7 @@ By default, if `input` has only one directory, the only thing copied will be its
 
 This is a list of modifiers for imports of specific modules and that can be used to change their paths. Yes, pretty complicated to explain, an example will be better:
 
-The module `wootils` uses this tool and generates an ESM version on a `esm` diretory, so we need to change all the imports for `wootils` so they'll use `wootils/esm`:
+The module `wootils` uses this tool and generates an ESM version on a `esm` directory, so we need to change all the imports for `wootils` so they'll use `wootils/esm`:
 
 ```js
 const options = {
@@ -207,7 +207,7 @@ This is the path, relative to the working directory, in which the transformation
 
 These are the name of the files for the transformations, inside the `path` directory.
 
-The list can also be used to change the order of the default transformations, and it can also contain the `<cjs2esm>` special keyword, which references the tranformation file this package uses.
+The list can also be used to change the order of the default transformations, and it can also contain the `<cjs2esm>` special keyword, which references the transformation file this package uses.
 
 For example:
 
@@ -295,9 +295,9 @@ The configuration file is on `./.jestrc.js`, the tests are on `./tests` and the 
 
 ### Linting && Formatting
 
-I use [ESlint](https://eslint.org) with [my own custom configuration](https://www.npmjs.com/package/@homer0/eslint-plugin) to validate all the JS code. The configuration file for the project code is on `./.eslintrc` and the one for the tests is on `./tests/.eslintrc`. There's also an `./.eslintignore` to exclude some files on the process. The script that runs it is on `./utils/scripts/lint-all`.
+I use [ESlint](https://eslint.org) with [my own custom configuration](https://www.npmjs.com/package/@homer0/eslint-plugin) to validate all the JS code. The configuration file for the project code is on `./eslint.config.mjs`. The script that runs it is on `./utils/scripts/lint-all`.
 
-For formatting I use [Prettier](https://prettier.io) with [my custom configuration](https://www.npmjs.com/package/@homer0/prettier-config). The configuration file for the project code is on `./.prettierrc`.
+For formatting I use [Prettier](https://prettier.io) with [my custom configuration](https://www.npmjs.com/package/@homer0/prettier-config). The configuration file for the project code is on `./.prettierrc.mjs`.
 
 ### Documentation
 
@@ -323,10 +323,11 @@ I found `jscodeshift` and the `5to6` codemod, that are normally used to migrate 
 
 It's not as fast as Babel, running it on [Jimpex](https://github.com/homer0/jimpex) (~40 files), takes ~12seg, but you would only run it on your CI, or once or twice to see what generates.
 
-I believe it's a better experencie to have the ESM version on a different path :D.
+I believe it's a better experience to have the ESM version on a different path :D.
 
 Enjoy 🤘!
 
 > ~~Once `v14` becomes the oldest LTS, I'll archive this repository and deprecate the tool.~~
 > Node 12 now supports ESM without a flag, but there are still a lot of things that use CommonJS, and the fact that you can't `require` ESM makes things complicated, so I'm not sure yet when I'll deprecate the tool.
 > Update: 2022, and the interop is still a mess, so I'm not sure when I'll deprecate the tool.
+> Update: 2025, there's more push for ESM now, but CJS is still widely used, and seems like Node will add a proper interop soon. In my case, I started migrating all my projects, when possible, but I plan to keep this tool alive a bit longer.
