@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node: [ '18', '20', '22' ]
+        node: ['20', '22.14', '24']
     name: Run jest and ESLint (Node ${{ matrix.node }})
     steps:
       - uses: actions/checkout@v3
