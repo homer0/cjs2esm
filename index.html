@@ -127,7 +127,7 @@ export { Pilar }
 <p>⚠️: Do not do <code>module.exports = { Pilar }</code>, as the latest version of the parser doesn't support it.</p>
 </blockquote>
 <h2>🚀 Usage</h2>
-<p>The package comes with a binary that you can execute from your <code>package.json</code>, or with <code>npm</code>/<code>yarn</code>:</p>
+<p>The package comes with a binary that you can execute from your <code>package.json</code>, or with <code>pnpm</code>/<code>npm</code>/<code>yarn</code>:</p>
 <pre class="prettyprint source lang-bash"><code># From the package.json
 cjs2esm
 
@@ -191,7 +191,7 @@ pnpm exec cjs2esm
 </blockquote>
 <h4>.modules</h4>
 <p>This is a list of modifiers for imports of specific modules and that can be used to change their paths. Yes, pretty complicated to explain, an example will be better:</p>
-<p>The module <code>wootils</code> uses this tool and generates an ESM version on a <code>esm</code> diretory, so we need to change all the imports for <code>wootils</code> so they'll use <code>wootils/esm</code>:</p>
+<p>The module <code>wootils</code> uses this tool and generates an ESM version on a <code>esm</code> directory, so we need to change all the imports for <code>wootils</code> so they'll use <code>wootils/esm</code>:</p>
 <pre class="prettyprint source lang-js"><code>const options = {
   // ...
   modules: {
@@ -248,7 +248,7 @@ import ObjectUtils from 'wootils/esm/shared/objectUtils.js';
 </blockquote>
 <h5>.files</h5>
 <p>These are the name of the files for the transformations, inside the <code>path</code> directory.</p>
-<p>The list can also be used to change the order of the default transformations, and it can also contain the <code>&lt;cjs2esm&gt;</code> special keyword, which references the tranformation file this package uses.</p>
+<p>The list can also be used to change the order of the default transformations, and it can also contain the <code>&lt;cjs2esm&gt;</code> special keyword, which references the transformation file this package uses.</p>
 <p>For example:</p>
 <pre class="prettyprint source lang-json"><code>{
   &quot;files&quot;: [
@@ -334,8 +334,8 @@ import { prepare, getConfiguration } from 'cjs2esm/esm';
 <p>I use <a href="https://facebook.github.io/jest/">Jest</a> to test the project.</p>
 <p>The configuration file is on <code>./.jestrc.js</code>, the tests are on <code>./tests</code> and the script that runs it is on <code>./utils/scripts/test</code>.</p>
 <h3>Linting &amp;&amp; Formatting</h3>
-<p>I use <a href="https://eslint.org">ESlint</a> with <a href="https://www.npmjs.com/package/@homer0/eslint-plugin">my own custom configuration</a> to validate all the JS code. The configuration file for the project code is on <code>./.eslintrc</code> and the one for the tests is on <code>./tests/.eslintrc</code>. There's also an <code>./.eslintignore</code> to exclude some files on the process. The script that runs it is on <code>./utils/scripts/lint-all</code>.</p>
-<p>For formatting I use <a href="https://prettier.io">Prettier</a> with <a href="https://www.npmjs.com/package/@homer0/prettier-config">my custom configuration</a>. The configuration file for the project code is on <code>./.prettierrc</code>.</p>
+<p>I use <a href="https://eslint.org">ESlint</a> with <a href="https://www.npmjs.com/package/@homer0/eslint-plugin">my own custom configuration</a> to validate all the JS code. The configuration file for the project code is on <code>./eslint.config.mjs</code>. The script that runs it is on <code>./utils/scripts/lint-all</code>.</p>
+<p>For formatting I use <a href="https://prettier.io">Prettier</a> with <a href="https://www.npmjs.com/package/@homer0/prettier-config">my custom configuration</a>. The configuration file for the project code is on <code>./.prettierrc.mjs</code>.</p>
 <h3>Documentation</h3>
 <p>I use <a href="https://jsdoc.app">JSDoc</a> to generate an HTML documentation site for the project.</p>
 <p>The configuration file is on <code>./.jsdoc.js</code> and the script that runs it is on <code>./utils/scripts/docs</code>.</p>
@@ -348,12 +348,19 @@ import { prepare, getConfiguration } from 'cjs2esm/esm';
 <p>The thing I like the least from transpiling from ESM to CJS is that if you use CJS, you have to use <code>require('something').default</code>, as <code>export default</code> becomes <code>exports.default</code>; I've had to update a lot of tools for this kind of changes (on the <code>webpack</code> ecosystem)...That's a sh*#ty experience.</p>
 <p>I found <code>jscodeshift</code> and the <code>5to6</code> codemod, that are normally used to migrate a project to ESM and I adapted so it can cover a couple more issues (like extensions and the <code>package.json</code>).</p>
 <p>It's not as fast as Babel, running it on <a href="https://github.com/homer0/jimpex">Jimpex</a> (~40 files), takes ~12seg, but you would only run it on your CI, or once or twice to see what generates.</p>
-<p>I believe it's a better experencie to have the ESM version on a different path :D.</p>
+<p>I believe it's a better experience to have the ESM version on a different path :D.</p>
 <p>Enjoy 🤘!</p>
 <blockquote>
-<p><s>Once <code>v14</code> becomes the oldest LTS, I'll archive this repository and deprecate the tool.</s>
-Node 12 now supports ESM without a flag, but there are still a lot of things that use CommonJS, and the fact that you can't <code>require</code> ESM makes things complicated, so I'm not sure yet when I'll deprecate the tool.
-Update: 2022, and the interop is still a mess, so I'm not sure when I'll deprecate the tool.</p>
+<p><s>Once <code>v14</code> becomes the oldest LTS, I'll archive this repository and deprecate the tool.</s></p>
+</blockquote>
+<blockquote>
+<p>Node 12 now supports ESM without a flag, but there are still a lot of things that use CommonJS, and the fact that you can't <code>require</code> ESM makes things complicated, so I'm not sure yet when I'll deprecate the tool.</p>
+</blockquote>
+<blockquote>
+<p>Update: 2022, and the interop is still a mess, so I'm not sure when I'll deprecate the tool.</p>
+</blockquote>
+<blockquote>
+<p>Update: 2025, there's more push for ESM now, but CJS is still widely used, and seems like Node will add a proper interop soon. In my case, I started migrating all my projects, when possible, but I plan to keep this tool alive a bit longer.</p>
 </blockquote></article>
     </section>
 
@@ -369,7 +376,7 @@ Update: 2022, and the interop is still a mess, so I'm not sure when I'll depreca
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.4</a> using a forked <a href="https://github.com/homer0/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> using a forked <a href="https://github.com/homer0/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>
