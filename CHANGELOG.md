@@ -1,3 +1,18 @@
+# [6.0.0](https://github.com/homer0/cjs2esm/compare/5.0.0...6.0.0) (2025-12-07)
+
+
+### Bug Fixes
+
+* add override for old version of micromatch ([ac7fdb0](https://github.com/homer0/cjs2esm/commit/ac7fdb0f4944953976b44f7f9a823148b235b3f7))
+* drop Node v18 ([33267c6](https://github.com/homer0/cjs2esm/commit/33267c6dc59233d800775e4bc54dbc1a6e9b4679))
+* update dependencies ([4cca850](https://github.com/homer0/cjs2esm/commit/4cca8509d82d4695675036e465b8e59aa480e146))
+
+
+### BREAKING CHANGES
+
+* Node v18 is not longer supported. Node v20.19 is the minimum
+required version now
+
 # [5.0.0](https://github.com/homer0/cjs2esm/compare/4.0.2...5.0.0) (2024-11-09)
 
 
