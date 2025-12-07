@@ -3,24 +3,20 @@ const packageJson = require('./package.json');
 module.exports = {
   source: {
     include: ['./src'],
-    includePattern: '.js$'
+    includePattern: '.js$',
   },
-  plugins: [
-    'docdash/nativeTypesPlugin',
-    'jsdoc-ts-utils',
-    'plugins/markdown',
-  ],
+  plugins: ['docdash/nativeTypesPlugin', 'jsdoc-ts-utils', 'plugins/markdown'],
   templates: {
     cleverLinks: true,
     default: {
-      includeDate: false
-    }
+      includeDate: false,
+    },
   },
   opts: {
     recurse: true,
     destination: './docs',
     readme: 'README.md',
-    template: 'node_modules/docdash'
+    template: 'node_modules/docdash',
   },
   docdash: {
     title: packageJson.name,
