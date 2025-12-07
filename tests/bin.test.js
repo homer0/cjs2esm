@@ -15,7 +15,7 @@ describe('bin', () => {
    * @returns {Functions}
    */
   const getFunctions = () => {
-    // eslint-disable-next-line global-require
+    // eslint-disable-next-line n/global-require
     const fns = require('../src');
     return fns;
   };
@@ -24,7 +24,7 @@ describe('bin', () => {
    * times.
    */
   const loadBin = () => {
-    // eslint-disable-next-line global-require
+    // eslint-disable-next-line n/global-require
     require('../src/bin');
   };
   /**

@@ -40,7 +40,6 @@ const findFile = async (list, directory) => {
   let result;
   for (let i = 0; i < list.length; i++) {
     const test = path.join(directory, list[i]);
-    // eslint-disable-next-line no-await-in-loop
     const exists = await fs.pathExists(test);
     if (exists) {
       result = test;
@@ -118,7 +117,7 @@ const findFileExtensionSync = (absPath) => {
   return file ? path.parse(file).ext : null;
 };
 /**
- * Given an the aboslute path for an import/require statement, the method will validate if
+ * Given an the absolute path for an import/require statement, the method will validate if
  * its for a folder, a file, and if it's for a file, it will complete its extension in
  * case it's missing.
  *
@@ -159,7 +158,7 @@ const getAbsPathInfo = async (absPath) => {
   return result;
 };
 /**
- * Given an the aboslute path for an import/require statement, the method will validate if
+ * Given an the absolute path for an import/require statement, the method will validate if
  * its for a folder, a file, and if it's for a file, it will complete its extension in
  * case it's missing.
  *
@@ -202,14 +201,14 @@ const getAbsPathInfoSync = (absPath) => {
 /**
  * This function is just a proxy for `require` and it only exists to make testing the tool
  * easier: the test for this is just that returns the same as `require`, but on the files
- * that use it, with mocking this funcion is enough and there won't be any need for
+ * that use it, with mocking this function is enough and there won't be any need for
  * `resetModules`.
  *
  * @param {string} modulePath  The path to the module to be required.
  * @returns {Object}
  */
 const requireModule = (modulePath) => {
-  // eslint-disable-next-line global-require, import/no-dynamic-require
+  // eslint-disable-next-line n/global-require, import-x/no-dynamic-require
   const result = require(modulePath);
   // And this variable only exists to avoid issues between the JSDoc block and ESLint.
   return result;

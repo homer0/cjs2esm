@@ -5,7 +5,7 @@ describe('esm', () => {
   beforeEach(() => {
     jest.resetAllMocks();
     jest.resetModules();
-    // eslint-disable-next-line global-require
+    // eslint-disable-next-line n/global-require
     esmModule = require('../src/esm');
   });
 
