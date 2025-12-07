@@ -1,7 +1,0 @@
-.github/*
-coverage/*
-documentation/*
-node_modules/*
-docs/*
-esm/*
-src/5to6-codemod

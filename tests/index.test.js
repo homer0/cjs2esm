@@ -252,7 +252,7 @@ describe('index', () => {
     });
     /**
      * Utility function to test the lists of copied files. The reason for this function is
-     * that all files are copied in parallel, so we can't alaways expect the same order.
+     * that all files are copied in parallel, so we can't always expect the same order.
      *
      * @param {CJS2ESMCopiedFile[]} list  The list of copied files.
      * @returns {CJS2ESMCopiedFile[]}

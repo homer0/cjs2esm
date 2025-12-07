@@ -18,8 +18,8 @@ const { findFileSync, getAbsPathInfoSync } = require('./utils');
  *
  * @param {string} absPath     The absolute path for the folder.
  * @param {string} importPath  The path as it is on the import statement.
- * @returns {?string} If there's no `package.json` and no `index` was found, the function
- *                    will return `null`.
+ * @returns {?string} If there's no `package.json` and no `index` was found, the
+ *                    function will return `null`.
  */
 const createReplacementForFolder = (absPath, importPath) => {
   let result;
@@ -113,7 +113,7 @@ const transform = (file, api, options) => {
   if (cjs2esm.modules.length) {
     root
       .find(j.ImportDeclaration)
-      // Filter out the import statments that don't need to be modified.
+      // Filter out the import statements that don't need to be modified.
       .filter((item) => {
         const importPath = item.value.source.value;
         return cjs2esm.modules.some((mod) => importPath.startsWith(mod.name));

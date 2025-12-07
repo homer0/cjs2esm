@@ -203,7 +203,7 @@ describe('utils', () => {
       expect(fs.pathExists).toHaveBeenNthCalledWith(2, expectedAbsFilePath);
     });
 
-    it('should return the information for a file without extension but with a sufix', async () => {
+    it('should return the information for a file without extension but with a suffix', async () => {
       // Given
       const file = 'myFile.service';
       const folder = '/src/utils';
@@ -308,7 +308,7 @@ describe('utils', () => {
       expect(fs.pathExistsSync).toHaveBeenNthCalledWith(2, expectedAbsFilePath);
     });
 
-    it('should return the information for a file without extension but with a sufix', () => {
+    it('should return the information for a file without extension but with a suffix', () => {
       // Given
       const file = 'myFile.service';
       const folder = '/src/utils';
@@ -374,7 +374,7 @@ describe('utils', () => {
       // Given
       const modPath = '../package.json';
       let result = null;
-      // eslint-disable-next-line global-require, import/no-dynamic-require
+      // eslint-disable-next-line n/global-require, import-x/no-dynamic-require
       const expectedResult = require(modPath);
       // When
       result = utils.requireModule(modPath);
