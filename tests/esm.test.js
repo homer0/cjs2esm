@@ -11,10 +11,8 @@ describe('esm', () => {
 
   it('should throw an error if modules are not loaded', () => {
     // Given/When/Then
-    expect(() => esmModule.getESMModule('chalk')).toThrowError(
-      'ESM modules are not loaded.',
-    );
-    expect(() => esmModule.getChalk()).toThrowError('ESM modules are not loaded.');
+    expect(() => esmModule.getESMModule('chalk')).toThrow('ESM modules are not loaded.');
+    expect(() => esmModule.getChalk()).toThrow('ESM modules are not loaded.');
   });
 
   it('should emit a warning when loading modules twice', async () => {
@@ -32,7 +30,7 @@ describe('esm', () => {
     // Given
     await esmModule.prepareESMModules();
     // When/Then
-    expect(() => esmModule.getESMModule('foo')).toThrowError(
+    expect(() => esmModule.getESMModule('foo')).toThrow(
       'ESM module "foo" is not loaded.',
     );
   });
@@ -43,9 +41,7 @@ describe('esm', () => {
     // When/Then
     expect(esmModule.getChalk()).toEqual(
       expect.objectContaining({
-        default: expect.objectContaining({
-          red: expect.any(Function),
-        }),
+        backgroundColorNames: expect.arrayContaining(['bgBlack', 'bgRed', 'bgGreen']),
       }),
     );
   });
