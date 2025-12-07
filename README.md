@@ -328,6 +328,9 @@ I believe it's a better experience to have the ESM version on a different path :
 Enjoy 🤘!
 
 > ~~Once `v14` becomes the oldest LTS, I'll archive this repository and deprecate the tool.~~
+
 > Node 12 now supports ESM without a flag, but there are still a lot of things that use CommonJS, and the fact that you can't `require` ESM makes things complicated, so I'm not sure yet when I'll deprecate the tool.
+
 > Update: 2022, and the interop is still a mess, so I'm not sure when I'll deprecate the tool.
+
 > Update: 2025, there's more push for ESM now, but CJS is still widely used, and seems like Node will add a proper interop soon. In my case, I started migrating all my projects, when possible, but I plan to keep this tool alive a bit longer.
